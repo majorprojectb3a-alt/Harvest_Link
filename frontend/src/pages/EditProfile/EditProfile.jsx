@@ -121,7 +121,7 @@ const EditProfile = () =>{
                     <div className="form-group">
                         <label>
                             <input type="checkbox" name="pickup" id="pickup" onChange={handleChange}/>
-                            I can arrange transportation for pickup
+                            I can arrange transportation for pickup..
                         </label>
                     </div>
                 </div>
