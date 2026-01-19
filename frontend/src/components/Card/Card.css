@@ -1,0 +1,38 @@
+.card {
+    background: #00695C;
+    padding: 24px 20px;
+    width: 200px;
+    height: 250px;
+    border-radius: 12px;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.card:hover {
+    transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  border: 2px solid #A3E635;
+
+}
+
+.card-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+}
+
+.card button {
+    background: white;
+    color: #00695C;;
+
+    font-size: 18px;
+    margin: 0;
+}
