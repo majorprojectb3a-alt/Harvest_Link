@@ -1,16 +1,14 @@
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
   font-weight: 400;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 
   color-scheme: light dark;
   color: #213547;
   background-color: #ffffff;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -35,13 +33,13 @@ body {
 }
 
 /* Optional global heading */
-h1 {
+/* h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
+} */
 
 /* Keep buttons generic (Auth.css overrides its own buttons) */
-button {
+/* button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
@@ -65,4 +63,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

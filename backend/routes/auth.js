@@ -64,17 +64,36 @@ router.post("/login", async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ msg: "Incorrect password" });
 
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      role: user.role,
+      profileImage: user.profileImage || ""
+    };
+
     res.json({
       msg: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        role: user.role,
-      },
+      user: req.session.user
     });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
 });
+
+router.get("/profile", (req, res) =>{
+  if(!req.session.user)
+    return res.status(401).json({msg: "Unauthorised"});
+
+  res.json({
+    user: req.session.user
+  });
+});
+
+router.post("/logout", (req, res) =>{
+  req.session.destroy(() =>{
+    res.clearCookie("harvestlink.sid");
+    res.json({msg: "logged out successfully"});
+  })
+})
 
 export default router;

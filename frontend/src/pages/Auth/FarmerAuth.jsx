@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
-import "./App.css";
+import Navbar from "./AuthNavbar";
+import "../../App.css";
 
-export default function CustomerAuth() {
+export default function FarmerAuth() {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
 
   const [form, setForm] = useState({
@@ -57,9 +59,27 @@ export default function CustomerAuth() {
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         {
-          role: "customer",
+          role: "farmer",
           email: form.email,
           password: form.password
+        }
+      );
+      alert(res.data.msg);
+      navigate("/FarmerHome");
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
+  };
+
+  const handleSignup = async () => {
+    if (!validateSignup()) return;
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        {
+          role: "farmer",
+          ...form
         }
       );
       alert(res.data.msg);
@@ -68,33 +88,16 @@ export default function CustomerAuth() {
     }
   };
 
-  const handleSignup = async () => {
-    if (!validateSignup()) return;
-    console.log('inside signup');
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        {
-          role: "customer",
-          ...form
-        }
-      );
-      alert('alert' + res.data.msg);
-    } catch (err) {
-      alert(err.response.data.msg);
-    }
-  };
-
   return (
     <>
-      <Navbar oppositeUser="farmer" />
+      <Navbar oppositeUser="customer" />
 
       <div className="page-container">
         <div className={`cont ${isSignUp ? "s--signup" : ""}`}>
 
           {/* LOGIN */}
           <div className="form sign-in">
-            <h2>Customer Login</h2>
+            <h2>Farmer Login</h2>
 
             <div className="form-group">
               <label>Email</label>
@@ -114,7 +117,7 @@ export default function CustomerAuth() {
           {/* SLIDER */}
           <div className="sub-cont">
             <div className="img">
-              <div className="img__text m--up"><h3>New Customer?</h3></div>
+              <div className="img__text m--up"><h3>New Farmer?</h3></div>
               <div className="img__text m--in"><h3>Already have an account?</h3></div>
 
               <div className="img__btn" onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}>
@@ -125,7 +128,7 @@ export default function CustomerAuth() {
 
             {/* SIGNUP */}
             <div className="form sign-up">
-              <h2>Customer Signup</h2>
+              <h2>Farmer Signup</h2>
 
               <div className="form-group">
                 <label>Name</label>

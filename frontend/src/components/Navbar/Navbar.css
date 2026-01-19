@@ -1,0 +1,63 @@
+.nav {
+    background: #00695C;
+    height: 80px;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.username {
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #ecf4ec;
+  font-size: 16px;
+}
+
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+.logout-div{
+  background-color: #ef2a2a;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 2rem;
+}
+.logout-div p{
+ cursor: pointer;
+}
+
+.logout-logo {
+    font-size: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.profile-img:hover, .logout-div:hover {
+  transform: scale(1.1);
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../components/Header/Header";
+import Header from "../../components/Navbar/Header";
 import "./EditProfile.css";
 import defaultProfile from "../../assets/default_profile_image.png";
 import { getCountries, getStatesOfCountry, getCitiesOfState } from '@countrystatecity/countries';

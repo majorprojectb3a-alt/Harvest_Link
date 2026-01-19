@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import logo from "./assets/logo.jpg";
+// import logo from "./assets/logo.jpg";
+import './Auth.css';
 
 export default function Navbar() {
   const location = useLocation();
@@ -11,7 +12,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <img src={logo} alt="Logo" className="logo" />
+        {/* <img src={logo} alt="Logo" className="logo" /> */}
         <span className="brand">HarvestLink</span>
       </div>
 
