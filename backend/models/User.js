@@ -19,11 +19,12 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
+      unique:true,
       match: /^[0-9]{10}$/,
       required: true,
     },
     password: {
-      type: String,
+      type: String, 
       required: true,
     },
   },

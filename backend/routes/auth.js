@@ -1,79 +1,73 @@
 import express from "express";
-import bcrypt from "bcryptjs";
-import User from "../models/User.js";
+import twilio from "twilio";
+import Otp from "../models/Otp.js";
 
 const router = express.Router();
 
-/* ---------- HELPERS ---------- */
-const isValidEmail = (email) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+/* ================= SEND OTP ================= */
+router.post("/send-otp", async (req, res) => {
+  const { phone } = req.body;
 
-/* ---------- SIGNUP ---------- */
-router.post("/signup", async (req, res) => {
-  console.log("SIGNUP BODY:", req.body);
+  if (!phone) {
+    return res.status(400).json({ msg: "Phone number required" });
+  }
+
+  const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
   try {
-    const { role, name, email, phone, password } = req.body;
+    await Otp.deleteMany({ phone });
 
-    if (!role || !name || !email || !phone || !password)
-      return res.status(400).json({ msg: "All fields required" });
-
-    if (!isValidEmail(email))
-      return res.status(400).json({ msg: "Invalid email" });
-
-    if (!/^[0-9]{10}$/.test(phone))
-      return res.status(400).json({ msg: "Invalid phone number" });
-
-    if (password.length < 8)
-      return res.status(400).json({ msg: "Weak password" });
-
-    const existingUser = await User.findOne({ email, role });
-    if (existingUser)
-      return res.status(400).json({ msg: "User already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new User({
-      role,
-      name,
-      email,
+    await Otp.create({
       phone,
-      password: hashedPassword,
+      otp,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000)
     });
 
-    await user.save();
+    await client.messages.create({
+      body: `Your HarvestLink OTP is ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: `+91${phone}`
+    });
 
-    res.status(201).json({ msg: "Signup successful" });
+    console.log("OTP SENT:", otp); // dev only
+
+    res.json({ msg: "OTP sent successfully" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error(err);
+    res.status(500).json({ msg: "Failed to send OTP" });
   }
 });
 
-/* ---------- LOGIN ---------- */
-router.post("/login", async (req, res) => {
+/* ================= VERIFY OTP ================= */
+router.post("/verify-otp", async (req, res) => {
+  const { phone, otp } = req.body;
+
+  if (!phone || !otp) {
+    return res.status(400).json({ msg: "Phone and OTP required" });
+  }
+
   try {
-    const { role, email, password } = req.body;
+    const record = await Otp.findOne({ phone, otp });
 
-    if (!email || !password)
-      return res.status(400).json({ msg: "Email & password required" });
+    if (!record) {
+      return res.status(400).json({ msg: "Invalid OTP" });
+    }
 
-    const user = await User.findOne({ email, role });
-    if (!user)
-      return res.status(400).json({ msg: "User not found" });
+    if (record.expiresAt < new Date()) {
+      return res.status(400).json({ msg: "OTP expired" });
+    }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ msg: "Incorrect password" });
+    await Otp.deleteMany({ phone });
 
-    res.json({
-      msg: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        role: user.role,
-      },
-    });
+    res.json({ msg: "OTP verified successfully" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error(err);
+    res.status(500).json({ msg: "OTP verification failed" });
   }
 });
 
