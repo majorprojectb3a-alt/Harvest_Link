@@ -1,0 +1,59 @@
+.waste-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border: 1px solid #e6e6e6;
+  padding: 20px 28px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #222;
+  transition: 0.25s;
+
+  width: 100%;
+
+  border-left: 5px solid #2f7d6b;   /* 🔥 HARVESTLINK ACCENT */
+}
+
+.waste-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.waste-info h3 {
+  font-size: 21px;
+  margin-bottom: 6px;
+  color: #243746;
+}
+
+.waste-info p {
+  font-size: 15px;
+  margin: 3px 0;
+  color: #666;
+}
+
+.waste-meta {
+  text-align: right;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2fa04f;
+}
+
+.distance {
+  font-size: 14px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.clickable:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}

@@ -22,7 +22,9 @@ function Options() {
         <section className="options">
             <div className="items">
                 {options.map((item, index) => (
-                    <Card key={index} image={item.image} title={item.title} onClick = {() =>handleClick(item.path)}/>
+                    <div onClick = {() =>handleClick(item.path)}>
+                        <Card key={index} image={item.image} title={item.title} />
+                    </div>
                 ))}
             </div>
         </section>

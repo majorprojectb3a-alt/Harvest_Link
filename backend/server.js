@@ -7,6 +7,7 @@ import MongoStore from "connect-mongo";
 
 import estimateRoutes from "./routes/estimate.js";
 import authRoutes from "./routes/auth.js"; // 👈 IMPORTANT
+import wasteRoutes from "./routes/waste.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
+    sameSite: "lax" 
   },
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI
@@ -34,6 +36,7 @@ app.use(session({
 
 app.use("/api/auth", authRoutes); // 👈 router is a function
 app.use("/api/estimator", estimateRoutes);
+app.use("/api/waste", wasteRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

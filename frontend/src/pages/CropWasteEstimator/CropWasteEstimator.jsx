@@ -57,25 +57,37 @@ export default function CropWasteEstimator() {
         <h2>Crop Waste → Biofuel Estimator</h2>
 
         <div className="predictor-form">
-          <div className="form-group">
-            <label>Crop</label>
-            <input name="crop" value={form.crop} onChange={handleChange} />
-          </div>
+            <div className="form-group">
+                <label>Crop</label>
+                <select name="crop" value={form.crop} onChange={handleChange}>
+                    <option value="rice">Rice</option>
+                    <option value="wheat">Wheat</option>
+                    <option value="maize">Maize</option>
+                    <option value="sugarcane">Sugarcane</option>
+                    <option value="cotton">Cotton</option>
+                    <option value="banana">Banana</option>
+                </select>
+            </div>
 
-          <div className="form-group">
-            <label>Region</label>
-            <input name="region" value={form.region} onChange={handleChange} />
-          </div>
+            <div className="form-group">
+                <label>Country</label>
+                <input
+                    type="text"
+                    name="region"
+                    value="India"
+                    disabled
+                />
+            </div>
 
-          <div className="form-group">
-            <label>Harvested Amount (kg)</label>
-            <input
-              type="number"
-              name="harvested_kg"
-              value={form.harvested_kg}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="form-group">
+                <label>Harvested Amount (kg)</label>
+                <input
+                type="number"
+                name="harvested_kg"
+                value={form.harvested_kg}
+                onChange={handleChange}
+                />
+            </div>
 
           <div className="form-group">
             <label>Residue-to-Product Ratio (RPR)</label>
