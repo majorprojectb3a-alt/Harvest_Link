@@ -1,0 +1,106 @@
+.predictor-container {
+  max-width: 900px;
+  margin: 40px auto;
+  margin-top: 120px;   /* 👈 pushes content below navbar */
+  padding: 25px;
+  background: #f9fdf9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+
+.predictor-container h2 {
+  text-align: center;
+  color: #2e7d32;
+  margin-bottom: 25px;
+  font-size: 26px;
+}
+
+/* Form grid */
+.predictor-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+/* Input blocks */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #333;
+}
+
+.form-group input {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #2e7d32;
+}
+
+/* Button */
+.predict-btn {
+  grid-column: span 2;
+  padding: 12px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.predict-btn:hover {
+  background: #1b5e20;
+}
+
+/* Result box */
+.result-box {
+  margin-top: 30px;
+  padding: 20px;
+  background: #e8f5e9;
+  border-left: 5px solid #2e7d32;
+  border-radius: 8px;
+}
+
+.result-box h3 {
+  margin-bottom: 10px;
+  color: #1b5e20;
+}
+
+.result-box p {
+  font-size: 15px;
+  margin: 6px 0;
+}
+
+/* Error */
+.error-text {
+  color: red;
+  margin-top: 15px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .predictor-form {
+    grid-template-columns: 1fr;
+  }
+
+  .predict-btn {
+    grid-column: span 1;
+  }
+}

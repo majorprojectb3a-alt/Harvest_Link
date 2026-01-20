@@ -7,6 +7,8 @@ import BuyFresh from "./pages/BuyFresh/BuyFresh";
 import BuyWaste from "./pages/BuyWaste/BuyWaste";
 import FarmerAuth from "./pages/Auth/FarmerAuth";
 import CustomerAuth from "./pages/Auth/CustomerAuth";
+import CropWasteEstimtor from "./pages/CropWasteEstimator/CropWasteEstimator";
+
 import SellWaste from "./pages/Sellwaste/SellWaste";
 import axios from "axios";
 
@@ -23,6 +25,7 @@ function App() {
         <Route path = "/buy-waste" element = {<BuyWaste />} />
         <Route path="/farmer" element={<FarmerAuth />} />
         <Route path="/customer" element={<CustomerAuth />} />
+        <Route path="/predict-price" element={<CropWasteEstimtor />} />
         <Route path="/sell-waste" element={<SellWaste />} />
       </Routes>
     </Router>

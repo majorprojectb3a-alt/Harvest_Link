@@ -5,6 +5,7 @@ import fresh from "../../assets/fresh.jpg"
 import waste from "../../assets/waste.webp"
 import predict from "../../assets/predict.png"
 import React from 'react';
+
 function Options() {
     const navigate = useNavigate();
     const options = [

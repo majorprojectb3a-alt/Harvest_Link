@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
+import estimateRoutes from "./routes/estimate.js";
 import authRoutes from "./routes/auth.js"; // 👈 IMPORTANT
 import wasteRoutes from "./routes/waste.js";
 
@@ -34,6 +35,7 @@ app.use(session({
 }));
 
 app.use("/api/auth", authRoutes); // 👈 router is a function
+app.use("/api/estimator", estimateRoutes);
 app.use("/api/waste", wasteRoutes);
 
 mongoose

@@ -142,7 +142,7 @@ router.post("/send-otp", async (req, res) => {
 /* ================= VERIFY OTP ================= */
 router.post("/verify-otp", async (req, res) => {
   const { phone, otp, role } = req.body;
-
+  console.log(req.body+" "+"inside verify otp");
   if (!phone || !otp || !role)
     return res.status(400).json({ msg: "Phone, OTP & role required" });
 
