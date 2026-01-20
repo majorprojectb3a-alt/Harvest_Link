@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getWasteItems, getWasteDetails, buyWasteItem } from "../../api/wasteApi";
 import WasteCard from "../Card/WasteCard";
 import Filters from "../Filters/Filters";
+import "./WasteOptions.css"
 
 export default function WasteOptions() {
   const [items, setItems] = useState([]);
@@ -116,16 +117,20 @@ export default function WasteOptions() {
             <p><strong>Total Price:</strong> ₹{selectedWaste.predictedPrice}</p>
             <p><strong>Price per kg:</strong> ₹{selectedWaste.pricePerKg}</p>
 
+
             <hr />
 
             {/* 🔥 SELLER DETAILS */}
-            <h3>Seller Contact Details</h3>
+            <h2>Seller Contact Details</h2>
             <p><strong>Name:</strong> {selectedWaste.userId.name}</p>
             <p><strong>Email:</strong> {selectedWaste.userId.email}</p>
             <p><strong>Phone:</strong> {selectedWaste.userId.phone}</p>
 
             <hr />
+            <br />
 
+            <div className="btns">
+              
             {/* 🔥 BOOK BUTTON */}
             <button
               className="book-btn"
@@ -143,12 +148,14 @@ export default function WasteOptions() {
               📦 Book Waste
             </button>
 
+
             <button
               className="cancel-btn"
               onClick={() => setShowDetails(false)}
             >
               Close
             </button>
+            </div>
 
           </div>
         </div>

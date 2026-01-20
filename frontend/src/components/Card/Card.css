@@ -1,8 +1,8 @@
 .card {
     background: #00695C;
     padding: 24px 20px;
-    width: 200px;
-    height: 250px;
+    width: 245px;
+    height: 295px;
     border-radius: 12px;
     cursor: pointer;
 
@@ -31,7 +31,7 @@
 
 .card button {
     background: white;
-    color: #00695C;;
+    color: #00695C;
 
     font-size: 18px;
     margin: 0;

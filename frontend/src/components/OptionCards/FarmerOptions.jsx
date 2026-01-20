@@ -1,17 +1,17 @@
-import "./Options.css";
+
 import Card from "../Card/Card";
 import {useNavigate} from "react-router-dom";
 import fresh from "../../assets/fresh.jpg"
 import waste from "../../assets/waste.webp"
 import predict from "../../assets/predict.png"
-import React from 'react';
+import "./Options.css"
 
 function Options() {
     const navigate = useNavigate();
     const options = [
         {image: fresh, title:"Sell Fresh", path: "/sell-fresh"},
         {image: waste, title:"Sell Waste", path: "/sell-waste"},
-        {image: predict, title:"Predict Price", path: "/predict-price"}
+        {image: predict, title:"Estimate", path: "/predict-price"}
     ];
 
     const handleClick = (path) => {

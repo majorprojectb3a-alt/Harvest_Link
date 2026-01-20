@@ -148,7 +148,7 @@ export default function FarmerAuth() {
 
           {/* ---------- LOGIN ---------- */}
           <div className="form sign-in">
-            <h2>Farmer Login</h2>
+            <h2 className="h2">Farmer Login</h2>
 
             <div className="form-group">
               <label>Phone</label>
@@ -175,11 +175,11 @@ export default function FarmerAuth() {
             )}
 
             {!otpSent ? (
-              <button className="submit" onClick={sendOtp}>
+              <button className="submit btn" onClick={sendOtp}>
                 Send OTP
               </button>
             ) : (
-              <button className="submit" onClick={verifyOtp}>
+              <button className="submit btn" onClick={verifyOtp}>
                 Verify OTP
               </button>
             )}
@@ -209,7 +209,7 @@ export default function FarmerAuth() {
             </div>
 
             <div className="form sign-up">
-              <h2>Farmer Signup</h2>
+              <h2 className="h2">Farmer Signup</h2>
 
               <div className="form-group">
                 <label>Name</label>
@@ -240,7 +240,7 @@ export default function FarmerAuth() {
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 
-              <button className="submit" onClick={handleSignup}>
+              <button className="submit btn" onClick={handleSignup}>
                 Sign Up
               </button>
             </div>
