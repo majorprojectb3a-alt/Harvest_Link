@@ -91,9 +91,13 @@
   position: fixed;
   bottom: 30px;
   right: 30px;
-  width: 60px;
-  height: 60px;
+   width: 50px;
+  height: 70px;                 /* 🔥 important for perfect circle */
   border-radius: 50%;
+
+  display: flex;               /* 🔥 center the + perfectly */
+  align-items: center;
+  justify-content: center;
   font-size: 32px;
   border: none;
   background-color: #2e7d32;

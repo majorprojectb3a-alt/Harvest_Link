@@ -97,7 +97,7 @@ export default function CustomerAuth() {
 
           {/* LOGIN */}
           <div className="form sign-in">
-            <h2>Customer Login</h2>
+            <h2 className="h2">Customer Login</h2>
 
             <div className="form-group">
               <label>Email</label>
@@ -111,7 +111,7 @@ export default function CustomerAuth() {
               {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
-            <button className="submit" onClick={handleLogin}>Sign In</button>
+            <button className="submit btn" onClick={handleLogin}>Sign In</button>
           </div>
 
           {/* SLIDER */}
@@ -128,7 +128,7 @@ export default function CustomerAuth() {
 
             {/* SIGNUP */}
             <div className="form sign-up">
-              <h2>Customer Signup</h2>
+              <h2 className="h2">Customer Signup</h2>
 
               <div className="form-group">
                 <label>Name</label>
@@ -154,7 +154,7 @@ export default function CustomerAuth() {
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 
-              <button className="submit" onClick={handleSignup}>Sign Up</button>
+              <button className="submit btn" onClick={handleSignup}>Sign Up</button>
             </div>
           </div>
         </div>
