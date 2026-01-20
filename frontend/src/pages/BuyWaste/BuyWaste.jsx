@@ -1,13 +1,17 @@
-import React from "react";
-import Header from "../../components/Navbar/Header";
+import WasteOptions from "../../components/OptionCards/WasteOptions";
+import Filters from "../../components/Filters/Filters";
+import Navbar from "../../components/Navbar/Navbar";
+import "./BuyWaste.css";
 
-const BuyWaste = () =>{
-    return( 
-        <>
-        <Header />
-        <h2>Buy Waste Page</h2>
-        </>
-    );
+export default function BuyWaste() {
+  return (
+    <div className="buy-container">
+      <Navbar />
+
+      {/* 🔥 BIG WHITE CARD */}
+      <div className="waste">
+        <WasteOptions />
+      </div>
+    </div>
+  );
 }
-
-export default BuyWaste;

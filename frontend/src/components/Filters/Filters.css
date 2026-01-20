@@ -1,0 +1,25 @@
+.filters-container {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+
+  background: #f8f8f8;
+  padding: 14px 22px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+
+  max-width: 600px;
+  margin: 0 auto 20px auto;   /* 🔥 REDUCED BOTTOM GAP */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+
+
+.filters-container select {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  font-size: 15px;
+  cursor: pointer;
+  background: #f9f9f9;
+}

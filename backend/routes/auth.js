@@ -1,6 +1,8 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import Otp from "../models/Otp.js"
+import twilio from "twilio";
 
 const router = express.Router();
 
@@ -95,5 +97,88 @@ router.post("/logout", (req, res) =>{
     res.json({msg: "logged out successfully"});
   })
 })
+
+router.post("/send-otp", async (req, res) => {
+  const { phone, role } = req.body;
+
+  if (!phone || !role)
+    return res.status(400).json({ msg: "Phone & role required" });
+
+  const client = twilio(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  try {
+    // remove old OTPs for this phone+role
+    await Otp.deleteMany({ phone, role });
+
+    // save new OTP
+    await Otp.create({
+      phone,
+      role,
+      otp,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000)
+    });
+
+    // send SMS
+    await client.messages.create({
+      body: `Your HarvestLink OTP is ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: `+91${phone}`
+    });
+
+    console.log(`OTP for ${role} (${phone}):`, otp); // dev only
+    return res.json({ msg: "OTP sent successfully" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: "Failed to send OTP", error: err.message });
+  }
+});
+
+/* ================= VERIFY OTP ================= */
+router.post("/verify-otp", async (req, res) => {
+  const { phone, otp, role } = req.body;
+
+  if (!phone || !otp || !role)
+    return res.status(400).json({ msg: "Phone, OTP & role required" });
+
+  try {
+    const record = await Otp.findOne({ phone, role });
+
+    if (!record) return res.status(400).json({ msg: "OTP not found" });
+    if (record.expiresAt < new Date()) return res.status(400).json({ msg: "OTP expired" });
+
+    // ✅ ensure type and trim
+    if (record.otp.toString().trim() !== otp.toString().trim())
+      return res.status(400).json({ msg: "Invalid OTP" });
+
+    // delete OTP after success
+    await Otp.deleteMany({ phone, role });
+
+    // ✅ auto-login: find user by phone + role
+    const user = await User.findOne({ phone, role });
+    if (!user) return res.status(400).json({ msg: "User not found" });
+
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      role: user.role,
+      profileImage: user.profileImage || ""
+    };
+
+    return res.json({ msg: "OTP verified & login successful", user: req.session.user });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: "Verification failed", error: err.message });
+  }
+});
+
+
+
 
 export default router;
