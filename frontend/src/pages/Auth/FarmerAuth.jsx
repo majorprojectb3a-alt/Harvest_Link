@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./AuthNavbar";
 import "../../App.css";
+import "./Auth.css";   // ✅ must be imported
 
 export default function FarmerAuth() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function FarmerAuth() {
     setErrors({});
   };
 
-  /* ---------- VALIDATE LOGIN ---------- */
+  /* ---------- LOGIN ---------- */
   const validateSendOtp = () => {
     let e = {};
     if (!isValidPhone(form.phone)) e.phone = "Enter valid 10-digit phone number";
@@ -46,59 +47,35 @@ export default function FarmerAuth() {
     return Object.keys(e).length === 0;
   };
 
-  /* ---------- SEND OTP ---------- */
   const sendOtp = async () => {
     if (!validateSendOtp()) return;
-
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/send-otp",
         { phone: form.phone, role: "farmer" }
       );
-
       alert(res.data.msg);
       setOtpSent(true);
       setForm({ ...form, otp: "" });
     } catch (err) {
-      setErrors({
-        phone: err.response?.data?.msg || "Failed to send OTP"
-      });
+      setErrors({ phone: err.response?.data?.msg || "Failed to send OTP" });
     }
   };
 
-  /* ---------- VERIFY OTP ---------- */
   const verifyOtp = async () => {
     if (!validateVerifyOtp()) return;
-
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/verify-otp",
-        {
-          phone: form.phone,
-          otp: form.otp,
-          role: "farmer"
-        }
+        { phone: form.phone, otp: form.otp, role: "farmer" }
       );
-
       alert(res.data.msg);
-
-      // ✅ Navigate first, then reset form
       navigate("/FarmerHome");
-
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
-        otp: ""
-      });
+      setForm({ name: "", email: "", phone: "", password: "", otp: "" });
       setErrors({});
       setOtpSent(false);
-
     } catch (err) {
-      setErrors({
-        otp: err.response?.data?.msg || "Invalid OTP"
-      });
+      setErrors({ otp: err.response?.data?.msg || "Invalid OTP" });
     }
   };
 
@@ -115,28 +92,17 @@ export default function FarmerAuth() {
 
   const handleSignup = async () => {
     if (!validateSignup()) return;
-
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/signup",
-        {
-          role: "farmer",
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          password: form.password
-        }
+        { role: "farmer", ...form }
       );
-
       alert(res.data.msg);
       setIsSignUp(false);
       setOtpSent(false);
       setForm({ name: "", email: "", phone: "", password: "", otp: "" });
-
     } catch (err) {
-      setErrors({
-        phone: err.response?.data?.msg || "Signup failed"
-      });
+      setErrors({ phone: err.response?.data?.msg || "Signup failed" });
     }
   };
 
@@ -175,25 +141,17 @@ export default function FarmerAuth() {
             )}
 
             {!otpSent ? (
-              <button className="submit btn" onClick={sendOtp}>
-                Send OTP
-              </button>
+              <button className="submit btn" onClick={sendOtp}>Send OTP</button>
             ) : (
-              <button className="submit btn" onClick={verifyOtp}>
-                Verify OTP
-              </button>
+              <button className="submit btn" onClick={verifyOtp}>Verify OTP</button>
             )}
           </div>
 
           {/* ---------- SIGNUP ---------- */}
           <div className="sub-cont">
             <div className="img">
-              <div className="img__text m--up">
-                <h3>New Farmer?</h3>
-              </div>
-              <div className="img__text m--in">
-                <h3>Already have an account?</h3>
-              </div>
+              <div className="img__text m--up"><h3>New Farmer?</h3></div>
+              <div className="img__text m--in"><h3>Already have an account?</h3></div>
               <div
                 className="img__btn"
                 onClick={() => {
@@ -240,9 +198,7 @@ export default function FarmerAuth() {
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 
-              <button className="submit btn" onClick={handleSignup}>
-                Sign Up
-              </button>
+              <button className="submit btn" onClick={handleSignup}>Sign Up</button>
             </div>
           </div>
         </div>

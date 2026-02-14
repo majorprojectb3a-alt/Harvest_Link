@@ -2,7 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 import Navbar from "./AuthNavbar";
 import "../../App.css";
+import "./Auth.css";   
 import { useNavigate } from "react-router-dom";
+
 export default function CustomerAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
 
@@ -12,8 +14,8 @@ export default function CustomerAuth() {
     phone: "",
     password: ""
   });
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
   /* ---------- VALIDATIONS ---------- */
@@ -61,7 +63,8 @@ export default function CustomerAuth() {
           role: "customer",
           email: form.email,
           password: form.password
-        }, { withCredentials: true }
+        },
+        { withCredentials: true }
       );
       alert(res.data.msg);
       navigate("/BuyerHome");
@@ -72,17 +75,17 @@ export default function CustomerAuth() {
 
   const handleSignup = async () => {
     if (!validateSignup()) return;
-    console.log('inside signup');
+
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/signup",
         {
           role: "customer",
           ...form
-        }, { withCredentials: true }
+        },
+        { withCredentials: true }
       );
-      alert('alert' + res.data.msg);
-      
+      alert(res.data.msg);
     } catch (err) {
       alert(err.response.data.msg);
     }
@@ -101,26 +104,47 @@ export default function CustomerAuth() {
 
             <div className="form-group">
               <label>Email</label>
-              <input name="email" value={form.email} onChange={handleChange} />
+              <input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+              />
               {errors.email && <span className="error">{errors.email}</span>}
             </div>
 
             <div className="form-group">
               <label>Password</label>
-              <input type="password" name="password" value={form.password} onChange={handleChange} />
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+              />
               {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
-            <button className="submit btn" onClick={handleLogin}>Sign In</button>
+            <button className="submit btn" onClick={handleLogin}>
+              Sign In
+            </button>
           </div>
 
           {/* SLIDER */}
           <div className="sub-cont">
             <div className="img">
-              <div className="img__text m--up"><h3>New Customer?</h3></div>
-              <div className="img__text m--in"><h3>Already have an account?</h3></div>
+              <div className="img__text m--up">
+                <h3>New Customer?</h3>
+              </div>
+              <div className="img__text m--in">
+                <h3>Already have an account?</h3>
+              </div>
 
-              <div className="img__btn" onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}>
+              <div
+                className="img__btn"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setErrors({});
+                }}
+              >
                 <span className="m--up">Sign Up</span>
                 <span className="m--in">Sign In</span>
               </div>
@@ -132,29 +156,48 @@ export default function CustomerAuth() {
 
               <div className="form-group">
                 <label>Name</label>
-                <input name="name" value={form.name} onChange={handleChange} />
+                <input
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                />
                 {errors.name && <span className="error">{errors.name}</span>}
               </div>
 
               <div className="form-group">
                 <label>Email</label>
-                <input name="email" value={form.email} onChange={handleChange} />
+                <input
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                />
                 {errors.email && <span className="error">{errors.email}</span>}
               </div>
 
               <div className="form-group">
                 <label>Phone</label>
-                <input name="phone" value={form.phone} onChange={handleChange} />
+                <input
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                />
                 {errors.phone && <span className="error">{errors.phone}</span>}
               </div>
 
               <div className="form-group">
                 <label>Password</label>
-                <input type="password" name="password" value={form.password} onChange={handleChange} />
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                />
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 
-              <button className="submit btn" onClick={handleSignup}>Sign Up</button>
+              <button className="submit btn" onClick={handleSignup}>
+                Sign Up
+              </button>
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import "./Options.css"
 function Options() {
     const navigate = useNavigate();
     const options = [
-        {image: fresh, title:"Sell Fresh", path: "/sell-fresh"},
+        {image: fresh, title:"Sell Fresh", path: "/sellfresh"},
         {image: waste, title:"Sell Waste", path: "/sell-waste"},
         {image: predict, title:"Estimate", path: "/predict-price"}
     ];
