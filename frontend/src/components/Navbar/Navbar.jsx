@@ -4,7 +4,6 @@ import {FiLogOut} from "react-icons/fi"
 import { useEffect, useState } from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import logo from "../../assets/logo.png";
 import defaultProfile from "../../assets/default_profile_image.png";
 
 function Navbar () {
@@ -12,7 +11,7 @@ function Navbar () {
     const navigate = useNavigate();
 
     useEffect(() =>{
-        axios.get("http://localhost:5000/api/auth/profile", {withCredentials: true}).then(res =>{
+        axios.get("http://localhost:5000/auth/profile", {withCredentials: true}).then(res =>{
             setProfile(res.data.user);
         })
         .catch(()=>{
@@ -21,26 +20,31 @@ function Navbar () {
     }, []);
 
     const logout = async () =>{
-        await axios.post("http://localhost:5000/api/auth/logout", {}, {withCredentials: true});
+        await axios.post("http://localhost:5000/auth/logout", {}, {withCredentials: true});
         navigate("/");
     }
+    
     return (
         <nav className='nav'>
             <div className='logo'>
-                
-                <img src={logo} alt="logo" />
+                HarvestLink
             </div>
 
             <div className='right'>
+                <ul className="nav-links">
+                    <li><a href="#home">Home</a></li>
+
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
                 <div className="username-div">
                     <span className="username">
                         {profile?.name}
                     </span>
                 </div>
                     <img src={profile?.profileImage && profile.profileImage !== "" ? profile.profileImage: defaultProfile} alt="Profile" className="profile-img"/>
-                <div className = "logout-div" onClick={logout}>
+                <div className = "logout" onClick={logout}>
                     <FiLogOut className="logout-logo" title="Logout"/>
-                    {/* <p>LogOut</p> */}
+                    <p>LogOut</p>
                 </div>
             </div>
 

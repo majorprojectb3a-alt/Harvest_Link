@@ -41,12 +41,17 @@ router.post("/signup", async (req, res) => {
       phone,
       password: hashedPassword,
     });
-    console.log(user);
+    console.log('user: ', user);
     await user.save();
-
+    console.log('saved successfully');
     res.status(201).json({ msg: "Signup successful" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" } + err.code + err.message);
+    console.error(err);
+    res.status(500).json({
+      msg: "Server error",
+      code: err.code,
+      error: err.message
+    });
   }
 });
 
@@ -177,8 +182,5 @@ router.post("/verify-otp", async (req, res) => {
     return res.status(500).json({ msg: "Verification failed", error: err.message });
   }
 });
-
-
-
 
 export default router;

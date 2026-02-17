@@ -13,6 +13,10 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
+option, select {
+  color: black;
+}
+
 
 
 .filters-container select {

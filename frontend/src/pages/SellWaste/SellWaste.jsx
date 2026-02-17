@@ -9,11 +9,11 @@ function SellWaste() {
   const [items, setItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
-  // 🔥 FETCH SELLER'S OWN WASTE
+  // FETCH SELLER'S OWN WASTE
   const fetchItems = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/waste/my",
+        "http://localhost:5000/waste/my",
         { withCredentials: true }
       );
 
@@ -32,7 +32,7 @@ function SellWaste() {
       <Navbar />
 
       <div className="sell-waste-page">
-        <h2 className="page-title">🌾 My Waste Listings</h2>
+        <h2 className="page-title"> My Waste Listings</h2>
 
         {items.length > 0 ? (
           <div className="seller-list">

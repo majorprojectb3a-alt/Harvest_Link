@@ -1,5 +1,6 @@
 import express from "express";
 import Waste from "../models/Waste.js";
+import { requireAuth, requireRole } from "../middleware/requireRole.js";
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
     const { buyerLat, buyerLng, maxDistance, type } = req.query;
 
@@ -88,7 +89,7 @@ router.get("/", async (req, res) => {
 });
 
 // 🔥 GET SINGLE WASTE WITH SELLER DETAILS
-router.get("/details/:id", async (req, res) => {
+router.get("/details/:id", requireAuth, async (req, res) => {
   try {
     const waste = await Waste.findById(req.params.id)
       .populate("userId", "name email phone");
@@ -105,13 +106,11 @@ router.get("/details/:id", async (req, res) => {
   }
 });
 
-
-
-router.post("/add", async (req, res) => {
+router.post("/add", requireRole("farmer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ msg: "Not logged in" });
-    }
+    // if (!req.session.user) {
+    //   return res.status(401).json({ msg: "Not logged in" });
+    // }
 
     const userId = req.session.user.id;
     const userName = req.session.user.name;
@@ -145,11 +144,11 @@ router.post("/add", async (req, res) => {
 });
 
 /* GET WASTE ITEMS FOR USER */
-router.get("/my", async (req, res) => {
+router.get("/my", requireRole("farmer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ msg: "Not logged in" });
-    }
+    // if (!req.session.user) {
+    //   return res.status(401).json({ msg: "Not logged in" });
+    // }
 
     const userId = req.session.user.id;
 
@@ -162,11 +161,11 @@ router.get("/my", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("farmer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ msg: "Not logged in" });
-    }
+    // if (!req.session.user) {
+    //   return res.status(401).json({ msg: "Not logged in" });
+    // }
 
     const waste = await Waste.findById(req.params.id);
 
@@ -186,11 +185,11 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.post("/buy/:id", async (req, res) => {
+router.post("/buy/:id", requireRole("buyer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ msg: "Not logged in" });
-    }
+    // if (!req.session.user) {
+    //   return res.status(401).json({ msg: "Not logged in" });
+    // }
 
     const buyerId = req.session.user.id;
 
@@ -219,11 +218,11 @@ router.post("/buy/:id", async (req, res) => {
   }
 });
 
-router.get("/buyer/history", async (req, res) => {
+router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ msg: "Not logged in" });
-    }
+    // if (!req.session.user) {
+    //   return res.status(401).json({ msg: "Not logged in" });
+    // }
 
     const buyerId = req.session.user.id;
 
@@ -236,11 +235,11 @@ router.get("/buyer/history", async (req, res) => {
   }
 });
 
-router.get("/seller/history", async (req, res) => {
+router.get("/seller/history", requireRole("farmer"), async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ msg: "Not logged in" });
-    }
+    // if (!req.session.user) {
+    //   return res.status(401).json({ msg: "Not logged in" });
+    // }
 
     const sellerId = req.session.user.id;
 

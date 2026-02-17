@@ -62,7 +62,7 @@
   color: white;
   border: none;
   padding: 10px 24px;
-  border-radius: 8px;
+  border-radius: 100px;
   cursor: pointer;
 }
 
@@ -93,6 +93,10 @@
 
 .predict-btn:hover {
   background: #eab308;
+}
+
+input {
+  color: black;
 }
 
 .weight-row {

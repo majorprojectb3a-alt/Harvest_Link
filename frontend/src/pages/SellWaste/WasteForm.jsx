@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./WasteForm.css";
-import { CROP_WASTE_TYPES } from "../../constants/CropWasteTypes";
+import { CROP_WASTE_TYPES } from "../../constants/cropWasteTypes";
 
 function WasteForm({ onClose }) {
 
@@ -15,7 +15,7 @@ function WasteForm({ onClose }) {
 
   const [location, setLocation] = useState({ lat: null, lng: null });
 
-  // 🔥 GET USER LOCATION
+  // GET USER LOCATION
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -30,15 +30,15 @@ function WasteForm({ onClose }) {
     );
   }, []);
 
-  // 🔥 HANDLE INPUT CHANGE (KG + GRAMS LOGIC)
+  // HANDLE INPUT CHANGE (KG + GRAMS LOGIC)
   const handleChange = (e) => {
     const updated = { ...form, [e.target.name]: e.target.value };
 
     const kg = Number(updated.kg) || 0;
     const grams = Number(updated.grams) || 0;
-    const totalWeight = kg + grams / 1000;   // 🔥 CONVERT TO KG
+    const totalWeight = kg + grams / 1000;   // CONVERT TO KG
 
-    // 🔥 AUTO CALCULATE PRICE
+    // AUTO CALCULATE PRICE
     if (totalWeight > 0 && updated.pricePerKg) {
       updated.predictedPrice =
         (totalWeight * Number(updated.pricePerKg)).toFixed(2);
@@ -49,7 +49,7 @@ function WasteForm({ onClose }) {
     setForm(updated);
   };
 
-  // 🔥 SUBMIT FORM
+  // SUBMIT FORM
   const handleSubmit = async () => {
     if (!form.type || (!form.kg && !form.grams) || !form.pricePerKg) {
       alert("Please fill all fields");
@@ -69,7 +69,7 @@ function WasteForm({ onClose }) {
         "http://localhost:5000/api/waste/add",
         {
           type: form.type,
-          weight: totalWeight,          // 🔥 STORE DECIMAL KG
+          weight: totalWeight,          // STORE DECIMAL KG
           pricePerKg: form.pricePerKg,
           predictedPrice: form.predictedPrice,
           lat: location.lat,
@@ -105,7 +105,7 @@ function WasteForm({ onClose }) {
         ))}
       </select>
 
-      {/* 🔥 WEIGHT INPUT: KG + GRAMS */}
+      {/* WEIGHT INPUT: KG + GRAMS */}
       <div className="weight-row">
         <input
           name="kg"

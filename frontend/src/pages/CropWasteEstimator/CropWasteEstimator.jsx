@@ -25,7 +25,7 @@ export default function CropWasteEstimator() {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/estimator/estimate",
+        "http://localhost:5000/estimator/estimate",
         {
           crop: form.crop,
           region: form.region,

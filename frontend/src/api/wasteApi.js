@@ -1,9 +1,9 @@
 // src/api/wasteApi.js
 import axios from "axios";
 
-// 🔥 GET MARKETPLACE WASTE
+// GET MARKETPLACE WASTE
 export const getWasteItems = async (buyerLat, buyerLng, type) => {
-  let url = `http://localhost:5000/api/waste?buyerLat=${buyerLat}&buyerLng=${buyerLng}`;
+  let url = `http://localhost:5000/waste?buyerLat=${buyerLat}&buyerLng=${buyerLng}`;
 
   if (type && type !== "All") {
     url += `&type=${encodeURIComponent(type)}`;
@@ -14,10 +14,10 @@ export const getWasteItems = async (buyerLat, buyerLng, type) => {
   return res.data;
 };
 
-// 🔥 GET WASTE DETAILS WITH SELLER CONTACT
+// GET WASTE DETAILS WITH SELLER CONTACT
 export const getWasteDetails = async (id) => {
   const res = await axios.get(
-    `http://localhost:5000/api/waste/details/${id}`,
+    `http://localhost:5000/waste/details/${id}`,
     { withCredentials: true }
   );
 
@@ -27,10 +27,10 @@ export const getWasteDetails = async (id) => {
 
 
 
-// 🔥 BUY WASTE ITEM
+// BUY WASTE ITEM
 export const buyWasteItem = async (id) => {
   const res = await axios.post(
-    `http://localhost:5000/api/waste/buy/${id}`,
+    `http://localhost:5000/waste/buy/${id}`,
     {},
     { withCredentials: true }
   );

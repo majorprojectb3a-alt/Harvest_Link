@@ -1,10 +1,10 @@
 import React from "react";
-import Header from "../../components/Navbar/Header";
+import Navbar from "../../components/Navbar/Navbar";
 
 const BuyFresh = () =>{
     return( 
         <>
-        <Header />
+        <Navbar />
         <h2>Buy Fresh Page</h2>
         </>
     );

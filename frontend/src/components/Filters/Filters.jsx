@@ -5,7 +5,7 @@ export default function Filters({ selectedType, setSelectedType }) {
   return (
     <div className="filters">
 
-      {/* 🔥 CROP WASTE TYPE FILTER */}
+      {/* CROP WASTE TYPE FILTER */}
       <select
         value={selectedType}
         onChange={(e) => setSelectedType(e.target.value)}

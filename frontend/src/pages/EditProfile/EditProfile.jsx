@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../components/Navbar/Header";
+import Header from "../../components/Navbar/Navbar";
 import "./EditProfile.css";
 import defaultProfile from "../../assets/default_profile_image.png";
 import { getCountries, getStatesOfCountry, getCitiesOfState } from '@countrystatecity/countries';
@@ -108,7 +108,7 @@ const EditProfile = () => {
 
     return (
         <>
-        <Header />
+        <Navbar />
         <p>{gettingCountries()}</p>
         <div className="edit-profile-page">
             <div className="edit-profile-container">

@@ -52,7 +52,7 @@ export default function FarmerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/send-otp",
+        "http://localhost:5000/auth/send-otp",
         { phone: form.phone, role: "farmer" }
       );
 
@@ -72,7 +72,7 @@ export default function FarmerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-otp",
+        "http://localhost:5000/auth/verify-otp",
         {
           phone: form.phone,
           otp: form.otp,
@@ -82,7 +82,7 @@ export default function FarmerAuth() {
 
       alert(res.data.msg);
 
-      // ✅ Navigate first, then reset form
+      // Navigate first, then reset form
       navigate("/FarmerHome");
 
       setForm({
@@ -118,7 +118,7 @@ export default function FarmerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        "http://localhost:5000/auth/signup",
         {
           role: "farmer",
           name: form.name,
@@ -142,13 +142,13 @@ export default function FarmerAuth() {
 
   return (
     <>
-      <Navbar oppositeUser="customer" />
+      <Navbar oppositeUser="Buyer" />
       <div className="page-container">
         <div className={`cont ${isSignUp ? "s--signup" : ""}`}>
 
           {/* ---------- LOGIN ---------- */}
           <div className="form sign-in">
-            <h2>Farmer Login</h2>
+            <h2 className="h2">Farmer Login</h2>
 
             <div className="form-group">
               <label>Phone</label>
@@ -175,11 +175,11 @@ export default function FarmerAuth() {
             )}
 
             {!otpSent ? (
-              <button className="submit" onClick={sendOtp}>
+              <button className="submit btn" onClick={sendOtp}>
                 Send OTP
               </button>
             ) : (
-              <button className="submit" onClick={verifyOtp}>
+              <button className="submit btn" onClick={verifyOtp}>
                 Verify OTP
               </button>
             )}
@@ -209,7 +209,7 @@ export default function FarmerAuth() {
             </div>
 
             <div className="form sign-up">
-              <h2>Farmer Signup</h2>
+              <h2 className="h2">Farmer Signup</h2>
 
               <div className="form-group">
                 <label>Name</label>
@@ -240,7 +240,7 @@ export default function FarmerAuth() {
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 
-              <button className="submit" onClick={handleSignup}>
+              <button className="submit btn" onClick={handleSignup}>
                 Sign Up
               </button>
             </div>

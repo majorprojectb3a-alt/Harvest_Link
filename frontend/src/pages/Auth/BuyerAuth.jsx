@@ -3,7 +3,7 @@ import axios from "axios";
 import Navbar from "./AuthNavbar";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-export default function CustomerAuth() {
+export default function BuyerAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   const [form, setForm] = useState({
@@ -56,9 +56,9 @@ export default function CustomerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "http://localhost:5000/auth/login",
         {
-          role: "customer",
+          role: "buyer",
           email: form.email,
           password: form.password
         }, { withCredentials: true }
@@ -75,13 +75,13 @@ export default function CustomerAuth() {
     console.log('inside signup');
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        "http://localhost:5000/auth/signup",
         {
-          role: "customer",
+          role: "buyer",
           ...form
         }, { withCredentials: true }
       );
-      alert('alert' + res.data.msg);
+      alert(res.data.msg);
       
     } catch (err) {
       alert(err.response.data.msg);
@@ -97,7 +97,7 @@ export default function CustomerAuth() {
 
           {/* LOGIN */}
           <div className="form sign-in">
-            <h2>Customer Login</h2>
+            <h2 className="h2">Buyer Login</h2>
 
             <div className="form-group">
               <label>Email</label>
@@ -111,13 +111,13 @@ export default function CustomerAuth() {
               {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
-            <button className="submit" onClick={handleLogin}>Sign In</button>
+            <button className="submit btn" onClick={handleLogin}>Sign In</button>
           </div>
 
           {/* SLIDER */}
           <div className="sub-cont">
             <div className="img">
-              <div className="img__text m--up"><h3>New Customer?</h3></div>
+              <div className="img__text m--up"><h3>New Buyer?</h3></div>
               <div className="img__text m--in"><h3>Already have an account?</h3></div>
 
               <div className="img__btn" onClick={() => { setIsSignUp(!isSignUp); setErrors({}); }}>
@@ -128,7 +128,7 @@ export default function CustomerAuth() {
 
             {/* SIGNUP */}
             <div className="form sign-up">
-              <h2>Customer Signup</h2>
+              <h2 className="h2">Buyer Signup</h2>
 
               <div className="form-group">
                 <label>Name</label>
@@ -154,7 +154,7 @@ export default function CustomerAuth() {
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 
-              <button className="submit" onClick={handleSignup}>Sign Up</button>
+              <button className="submit btn" onClick={handleSignup}>Sign Up</button>
             </div>
           </div>
         </div>

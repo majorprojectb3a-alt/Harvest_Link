@@ -6,7 +6,7 @@ export default function Navbar() {
   const location = useLocation();
   const path = location.pathname;
 
-  const isCustomer = path.startsWith("/customer");
+  const isBuyer = path.startsWith("/buyer");
   const isFarmer = path.startsWith("/farmer");
 
   return (
@@ -17,24 +17,24 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-right">
-        {/* On Customer page → show Farmer */}
-        {isCustomer && (
+        {/* On Buyer's page → show Farmer */}
+        {isBuyer && (
           <Link to="/farmer" className="nav-link">
             Farmer Signup/Login
           </Link>
         )}
 
-        {/* On Farmer page → show Customer */}
+        {/* On Farmer page → show Buyer */}
         {isFarmer && (
-          <Link to="/customer" className="nav-link">
-            Customer Signup/Login
+          <Link to="/buyer" className="nav-link">
+            Buyer Signup/Login
           </Link>
         )}
 
-        {/* On / or /login → show Customer by default */}
-        {!isCustomer && !isFarmer && (
-          <Link to="/customer" className="nav-link">
-            Customer Signup/Login
+        {/* On / or /login → show Buyer by default */}
+        {!isBuyer && !isFarmer && (
+          <Link to="/buyer" className="nav-link">
+            Buyer Signup/Login
           </Link>
         )}
       </div>

@@ -15,6 +15,7 @@
 
 .right {
     display: flex;
+    color: white;
     align-items: center;
     gap: 20px;
 }
@@ -23,11 +24,63 @@
   font-size: 22px;
   font-weight: 700;
   letter-spacing: 1px;
+  color: white;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #e5e7eb;
+  font-size: 16px;
+  transition: color 0.2s ease;
+}
+
+.nav-links li a:hover {
+  color: #38bdf8;
+}
+
+.profile {
+    font-size: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.profile:hover {
+  transform: scale(1.1);
+}
+
+.logout {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: crimson;
+    color: white;
+    border-radius: 15px;
+    height: 50px;
+    padding: 0 10px;
+}
+
+.logout p {
+  color: white;
+}
+
+.logout-logo {
+    font-size: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.logout:hover {
+  transform: scale(1.1);
+  cursor: pointer;
 }
 
 .username {
-  align-items: center;
-  justify-content: center;
   font-weight: 600;
   color: #ecf4ec;
   font-size: 16px;
@@ -39,25 +92,10 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.logout-div{
-  background-color: #ef2a2a;
-  padding: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-radius: 2rem;
-}
-.logout-div p{
- cursor: pointer;
-}
-
-.logout-logo {
-    font-size: 25px;
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.profile-img:hover, .logout-div:hover {
+.profile-img:hover {
   transform: scale(1.1);
 }
