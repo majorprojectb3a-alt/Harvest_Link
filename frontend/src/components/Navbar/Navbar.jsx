@@ -37,9 +37,11 @@ function Navbar () {
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <div className="username-div">
-                    <span className="username">
-                        {profile?.name}
-                    </span>
+                    <a href="/profile">
+                        <span className="username">
+                            {profile?.name}
+                        </span>
+                    </a>
                 </div>
                     <img src={profile?.profileImage && profile.profileImage !== "" ? profile.profileImage: defaultProfile} alt="Profile" className="profile-img"/>
                 <div className = "logout" onClick={logout}>

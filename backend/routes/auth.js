@@ -87,14 +87,39 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/profile", (req, res) =>{
-  if(!req.session.user)
-    return res.status(401).json({msg: "Unauthorised"});
+router.get("/profile", async (req, res) => {
 
-  res.json({
-    user: req.session.user
-  });
+  try {
+
+    if (!req.session.user)
+      return res.status(401).json({
+        msg: "Unauthorised"
+      });
+
+    const user = await User.findById(
+      req.session.user.id
+    ).select("-password");
+
+    if (!user)
+      return res.status(404).json({
+        msg: "User not found"
+      });
+
+    res.json({
+      user
+    });
+
+  }
+  catch(err){
+
+    res.status(500).json({
+      msg: "Server error"
+    });
+
+  }
+
 });
+
 
 router.post("/logout", (req, res) =>{
   req.session.destroy(() =>{

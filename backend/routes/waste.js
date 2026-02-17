@@ -58,12 +58,9 @@ router.get("/", requireAuth, async (req, res) => {
         const lat2 = parseFloat(waste.location.lat);
         const lng2 = parseFloat(waste.location.lng);
 
-        console.log("🔥 Buyer coords:", lat1, lng1);
-        console.log("🔥 Waste coords:", lat2, lng2);
 
         if (!isNaN(lat1) && !isNaN(lng1) && !isNaN(lat2) && !isNaN(lng2)) {
           distance = calculateDistance(lat1, lng1, lat2, lng2);
-          console.log("🔥 Calculated distance:", distance);
         }
       }
 

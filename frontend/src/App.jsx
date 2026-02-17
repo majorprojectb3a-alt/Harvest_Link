@@ -12,6 +12,8 @@ import Unauthorized from "./pages/Auth/Unauthorized";
 import SellWaste from "./pages/Sellwaste/SellWaste";
 import axios from "axios";
 import RoleProtectedRoute from "./pages/Auth/RoleProtectedRoute";
+import Profile from "./pages/Profile/Profile";
+
 
 function App() {
   axios.defaults.withCredentials = true;
@@ -45,6 +47,7 @@ function App() {
         <Route path="/farmer" element={<FarmerAuth />} />
         <Route path="/buyer" element={<BuyerAuth />} />
         <Route path="/predict-price" element={<CropWasteEstimtor />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/sell-waste" element={
           <RoleProtectedRoute allow = {['farmer']}>
             <SellWaste />
