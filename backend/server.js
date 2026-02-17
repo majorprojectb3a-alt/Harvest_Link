@@ -6,7 +6,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 
 import estimateRoutes from "./routes/estimate.js";
-import authRoutes from "./routes/auth.js"; // 👈 IMPORTANT
+import authRoutes from "./routes/auth.js"; 
 import wasteRoutes from "./routes/waste.js";
 
 dotenv.config();
@@ -21,7 +21,7 @@ app.use(express.json());
 
 app.use(session({
   name: "harvestlink.sid",
-  secret: "process.env.SESSION_SECRET",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -34,9 +34,9 @@ app.use(session({
   })
 }));
 
-app.use("/api/auth", authRoutes); // 👈 router is a function
-app.use("/api/estimator", estimateRoutes);
-app.use("/api/waste", wasteRoutes);
+app.use("/auth", authRoutes);
+app.use("/estimator", estimateRoutes);
+app.use("/waste", wasteRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

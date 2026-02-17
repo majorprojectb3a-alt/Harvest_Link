@@ -52,7 +52,7 @@ export default function FarmerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/send-otp",
+        "http://localhost:5000/auth/send-otp",
         { phone: form.phone, role: "farmer" }
       );
 
@@ -72,7 +72,7 @@ export default function FarmerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-otp",
+        "http://localhost:5000/auth/verify-otp",
         {
           phone: form.phone,
           otp: form.otp,
@@ -82,7 +82,7 @@ export default function FarmerAuth() {
 
       alert(res.data.msg);
 
-      // ✅ Navigate first, then reset form
+      // Navigate first, then reset form
       navigate("/FarmerHome");
 
       setForm({
@@ -118,7 +118,7 @@ export default function FarmerAuth() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        "http://localhost:5000/auth/signup",
         {
           role: "farmer",
           name: form.name,
@@ -142,7 +142,7 @@ export default function FarmerAuth() {
 
   return (
     <>
-      <Navbar oppositeUser="customer" />
+      <Navbar oppositeUser="Buyer" />
       <div className="page-container">
         <div className={`cont ${isSignUp ? "s--signup" : ""}`}>
 

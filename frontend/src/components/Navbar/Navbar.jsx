@@ -11,7 +11,7 @@ function Navbar () {
     const navigate = useNavigate();
 
     useEffect(() =>{
-        axios.get("http://localhost:5000/api/auth/profile", {withCredentials: true}).then(res =>{
+        axios.get("http://localhost:5000/auth/profile", {withCredentials: true}).then(res =>{
             setProfile(res.data.user);
         })
         .catch(()=>{
@@ -20,9 +20,10 @@ function Navbar () {
     }, []);
 
     const logout = async () =>{
-        await axios.post("http://localhost:5000/api/auth/logout", {}, {withCredentials: true});
+        await axios.post("http://localhost:5000/auth/logout", {}, {withCredentials: true});
         navigate("/");
     }
+    
     return (
         <nav className='nav'>
             <div className='logo'>

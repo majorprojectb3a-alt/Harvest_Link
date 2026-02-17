@@ -7,8 +7,6 @@ export default function BuyWaste() {
   return (
     <div className="buy-container">
       <Navbar />
-
-      {/* 🔥 BIG WHITE CARD */}
       <div className="waste">
         <WasteOptions />
       </div>
