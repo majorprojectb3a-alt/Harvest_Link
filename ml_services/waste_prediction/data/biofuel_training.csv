@@ -1,0 +1,13 @@
+crop,region,harvested_kg,rpr,moisture_frac,LHV_MJ_per_kg,lab_yield_l_per_tonne
+rice,india,1000,1.5,0.20,14.5,280
+rice,india,800,1.5,0.18,14.5,290
+wheat,india,1200,1.3,0.15,15.0,300
+wheat,india,1000,1.3,0.14,15.0,310
+maize,india,900,1.4,0.17,16.0,330
+maize,india,1100,1.4,0.16,16.0,340
+sugarcane,india,2000,0.3,0.70,17.0,250
+sugarcane,india,1800,0.3,0.68,17.0,260
+cotton,india,700,1.8,0.12,16.5,350
+cotton,india,650,1.8,0.13,16.5,340
+banana,india,1500,0.25,0.75,14.0,220
+banana,india,1300,0.25,0.72,14.0,230
