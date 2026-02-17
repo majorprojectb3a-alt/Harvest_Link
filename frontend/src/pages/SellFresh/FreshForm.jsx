@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./WasteForm.css";
-import { CROP_WASTE_TYPES } from "../../constants/cropWasteTypes";
+import "./FreshForm.css";
+import { CROP_FRESH_TYPES } from "../../constants/cropFreshTypes";
+import {DISTRICTS} from "../../constants/Districts";
+import {MARKETS} from "../../constants/Markets";
 
-function WasteForm({ onClose }) {
+function FreshForm({ onClose }) {
 
   const [form, setForm] = useState({
-    type: "",
+    crop: "",
     kg: "",
     grams: "",
-    pricePerKg: "",
-    predictedPrice: ""
+    price: "",
+    totalPrice: "",
+    state: "",
+    district: "",
+    mandi: "",
   });
 
   const [location, setLocation] = useState({ lat: null, lng: null });
@@ -39,11 +44,11 @@ function WasteForm({ onClose }) {
     const totalWeight = kg + grams / 1000;   // CONVERT TO KG
 
     // AUTO CALCULATE PRICE
-    if (totalWeight > 0 && updated.pricePerKg) {
-      updated.predictedPrice =
-        (totalWeight * Number(updated.pricePerKg)).toFixed(2);
+    if (totalWeight > 0 && updated.price) {
+      updated.totalPrice =
+        (totalWeight * Number(updated.price)).toFixed(2);
     } else {
-      updated.predictedPrice = "";
+      updated.totalPrice = "";
     }
 
     setForm(updated);
@@ -51,7 +56,7 @@ function WasteForm({ onClose }) {
 
   // SUBMIT FORM
   const handleSubmit = async () => {
-    if (!form.type || (!form.kg && !form.grams) || !form.pricePerKg) {
+    if (!form.crop || (!form.kg && !form.grams) || !form.price) {
       alert("Please fill all fields");
       return;
     }
@@ -66,14 +71,17 @@ function WasteForm({ onClose }) {
 
     try {
       await axios.post(
-        "http://localhost:5000/waste/add",
+        "http://localhost:5000/fresh/add",
         {
-          type: form.type,
-          weight: totalWeight,          // STORE DECIMAL KG
-          pricePerKg: form.pricePerKg,
-          predictedPrice: form.predictedPrice,
-          lat: location.lat,
-          lng: location.lng
+            crop: form.crop,
+            weight: totalWeight,
+            price: form.price,
+            totalPrice: form.totalPrice,
+            state: form.state,
+            district: form.district,
+            mandi: form.mandi,
+            lat: location.lat,
+            lng: location.lng
         },
         { withCredentials: true }
       );
@@ -83,22 +91,22 @@ function WasteForm({ onClose }) {
 
     } catch (err) {
       console.log(err);
-      alert("❌ Failed to add waste item");
+      alert("❌ Failed to add fresh crop item");
     }
   };
 
   return (
-    <div className="waste-form">
-      <h2>♻️ Add Waste Item</h2>
+    <div className="fresh-item-form">
+      <h2> Add Fresh Crop Item</h2>
 
       {/* TYPE */}
       <select
-        name="type"
-        value={form.type}
+        name="crop"
+        value={form.crop}
         onChange={handleChange}
       >
-        <option value="">Select Crop Waste Type</option>
-        {CROP_WASTE_TYPES.map(type => (
+        <option value="">Select Crop Fresh Type</option>
+        {CROP_FRESH_TYPES.map(type => (
           <option key={type} value={type}>
             {type}
           </option>
@@ -127,15 +135,62 @@ function WasteForm({ onClose }) {
 
       {/* PRICE PER KG */}
       <input
-        name="pricePerKg"
+        name="price"
         type="number"
         placeholder="Price per kg (₹)"
         onChange={handleChange}
       />
 
+        <input
+        name="state"
+        type="text"
+        placeholder="State"
+        value="Andhra Pradesh"
+        disabled
+        onChange={handleChange}
+      />
+        <select
+        name="district"
+        value={form.district}
+        onChange={handleChange}
+      >
+        <option value="">Select State</option>
+        {DISTRICTS.map(type => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
+
+        {/* <input
+        name="district"
+        type="text"
+        placeholder="District"
+        onChange={handleChange}
+      /> */}
+
+        <select
+        name="mandi"
+        value={form.dmandi}
+        onChange={handleChange}
+      >
+        <option value="">Select Mandi name</option>
+        {MARKETS.map(type => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
+      {/* <input
+        name="mandi"
+        type="text"
+        placeholder="Mandi"
+        onChange={handleChange}
+      /> */}
+
       {/* TOTAL PRICE */}
       <div className="price-box">
-        💰 Total Price: ₹{form.predictedPrice || 0}
+        💰 Total Price: ₹{form.totalPrice || 0}
       </div>
 
       {/* ACTION BUTTONS */}
@@ -151,4 +206,4 @@ function WasteForm({ onClose }) {
   );
 }
 
-export default WasteForm;
+export default FreshForm;
