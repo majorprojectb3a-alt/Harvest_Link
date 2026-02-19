@@ -132,7 +132,7 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
         lat,
         lng
       },
-      status: "available"   // 🔥 VERY IMPORTANT
+      status: "available"   // VERY IMPORTANT
     });
 
     res.json({ msg: "Item added successfully", waste });

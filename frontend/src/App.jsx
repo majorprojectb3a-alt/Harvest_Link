@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import BuyerHome from './pages/HomePages/BuyerHome';
 import FarmerHome from "./pages/HomePages/FarmerHome";
 import EditProfile from "./pages/EditProfile/EditProfile";
@@ -7,9 +7,10 @@ import BuyFresh from "./pages/BuyFresh/BuyFresh";
 import BuyWaste from "./pages/BuyWaste/BuyWaste";
 import FarmerAuth from "./pages/Auth/FarmerAuth";
 import BuyerAuth from "./pages/Auth/BuyerAuth";
-import CropWasteEstimtor from "./pages/CropWasteEstimator/CropWasteEstimator";
+import CropWasteEstimator from "./pages/CropWasteEstimator/CropWasteEstimator";
 import Unauthorized from "./pages/Auth/Unauthorized";
 import SellWaste from "./pages/Sellwaste/SellWaste";
+import SellFresh from "./pages/SellFresh/SellFresh";   
 import axios from "axios";
 import RoleProtectedRoute from "./pages/Auth/RoleProtectedRoute";
 
@@ -17,7 +18,6 @@ function App() {
   axios.defaults.withCredentials = true;
 
   return (
-    <Router>
       <Routes>
         <Route path = "/unauthorized" element = {<Unauthorized/>} />
         <Route path="/" element={<FarmerAuth />} />
@@ -44,15 +44,19 @@ function App() {
         }/>
         <Route path="/farmer" element={<FarmerAuth />} />
         <Route path="/buyer" element={<BuyerAuth />} />
-        <Route path="/predict-price" element={<CropWasteEstimtor />} />
+        <Route path="/predict-price" element={<CropWasteEstimator />} />
         <Route path="/sell-waste" element={
           <RoleProtectedRoute allow = {['farmer']}>
             <SellWaste />
           </RoleProtectedRoute>
         }/>
+        <Route path="/sell-fresh" element={
+          <RoleProtectedRoute allow = {['farmer']}>
+            <SellFresh />
+          </RoleProtectedRoute>
+          } />
       </Routes>
-    </Router>
   );
-};
+}
 
 export default App;

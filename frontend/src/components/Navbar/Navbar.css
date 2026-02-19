@@ -4,7 +4,7 @@
     padding: 0 40px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* Logo left, rest right */
     position: fixed;
     top: 0;
     left: 0;
@@ -13,13 +13,7 @@
     box-sizing: border-box;
 }
 
-.right {
-    display: flex;
-    color: white;
-    align-items: center;
-    gap: 20px;
-}
-
+/* Logo styling */
 .logo {
   font-size: 22px;
   font-weight: 700;
@@ -27,10 +21,13 @@
   color: white;
 }
 
+/* Middle links (Home, Contact) */
 .nav-links {
   list-style: none;
   display: flex;
   gap: 24px;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links li a {
@@ -44,21 +41,11 @@
   color: #38bdf8;
 }
 
-.profile {
-    font-size: 25px;
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.profile:hover {
-  transform: scale(1.1);
-}
-
-.logout {
+/* Right section: username, profile, logout */
+.right {
     display: flex;
     align-items: center;
-    gap: 5px;
-    background-color: crimson;
+    gap: 20px;
     color: white;
     border-radius: 15px;
     height: 50px;
@@ -80,12 +67,14 @@
   cursor: pointer;
 }
 
+/* Username text */
 .username {
   font-weight: 600;
   color: #ecf4ec;
   font-size: 16px;
 }
 
+/* Profile image */
 .profile-img {
   width: 40px;
   height: 40px;
@@ -97,5 +86,33 @@
 }
 
 .profile-img:hover {
+  transform: scale(1.1);
+}
+
+/* Logout button */
+.logout {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: crimson;
+    color: white;
+    border-radius: 15px;
+    height: 50px;
+    padding: 0 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.logout p {
+  margin: 0;
+  color: white;
+  font-weight: 600;
+}
+
+.logout-logo {
+    font-size: 25px;
+}
+
+.logout:hover {
   transform: scale(1.1);
 }

@@ -66,7 +66,7 @@ function WasteForm({ onClose }) {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/waste/add",
+        "http://localhost:5000/waste/add",
         {
           type: form.type,
           weight: totalWeight,          // STORE DECIMAL KG
