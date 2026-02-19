@@ -1,0 +1,144 @@
+/* list grid */
+
+.fresh-items-grid {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 20px;
+
+  margin-top: 10px;
+
+}
+
+
+/* loading */
+
+.fresh-loading {
+
+  text-align: center;
+
+  color: #666;
+
+}
+
+
+/* error */
+
+.fresh-error {
+
+  text-align: center;
+
+  color: red;
+
+}
+
+
+/* empty */
+
+.fresh-empty {
+
+  text-align: center;
+
+  color: #777;
+
+}
+
+
+/* modal overlay */
+
+.fresh-modal-overlay {
+
+  position: fixed;
+
+  top: 0;
+
+  left: 0;
+
+  width: 100%;
+
+  height: 100%;
+
+  background: rgba(0,0,0,0.5);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+}
+
+
+/* modal content */
+
+.fresh-modal-content {
+
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 12px;
+
+  width: 400px;
+
+  max-width: 90%;
+
+}
+
+
+/* buttons */
+
+.fresh-btns {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 20px;
+
+}
+
+
+/* buy button */
+
+.fresh-buy-btn {
+
+  background: #2fa04f;
+
+  color: white;
+
+  border: none;
+
+  padding: 10px 20px;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+}
+
+
+.fresh-buy-btn:hover {
+
+  background: #237a3c;
+
+}
+
+
+/* close button */
+
+.fresh-close-btn {
+
+  background: #ccc;
+
+  border: none;
+
+  padding: 10px 20px;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+}

@@ -1,0 +1,148 @@
+.sell-fresh-page {
+  padding: 30px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 28px;
+  color: #2e7d32;
+}
+
+/* LIST CONTAINER */
+.seller-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.seller-row {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.seller-row:hover {
+  transform: scale(1.01);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* LEFT INFO */
+.seller-info h3 {
+  margin-bottom: 6px;
+  color: #1b5e20;
+}
+
+.seller-info p {
+  margin: 0;
+  color: #555;
+}
+
+/* PRICE CENTER */
+.seller-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+/* STATUS RIGHT */
+.seller-status {
+  display: flex;
+  align-items: center;
+}
+
+/* STATUS BADGES */
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.status-badge.available {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.sold {
+  background-color: #fdecea;
+  color: #c62828;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  margin-top: 60px;
+  color: #777;
+  font-size: 18px;
+}
+
+/* FLOATING ADD BUTTON */
+.fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+   width: 50px;
+  height: 70px;                 /* 🔥 important for perfect circle */
+  border-radius: 50%;
+
+  display: flex;               /* 🔥 center the + perfectly */
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border: none;
+  background-color: #2e7d32;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.fab:hover {
+  background-color: #1b5e20;
+}
+
+/* 🔥 MODAL OVERLAY */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);   /* dark background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* 🔥 MODAL CONTENT BOX */
+.modal-content {
+  background-color: #ffffff;
+  padding: 30px 35px;
+  border-radius: 14px;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: popup 0.3s ease;
+}
+
+/* Small animation */
+@keyframes popup {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
