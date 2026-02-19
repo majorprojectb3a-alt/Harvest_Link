@@ -13,7 +13,7 @@ function FreshForm({ onClose }) {
     grams: "",
     price: "",
     totalPrice: "",
-    state: "",
+    state: "Andhra Pradesh",
     district: "",
     mandi: "",
   });
@@ -146,7 +146,7 @@ function FreshForm({ onClose }) {
         type="text"
         placeholder="State"
         value="Andhra Pradesh"
-        disabled
+        readOnly
         onChange={handleChange}
       />
         <select
@@ -171,7 +171,7 @@ function FreshForm({ onClose }) {
 
         <select
         name="mandi"
-        value={form.dmandi}
+        value={form.mandi}
         onChange={handleChange}
       >
         <option value="">Select Mandi name</option>
