@@ -12,9 +12,9 @@ export default function FreshCard({ item, onSelect }) {
       {/* LEFT SIDE */}
       <div className="fresh-info">
 
-        <h3>{item.type}</h3>
+        <h3>{item.crop}</h3>
 
-        <p>Quantity: {item.quantity} kg</p>
+        <p>Quantity: {item.weight} kg</p>
 
         <p>Seller: {item.userName}</p>
 
@@ -26,7 +26,7 @@ export default function FreshCard({ item, onSelect }) {
 
         <div className="fresh-price">
 
-          ₹{item.pricePerKg}/kg
+          ₹{item.price}/kg
 
         </div>
 

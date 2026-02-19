@@ -214,11 +214,15 @@ export default function FreshOptions() {
             <h2>{selectedFresh.type}</h2>
 
             <p>
-              Quantity: {selectedFresh.quantity} kg
+              Quantity: {selectedFresh.weight} kg
             </p>
 
             <p>
-              Price: ₹{selectedFresh.pricePerKg}/kg
+              Price: ₹{selectedFresh.price}/kg
+            </p>
+
+            <p>
+              Total Price: ₹{selectedFresh.totalPrice}/kg
             </p>
 
 
@@ -241,6 +245,8 @@ export default function FreshOptions() {
               Phone:
               {selectedFresh.userId.phone}
             </p>
+
+
 
 
             <div className="fresh-btns">
