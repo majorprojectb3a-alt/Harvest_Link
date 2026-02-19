@@ -7,19 +7,11 @@
   padding: 0;
 }
 
-/* body {
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  background: #f0f0f0;
-  margin: 0;
-} */
-
 /* NAVBAR */
-
 .form-group input {
-  color: #000;              /* 🔥 text color */
-  background: #fff;        /* 🔥 input background */
+  color: #000;
+  background: #fff;
 }
-
 
 .navbar {
   width: 100%;
@@ -73,7 +65,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding-top: 60px; /* space for navbar */
+  padding-top: 60px;
   background: #f0f0f0;
 }
 
@@ -117,22 +109,17 @@
 }
 
 /* Buttons */
-.btn {
+.form .submit.btn {
   display: block;
-  margin: 0 auto;
+  margin: 40px auto 20px auto;
   width: 260px;
   height: 36px;
   border-radius: 30px;
+  background: #d4af7a;
   color: #fff;
   font-size: 15px;
-  cursor: pointer;
-}
-
-.submit {
-  margin-top: 40px;
-  margin-bottom: 20px;
-  background: #d4af7a;
   text-transform: uppercase;
+  cursor: pointer;
 }
 
 /* Panel side color */
@@ -271,26 +258,33 @@
   color: #cfcfcf;
 }
 
-/* Sign in/out sliding */
-.sign-in {
+/* Sliding logic fix */
+.form.sign-in {
   transition-timing-function: ease-out;
 }
 
-.cont.s--signup .sign-in {
+.cont.s--signup .form.sign-in {
   transition-timing-function: ease-in-out;
   transition-duration: 1.2s;
   transform: translate3d(640px, 0, 0);
 }
 
-.sign-up {
+.form.sign-up {
   transform: translate3d(-900px, 0, 0);
+  transition: transform 1.2s ease-in-out;
 }
 
-.cont.s--signup .sign-up {
+.cont.s--signup .form.sign-up {
   transform: translate3d(0, 0, 0);
 }
+
 .error {
   color: red;
   font-size: 12px;
   margin-top: 4px;
+}
+/* Prevent text cursor on non-input elements */
+body, .page-container, .cont, .form, .img, .h2, .form-group, .navbar {
+  user-select: none;       /* disables text selection */
+  caret-color: transparent; /* hides blinking cursor */
 }
