@@ -43,7 +43,9 @@ function Navbar() {
           </li>
         </ul>
 
-        <span className="username">{profile?.name}</span>
+        <a href="/profile">
+            <span className="username">{profile?.name}</span>
+        </a>
 
         <img
           src={

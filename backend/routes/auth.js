@@ -92,29 +92,54 @@ router.get("/profile", async (req, res) => {
   try {
 
     if (!req.session.user)
-      return res.status(401).json({
-        msg: "Unauthorised"
-      });
+      return res.status(401).json({ msg: "Unauthorized" });
 
-    const user = await User.findById(
-      req.session.user.id
-    ).select("-password");
+    const user =
+      await User.findById(
+        req.session.user.id
+      ).select("-password");
 
-    if (!user)
-      return res.status(404).json({
-        msg: "User not found"
-      });
-
-    res.json({
-      user
-    });
+    res.json({ user });
 
   }
   catch(err){
 
-    res.status(500).json({
-      msg: "Server error"
-    });
+    res.status(500).json({ msg: "Error" });
+
+  }
+
+});
+
+
+/* UPDATE PROFILE */
+
+router.put("/update-profile", async (req, res) => {
+
+  try {
+
+    const userId =
+      req.session.user.id;
+
+    const { name, phone, profileImage } =
+      req.body;
+
+    const user =
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          name,
+          phone,
+          profileImage
+        },
+        { new: true }
+      );
+
+    res.json({ user });
+
+  }
+  catch(err){
+
+    res.status(500).json({ msg: "Error" });
 
   }
 

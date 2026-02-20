@@ -232,21 +232,58 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
   }
 });
 
-router.get("/seller/history", requireRole("farmer"), async (req, res) => {
+router.get("/seller/history", async (req, res) => {
+
   try {
-    // if (!req.session.user) {
-    //   return res.status(401).json({ msg: "Not logged in" });
-    // }
 
-    const sellerId = req.session.user.id;
+    const sellerId =
+      req.session.user.id;
 
-    const items = await Waste.find({ userId: sellerId, status: "sold" });
+    const page =
+      parseInt(req.query.page) || 1;
 
-    res.json({ items });
+    const limit =
+      parseInt(req.query.limit) || 5;
 
-  } catch (err) {
-    res.status(500).json({ msg: "Failed to fetch sold history" });
+    const status =
+      req.query.status || "all";
+
+
+    let query = { userId: sellerId };
+
+    if (status !== "all")
+      query.status = status;
+
+
+    const total =
+      await Waste.countDocuments(query);
+
+    const totalPages =
+      Math.max(1, Math.ceil(total / limit));
+
+
+    const items =
+      await Waste.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+
+    res.json({
+      items,
+      total,
+      page,
+      totalPages
+    });
+
   }
+  catch(err){
+
+    res.status(500).json({ msg: "Error" });
+
+  }
+
 });
+
 
 export default router;

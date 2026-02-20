@@ -46,7 +46,7 @@ function App() {
         }/>
         <Route path="/farmer" element={<FarmerAuth />} />
         <Route path="/buyer" element={<BuyerAuth />} />
-        <Route path="/predict-price" element={<CropWasteEstimtor />} />
+        <Route path="/predict-price" element={<CropWasteEstimator />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/sell-waste" element={
           <RoleProtectedRoute allow = {['farmer']}>

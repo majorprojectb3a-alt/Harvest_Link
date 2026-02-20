@@ -393,30 +393,54 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
 
 
 // SELLER HISTORY
-router.get("/seller/history", requireRole("farmer"), async (req, res) => {
+router.get("/seller/history", async (req, res) => {
 
   try {
 
     const sellerId =
       req.session.user.id;
 
+    const page =
+      parseInt(req.query.page) || 1;
+
+    const limit =
+      parseInt(req.query.limit) || 5;
+
+    const status =
+      req.query.status || "all";
+
+
+    let query = { userId: sellerId };
+
+    if (status !== "all")
+      query.status = status;
+
+
+    const total =
+      await Product.countDocuments(query);
+
+    const totalPages =
+      Math.max(1, Math.ceil(total / limit));
+
+
     const items =
-      await Product.find({
+      await Product.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-        userId: sellerId,
 
-        status: "sold"
-
-      });
-
-    res.json({ items });
+    res.json({
+      items,
+      total,
+      page,
+      totalPages
+    });
 
   }
   catch(err){
 
-    res.status(500).json({
-      msg: "Failed to fetch sales history"
-    });
+    res.status(500).json({ msg: "Error" });
 
   }
 

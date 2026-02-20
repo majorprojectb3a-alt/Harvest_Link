@@ -1,189 +1,54 @@
-import "./Profile.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../../components/Navbar/Navbar";
-import defaultProfile from "../../assets/default_profile_image.png";
 
-function Profile() {
+import FarmerProfile from "./FarmerProfile";
+import BuyerProfile from "./BuyerProfile";
 
-    const [profile, setProfile] = useState(null);
+export default function Profile() {
 
-    const [wasteItems, setWasteItems] = useState([]);
+  const [role, setRole] = useState(null);
 
-    const [purchaseHistory, setPurchaseHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const fetchFarmerData = async () => {
 
-    const res = await axios.get(
-        "http://localhost:5000/waste/my",
-        { withCredentials: true }
-    );
+  useEffect(() => {
 
-    setWasteItems(res.data.items);
+    axios.get(
+      "http://localhost:5000/auth/profile",
+      { withCredentials: true }
+    )
+    .then(res => {
 
-};
+      setRole(res.data.user.role);
 
+      setLoading(false);
 
-const fetchBuyerData = async () => {
+    })
+    .catch(() => {
 
-    const res = await axios.get(
-        "http://localhost:5000/waste/buyer/history",
-        { withCredentials: true }
-    );
+      setLoading(false);
 
-    setPurchaseHistory(res.data.items);
+    });
 
-};
+  }, []);
 
 
-const fetchProfile = async () => {
+  if (loading)
+    return <div>Loading profile...</div>;
 
-    try {
 
-        const res = await axios.get(
-            "http://localhost:5000/auth/profile",
-            { withCredentials: true }
-        );
+  if (!role)
+    return <div>Unauthorized</div>;
 
-        setProfile(res.data.user);
 
-        if (res.data.user.role === "farmer") {
+  if (role === "farmer")
+    return <FarmerProfile />;
 
-            fetchFarmerData();
 
-        } else {
+  if (role === "buyer")
+    return <BuyerProfile />;
 
-            fetchBuyerData();
 
-        }
-
-    }
-    catch(err){
-
-        console.log(err);
-
-    }
-
-};
-
-    useEffect(() => {
-        fetchProfile();
-    }, []);
-
-
-
-    if (!profile) return <div>Loading...</div>;
-
-
-    return (
-
-
-        <div className="profile-container">
-
-            <Navbar/>
-
-            <div className="profile-card">
-
-                <img
-                    src={
-                        profile.profileImage || defaultProfile
-                    }
-                    className="profile-image"
-                    alt="profile"
-                />
-
-                <h2>{profile.name}</h2>
-
-                <p>{profile.email}</p>
-
-                <p>{profile.phone}</p>
-
-                <p className="role">
-                    Role: {profile.role}
-                </p>
-
-            </div>
-
-
-            {/* FARMER VIEW */}
-
-            {profile.role === "farmer" && (
-
-                <div className="farmer-section">
-
-                    <h3>Carbon Credits</h3>
-
-                    <p>
-                        🌱 Credits:
-                        {profile.totalCarbonCredits?.toFixed(3) || 0}
-                    </p>
-
-
-                    <h3>Your Waste Listings</h3>
-
-                    {wasteItems.length === 0
-                        ? "No items listed"
-                        :
-                        wasteItems.map(item => (
-
-                            <div
-                                key={item._id}
-                                className="waste-card"
-                            >
-
-                                <p>Type: {item.type}</p>
-
-                                <p>Weight: {item.weight} kg</p>
-
-                                <p>Status: {item.status}</p>
-
-                            </div>
-
-                        ))
-                    }
-
-                </div>
-
-            )}
-
-
-            {/* BUYER VIEW */}
-
-            {profile.role === "customer" && (
-
-                <div className="buyer-section">
-
-                    <h3>Purchase History</h3>
-
-                    {purchaseHistory.length === 0
-                        ? "No purchases yet"
-                        :
-                        purchaseHistory.map(item => (
-
-                            <div
-                                key={item._id}
-                                className="waste-card"
-                            >
-
-                                <p>Type: {item.type}</p>
-
-                                <p>Weight: {item.weight} kg</p>
-
-                                <p>Price: ₹{item.pricePerKg}/kg</p>
-
-                            </div>
-
-                        ))
-                    }
-
-                </div>
-
-            )}
-
-        </div>
-
-    );
+  return <div>Invalid role</div>;
 
 }
-
-export default Profile;
