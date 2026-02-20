@@ -1,6 +1,11 @@
 import express from "express";
 import Waste from "../models/Waste.js";
 import { requireAuth, requireRole } from "../middleware/requireRole.js";
+import User from "../models/User.js";
+import Notification from "../models/Notification.js";
+import sendSMS from "../utils/sendSMS.js";
+import pLimit from "p-limit";
+import {toE164} from '../utils/formatPhone.js';
 
 const router = express.Router();
 
@@ -117,6 +122,9 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
 
     const { type, weight, pricePerKg, predictedPrice, lat, lng } = req.body;
 
+    lat = Number(lat);
+    lng = Number(lng);
+
     if (!lat || !lng) {
       return res.status(400).json({ msg: "Location is required" });
     }
@@ -132,11 +140,70 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
         lat,
         lng
       },
+      locationGeo: { type: "Point", coordinates: [lng, lat] },
       status: "available"   // VERY IMPORTANT
     });
+    
+    const message = `new waste available ${type} (${weight} kg) at ${userName}. Expected price: ${predictedPrice}`;
 
-    res.json({ msg: "Item added successfully", waste });
+    const maxDistanceMeters = 50_000;
 
+    const buyers = await User.find({ 
+      role: "buyer",
+      location: {
+      $near:{
+        $geometry: {type: "Point", coordinates: [lat, lng]},
+        $maxDistance: maxDistanceMeters
+      }
+    }}).lean();
+    
+    const limit = plimit(5);
+    const sendTasks = [];
+
+    for (let buyer of buyers) {
+      const phoneE164 = toE164(buyer.phone, "IN");
+      const notify = await Notification.create({
+        buyer: buyer._id,
+        phone: phoneE164,
+        waste: waste._id,
+        message, 
+        status: 'pending'
+      });
+      
+      if (!phoneE164) {
+        // update notification as failed due to invalid number
+        await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: "invalid phone" });
+        continue;
+      }
+
+      const task = limit(async () => {
+        try {
+          const tw = await sendSMS(phoneE164, message, { wasteId: waste._id });
+          // update notification with messageSid and status (queued or sent)
+          await Notification.findByIdAndUpdate(notif._id, {
+            messageSid: tw.sid,
+            status: tw.status || "queued"
+          });
+          return { ok: true, buyer: buyer._id, sid: tw.sid };
+        } catch (err) {
+          await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: err.message });
+          return { ok: false, buyer: buyer._id, error: err.message };
+        }
+      });
+
+      sendTasks.push(task);
+
+      const results = await Promise.allSettled(sendTasks);
+
+    res.status(201).json({
+      message: "Waste added; notifications persisted; SMS sends attempted",
+      waste,
+      buyerCount: buyers.length,
+      smsResults: results.map(r => (r.status === "fulfilled" ? r.value : { ok: false, error: r.reason }))
+    });
+
+    }
+     
   } catch (err) {
     console.log("🔥 Add waste error:", err);
     res.status(500).json({ msg: "Failed to add item" });

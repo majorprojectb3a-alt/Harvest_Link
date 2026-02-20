@@ -30,7 +30,13 @@ const wasteSchema = new mongoose.Schema(
     location: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true }
+     
     },
+    locationGeo: {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: { type: [Number], index: "2dsphere" } // [lng, lat]
+    },
+    
     status: {
       type: String,
       enum: ["available", "sold"],

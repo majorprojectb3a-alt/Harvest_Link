@@ -19,9 +19,11 @@
     "dotenv": "^17.2.3",
     "express": "^4.22.1",
     "express-session": "^1.18.2",
+    "libphonenumber-js": "^1.12.37",
     "mongod": "^2.0.0",
     "mongoose": "^8.21.0",
     "nodemon": "^3.1.11",
+    "p-limit": "^7.3.0",
     "twilio": "^5.11.2"
   }
 }

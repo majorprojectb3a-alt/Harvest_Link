@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
   {
@@ -7,16 +7,32 @@ const notificationSchema = new mongoose.Schema(
       ref: "Buyer",
       required: true
     },
+    phone: { 
+      type: String
+    },
+    waste: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Waste" 
+    },
     message: {
       type: String,
       required: true
     },
-    isRead: {
-      type: Boolean,
-      default: false
+    messageSid: { 
+      type: String, 
+      default: null 
+    },
+    status: { 
+      type: String, 
+      enum: ["pending","queued","sent","delivered","failed","read","unknown"], 
+      default: "pending" 
+    },
+    error: { 
+      type: String, 
+      default: null 
     }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Notification", notificationSchema);
+export default mongoose.model("Notification", notificationSchema);
