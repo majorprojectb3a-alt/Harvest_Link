@@ -34,7 +34,7 @@ function SellFresh() {
                 {/* LEFT SIDE */}
                 <div className="seller-info">
                   <h3>{item.crop}</h3>
-                  <p>Quantity: {item.quantity} kg</p>
+                  <p>Quantity: {item.weight} kg</p>
                   <strong>Location:</strong> {item.state}, {item.district}, {item.mandi}
                 </div>
 
