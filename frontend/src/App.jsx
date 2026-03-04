@@ -23,7 +23,7 @@ function App() {
   return (
       <Routes>
         <Route path = "/unauthorized" element = {<Unauthorized/>} />
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<FarmerAuth />} />
         <Route path="/BuyerHome" element={
           <RoleProtectedRoute allow = {['buyer']}>
             <BuyerHome />
