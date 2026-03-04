@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/Landing/LandingPage";
 import BuyerHome from './pages/HomePages/BuyerHome';
 import FarmerHome from "./pages/HomePages/FarmerHome";
 import EditProfile from "./pages/EditProfile/EditProfile";
@@ -22,7 +23,7 @@ function App() {
   return (
       <Routes>
         <Route path = "/unauthorized" element = {<Unauthorized/>} />
-        <Route path="/" element={<FarmerAuth />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/BuyerHome" element={
           <RoleProtectedRoute allow = {['buyer']}>
             <BuyerHome />
