@@ -1,11 +1,73 @@
 import express from "express";
 import Product from "../models/Product.js";
 import { requireAuth, requireRole } from "../middleware/requireRole.js";
+import User from "../models/User.js";
+import sendSMS from "../utils/sendSMS.js";
 
 const router = express.Router();
 
+// max distance
+const MAX_DISTANCE_METERS = 500000;
+async function notifyNearByBuyers(product, action = "added"){
+  
+  if(!product?.location?.coordinates)
+    return ;
 
-// 🔥 Distance calculation (km)
+  const [lng, lat] = product.location.coordinates;
+
+  if (lng == null || lat == null)
+    return;
+
+  console.log('inside notifyBuyers');
+  try{
+    const buyers = await User.find({
+      role: "buyer",
+      // notifyOnNearbyProducts: true,
+      location:{
+        $near:{
+        $geometry: {
+          type: "Point",
+          coordinates: [lng, lat]
+        },
+        $maxDistance: 500000 
+        }
+      }
+    });
+    
+
+    console.log('buyers: ', buyers);
+
+    if(!buyers || buyers.length === 0)
+        return ;
+    
+    const actionVerb = action === "updated"? "updated": "added a new listing";
+    const crop = product.crop || "product";
+    const price = product.price != null ?  `₹${product.price}` : "";
+    const weight = product.weight ? `${product.weight} kg` : "";
+    const mandi = product.mandi ? `${product.mandi}` : "";
+    const msgBase = `${product.userName} has ${actionVerb}: ${crop} ${weight} ${price} at ${mandi}.`;
+
+    
+
+    for(const buyer of buyers){
+      if(!buyer.phone)
+        continue;
+
+      const body = `${msgBase} Check the app to view details.`;
+      try{
+      await sendSMS(buyer.phone, body);
+      console.log(`Notified ${buyer.phone} about product ${product._id}`);
+      }
+      catch(err){
+        console.log(`failed to message ${buyer.phone}`, err.message);
+      }
+    }
+  }
+  catch(err){
+    console.log("notifyNearByBuyers error", err);
+  }
+}
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
 
   const R = 6371;
@@ -176,24 +238,12 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
 
   try {
 
-    const userId =
-      req.session.user.id;
+    const userId = req.session.user.id;
 
-    const userName =
-      req.session.user.name;
+    const userName = req.session.user.name;
 
 
-    const {
-      crop,
-      weight,
-      price,
-      totalPrice,
-      state,
-      district,
-      mandi,
-      lat,
-      lng
-    } = req.body;
+    const {crop, weight, price, totalPrice, state, district, mandi, lat, lng } = req.body;
 
 
     if (!lat || !lng)
@@ -204,31 +254,22 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
 
     const product =
       await Product.create({
-
         userId,
-
         userName,
-
         crop,
-
         weight,
-
         price,
-
         totalPrice,
-
         state,
-
         district,
-
         mandi,
-
-        location: { lat, lng },
-
+        location: { type: "Point",
+                    coordinates: [Number(lng), Number(lat)] 
+                  },
         status: "available"
-
       });
-
+      console.log('product adding', product);
+    notifyNearByBuyers(product, "added");
 
     res.json({
       msg: "Fresh crop added successfully",
@@ -273,7 +314,42 @@ router.get("/my", requireRole("farmer"), async (req, res) => {
   }
 
 });
+router.put("/:id", requireRole("farmer"), async(req, res) =>{
+  try{
+    const userid = req.session.user.id;
+    const product = await Product.findById(req.params.id);
 
+    if(!product)
+      return res.status(404).json({msg: "product not found"});
+
+    if(product.userId.toString() !== userid){
+      return res.status(403).json({msg: "Unauthorised"});
+    }
+
+    const updateable = ["crop", "weight", "price", "totalPrice",
+      "state", "district", "mandi", "status",
+      "location"];
+
+      updateable.forEach((field)=>{
+        if(req.body[field] !== undefined){
+          product[field] = req.body[field];
+        }
+      });
+
+      if(req.body.lat && req.body.lng){
+        product.location = {lat: req.body.lat, lng: req.body.lng};
+      }
+
+      await product.save();
+
+      notifyNearByBuyers(product, "updated");
+      res.json({ msg: "Product updated", product });
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Failed to update product" });
+  }
+});
 
 // DELETE product
 router.delete("/:id", requireRole("farmer"), async (req, res) => {
@@ -393,30 +469,54 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
 
 
 // SELLER HISTORY
-router.get("/seller/history", requireRole("farmer"), async (req, res) => {
+router.get("/seller/history", async (req, res) => {
 
   try {
 
     const sellerId =
       req.session.user.id;
 
+    const page =
+      parseInt(req.query.page) || 1;
+
+    const limit =
+      parseInt(req.query.limit) || 5;
+
+    const status =
+      req.query.status || "all";
+
+
+    let query = { userId: sellerId };
+
+    if (status !== "all")
+      query.status = status;
+
+
+    const total =
+      await Product.countDocuments(query);
+
+    const totalPages =
+      Math.max(1, Math.ceil(total / limit));
+
+
     const items =
-      await Product.find({
+      await Product.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-        userId: sellerId,
 
-        status: "sold"
-
-      });
-
-    res.json({ items });
+    res.json({
+      items,
+      total,
+      page,
+      totalPages
+    });
 
   }
   catch(err){
 
-    res.status(500).json({
-      msg: "Failed to fetch sales history"
-    });
+    res.status(500).json({ msg: "Error" });
 
   }
 

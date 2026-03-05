@@ -1,0 +1,193 @@
+.buyer-profile-container {
+
+  padding: 40px;
+
+  background: #f4f1ed;
+
+  min-height: 100vh;
+
+  margin-top: 80px;
+
+}
+
+
+
+/* PROFILE CARD */
+.buyer-profile-card {
+
+  background: white;
+
+  padding: 20px 25px;
+
+  border-radius: 14px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+  margin-bottom: 20px;
+
+}
+
+
+.buyer-profile-left {
+
+  display: flex;
+
+  gap: 18px;
+
+  align-items: center;
+
+}
+
+
+.buyer-profile-image {
+
+  width: 65px;
+
+  height: 65px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+}
+
+
+.buyer-profile-left h2 {
+
+  margin: 0;
+
+  color: #2f6b3f;
+
+}
+
+
+.buyer-profile-left p {
+
+  margin: 3px 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+
+}
+
+
+
+/* EDIT BUTTON */
+.buyer-edit-btn {
+
+  background: #4a7c3a;
+
+  color: white;
+
+  border: none;
+
+  padding: 10px 18px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+}
+
+
+
+/* FILTER ROW */
+.buyer-filter-row {
+
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 15px;
+
+}
+
+
+.buyer-filter-row select {
+
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  border: 1px solid #ddd;
+
+}
+
+
+
+/* MODAL */
+.buyer-modal {
+
+  position: fixed;
+
+  top: 0;
+
+  left: 0;
+
+  right: 0;
+
+  bottom: 0;
+
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+}
+
+
+.buyer-modal-content {
+
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  width: 350px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.buyer-image-upload {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 10px;
+
+}
+
+
+.buyer-edit-image {
+
+  width: 90px;
+
+  height: 90px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 3px solid #4a7c3a;
+
+}

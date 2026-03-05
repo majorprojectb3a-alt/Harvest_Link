@@ -56,5 +56,4 @@ const wasteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
 export default mongoose.model("Waste", wasteSchema);

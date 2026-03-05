@@ -39,10 +39,18 @@ const productSchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    location:{
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true }
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true
+      },
+      coordinates: {
+        type: [Number],
+        required: true
+      }
     },
+
     status: {
       type: String,
       enum: ["available", "sold"],

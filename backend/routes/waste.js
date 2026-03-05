@@ -63,12 +63,9 @@ router.get("/", requireAuth, async (req, res) => {
         const lat2 = parseFloat(waste.location.lat);
         const lng2 = parseFloat(waste.location.lng);
 
-        console.log("🔥 Buyer coords:", lat1, lng1);
-        console.log("🔥 Waste coords:", lat2, lng2);
 
         if (!isNaN(lat1) && !isNaN(lng1) && !isNaN(lat2) && !isNaN(lng2)) {
           distance = calculateDistance(lat1, lng1, lat2, lng2);
-          console.log("🔥 Calculated distance:", distance);
         }
       }
 
@@ -120,7 +117,7 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
     const userId = req.session.user.id;
     const userName = req.session.user.name;
 
-    const { type, weight, pricePerKg, predictedPrice, lat, lng } = req.body;
+    let { type, weight, pricePerKg, predictedPrice, lat, lng } = req.body;
 
     lat = Number(lat);
     lng = Number(lng);
@@ -144,65 +141,92 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
       status: "available"   // VERY IMPORTANT
     });
     
-    const message = `new waste available ${type} (${weight} kg) at ${userName}. Expected price: ${predictedPrice}`;
-
-    const maxDistanceMeters = 50_000;
-
-    const buyers = await User.find({ 
+    const buyers = await User.find({
       role: "buyer",
       location: {
-      $near:{
-        $geometry: {type: "Point", coordinates: [lat, lng]},
-        $maxDistance: maxDistanceMeters
-      }
-    }}).lean();
-    
-    const limit = plimit(5);
-    const sendTasks = [];
-
-    for (let buyer of buyers) {
-      const phoneE164 = toE164(buyer.phone, "IN");
-      const notify = await Notification.create({
-        buyer: buyer._id,
-        phone: phoneE164,
-        waste: waste._id,
-        message, 
-        status: 'pending'
-      });
-      
-      if (!phoneE164) {
-        // update notification as failed due to invalid number
-        await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: "invalid phone" });
-        continue;
-      }
-
-      const task = limit(async () => {
-        try {
-          const tw = await sendSMS(phoneE164, message, { wasteId: waste._id });
-          // update notification with messageSid and status (queued or sent)
-          await Notification.findByIdAndUpdate(notif._id, {
-            messageSid: tw.sid,
-            status: tw.status || "queued"
-          });
-          return { ok: true, buyer: buyer._id, sid: tw.sid };
-        } catch (err) {
-          await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: err.message });
-          return { ok: false, buyer: buyer._id, error: err.message };
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat]
+          },
+          $maxDistance: 200 * 1000
         }
-      });
+      }
+    });
+    console.log(buyers);
+    // ⭐ SEND SMS TO ALL BUYERS
+    for (let buyer of buyers) {
+      const resp = await sendSMS(
+        buyer.phone,
+        `New waste available: ${type} (${weight}kg) near your location`
+      );
+      console.log(resp);
+    }
 
-      sendTasks.push(task);
-
-      const results = await Promise.allSettled(sendTasks);
 
     res.status(201).json({
-      message: "Waste added; notifications persisted; SMS sends attempted",
-      waste,
-      buyerCount: buyers.length,
-      smsResults: results.map(r => (r.status === "fulfilled" ? r.value : { ok: false, error: r.reason }))
+      message: `${buyers.length} buyers notified`,
+      waste
     });
+    // const message = `new waste available ${type} (${weight} kg) at ${userName}. Expected price: ${predictedPrice}`;
 
-    }
+    // const maxDistanceMeters = 50_000;
+
+    // const buyers = await User.find({ 
+    //   role: "buyer",
+    //   location: {
+    //   $near:{
+    //     $geometry: {type: "Point", coordinates: [lat, lng]},
+    //     $maxDistance: maxDistanceMeters
+    //   }
+    // }}).lean();
+    
+    // const limit = plimit(5);
+    // const sendTasks = [];
+
+    // for (let buyer of buyers) {
+    //   const phoneE164 = toE164(buyer.phone, "IN");
+    //   const notify = await Notification.create({
+    //     buyer: buyer._id,
+    //     phone: phoneE164,
+    //     waste: waste._id,
+    //     message, 
+    //     status: 'pending'
+    //   });
+      
+    //   if (!phoneE164) {
+    //     // update notification as failed due to invalid number
+    //     await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: "invalid phone" });
+    //     continue;
+    //   }
+
+    //   const task = limit(async () => {
+    //     try {
+    //       const tw = await sendSMS(phoneE164, message, { wasteId: waste._id });
+    //       // update notification with messageSid and status (queued or sent)
+    //       await Notification.findByIdAndUpdate(notif._id, {
+    //         messageSid: tw.sid,
+    //         status: tw.status || "queued"
+    //       });
+    //       return { ok: true, buyer: buyer._id, sid: tw.sid };
+    //     } catch (err) {
+    //       await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: err.message });
+    //       return { ok: false, buyer: buyer._id, error: err.message };
+    //     }
+    //   });
+
+    //   sendTasks.push(task);
+
+    //   const results = await Promise.allSettled(sendTasks);
+
+    // res.status(201).json({
+    //   message: "Waste added; notifications persisted; SMS sends attempted",
+    //   waste,
+    //   buyerCount: buyers.length,
+    //   smsResults: results.map(r => (r.status === "fulfilled" ? r.value : { ok: false, error: r.reason }))
+    // });
+
+    // }
      
   } catch (err) {
     console.log("🔥 Add waste error:", err);
@@ -302,21 +326,58 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
   }
 });
 
-router.get("/seller/history", requireRole("farmer"), async (req, res) => {
+router.get("/seller/history", async (req, res) => {
+
   try {
-    // if (!req.session.user) {
-    //   return res.status(401).json({ msg: "Not logged in" });
-    // }
 
-    const sellerId = req.session.user.id;
+    const sellerId =
+      req.session.user.id;
 
-    const items = await Waste.find({ userId: sellerId, status: "sold" });
+    const page =
+      parseInt(req.query.page) || 1;
 
-    res.json({ items });
+    const limit =
+      parseInt(req.query.limit) || 5;
 
-  } catch (err) {
-    res.status(500).json({ msg: "Failed to fetch sold history" });
+    const status =
+      req.query.status || "all";
+
+
+    let query = { userId: sellerId };
+
+    if (status !== "all")
+      query.status = status;
+
+
+    const total =
+      await Waste.countDocuments(query);
+
+    const totalPages =
+      Math.max(1, Math.ceil(total / limit));
+
+
+    const items =
+      await Waste.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+
+    res.json({
+      items,
+      total,
+      page,
+      totalPages
+    });
+
   }
+  catch(err){
+
+    res.status(500).json({ msg: "Error" });
+
+  }
+
 });
+
 
 export default router;

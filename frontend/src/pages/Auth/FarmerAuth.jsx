@@ -94,25 +94,40 @@ export default function FarmerAuth() {
 
   const handleSignup = async () => {
     if (!validateSignup()) return;
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/auth/signup",
-        {
-          role: "farmer",
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          password: form.password
-        }
-      );
-      alert(res.data.msg);
-      setIsSignUp(false);
-      setOtpSent(false);
-      setForm({ name: "", email: "", phone: "", password: "", otp: "" });
-    } catch (err) {
-      setErrors({ phone: err.response?.data?.msg || "Signup failed" });
+
+    if(!navigator.geolocation){
+      alert("geolocation not supported by browser");
+      return ;
     }
-  };
+
+    navigator.geolocation.getCurrentPosition(
+      async(position) =>{
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+      
+      try{
+        const res = await axios.post(
+          "http://localhost:5000/auth/signup",
+          {
+            role: "farmer",
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            password: form.password,
+            lat,
+            lng
+          }
+        );
+        alert(res.data.msg);
+        setIsSignUp(false);
+        setOtpSent(false);
+        setForm({ name: "", email: "", phone: "", password: "", otp: "" });
+      } catch (err) {
+        setErrors({ phone: err.response?.data?.msg || "Signup failed" });
+      }
+    }
+  );
+};
 
   return (
     <>
