@@ -29,7 +29,7 @@ async function notifyNearByBuyers(product, action = "added"){
           type: "Point",
           coordinates: [lng, lat]
         },
-        $maxDistance: 500000 
+        $maxDistance: 50000 
         }
       }
     });

@@ -4,7 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-
+import mandisRoutes from "./routes/mandis.js";
 import estimateRoutes from "./routes/estimate.js";
 import authRoutes from "./routes/auth.js"; 
 import wasteRoutes from "./routes/waste.js";
@@ -45,6 +45,7 @@ app.use("/auth", authRoutes);
 app.use("/estimator", estimateRoutes);
 app.use("/waste", wasteRoutes);
 app.use("/fresh", productRoutes);   
+app.use("/api/mandis", mandisRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.post("/twilio/status", async (req, res) => {
   try {
