@@ -14,10 +14,13 @@ const isValidEmail = (email) =>
 router.post("/signup", async (req, res) => {
   console.log("SIGNUP BODY:", req.body);
   try {
-    const { role, name, email, phone, password } = req.body;
+    const { role, name, email, phone, password, lat, lng } = req.body;
 
     if (!role || !name || !email || !phone || !password)
       return res.status(400).json({ msg: "All fields required" });
+
+    if (!lat || !lng)
+      return res.status(400).json({ msg: "Location permission required" });
 
     if (!isValidEmail(email))
       return res.status(400).json({ msg: "Invalid email" });
@@ -28,9 +31,15 @@ router.post("/signup", async (req, res) => {
     if (password.length < 8)
       return res.status(400).json({ msg: "Weak password" });
 
-    const existingUser = await User.findOne({ email, role });
-    if (existingUser)
-      return res.status(400).json({ msg: "User already exists" });
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail)
+      return res.status(400).json({ msg: "Email already registered" });
+
+    const existingPhoneRole = await User.findOne({ phone, role });
+    if (existingPhoneRole)
+      return res.status(400).json({
+        msg: `This phone is already registered as a ${role}`
+      });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -40,6 +49,11 @@ router.post("/signup", async (req, res) => {
       email,
       phone,
       password: hashedPassword,
+      location: {
+        type: "Point",
+        coordinates: [Number(lng), Number(lat)] // IMPORTANT: lng first
+      }
+      
     });
     console.log('user: ', user);
     await user.save();

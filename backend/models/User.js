@@ -29,9 +29,19 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       type: String,
       default: ""
+    },
+
+    notifyOnNearbyProducts: { type: Boolean, default: true },
+
+    location: {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: { type: [Number], index: "2dsphere" } // [lng, lat]
     }
   },
   { timestamps: true }
 );
+
+userSchema.index({ phone: 1, role: 1 }, { unique: true });
+userSchema.index({ location: "2dsphere" });
 
 export default mongoose.model("User", userSchema);
