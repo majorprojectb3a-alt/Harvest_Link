@@ -239,7 +239,11 @@ router.post("/verify-otp", async (req, res) => {
       profileImage: user.profileImage || ""
     };
 
-    return res.json({ msg: "OTP verified & login successful", user: req.session.user });
+    return res.json({ msg: "OTP verified & login successful", user: {
+      id: user._id,
+      name: user.name,
+      role: user.role
+    } });
 
   } catch (err) {
     console.error(err);

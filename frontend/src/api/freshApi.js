@@ -27,14 +27,13 @@ export const getFreshDetails = async(id)=>{
 };
 
 
-export const buyFreshItem = async(id)=>{
+export const requestFreshBooking = async (data) => {
 
   const res = await axios.post(
-    `${BASE_URL}/buy/${id}`,
-    {},
-    {withCredentials:true}
+    "http://localhost:5000/api/bookings/book",
+    data,
+    { withCredentials: true }
   );
 
   return res.data;
-
 };

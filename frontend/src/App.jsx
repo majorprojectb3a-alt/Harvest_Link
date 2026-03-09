@@ -12,6 +12,7 @@ import CropWasteEstimator from "./pages/CropWasteEstimator/CropWasteEstimator";
 import Unauthorized from "./pages/Auth/Unauthorized";
 import SellWaste from "./pages/Sellwaste/SellWaste";
 import SellFresh from "./pages/SellFresh/SellFresh";   
+import BookingRequests from "./pages/BookingRequests/BookingRequests";
 import axios from "axios";
 import RoleProtectedRoute from "./pages/Auth/RoleProtectedRoute";
 import Profile from "./pages/Profile/Profile";
@@ -59,6 +60,8 @@ function App() {
             <SellFresh />
           </RoleProtectedRoute>
           } />
+
+        <Route path="/booking-requests" element={<BookingRequests />} />
       </Routes>
   );
 }

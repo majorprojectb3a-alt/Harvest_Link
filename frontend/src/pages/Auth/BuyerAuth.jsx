@@ -65,6 +65,11 @@ export default function BuyerAuth() {
         },
         { withCredentials: true }
       );
+
+      console.log(res.data);
+      localStorage.setItem("userId", res.data.user.id);
+      localStorage.setItem("role", res.data.user.role);
+      console.log(res.data);
       alert(res.data.msg);
       navigate("/BuyerHome");
     } catch (err) {

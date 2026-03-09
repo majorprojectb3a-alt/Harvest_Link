@@ -71,6 +71,11 @@ export default function FarmerAuth() {
       );
       alert(res.data.msg);
 
+      console.log(res.data.user);
+
+      localStorage.setItem("userId", res.data.user.id);
+      localStorage.setItem("role", res.data.user.role);
+
       // Navigate first, then reset form
       navigate("/FarmerHome");
       setForm({ name: "", email: "", phone: "", password: "", otp: "" });

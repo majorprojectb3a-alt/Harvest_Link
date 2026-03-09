@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getFreshItems,
   getFreshDetails,
-  buyFreshItem
+  requestFreshBooking
 } from "../../api/freshApi";
 
 import FreshCard from "../Card/FreshCard";
@@ -29,6 +29,8 @@ export default function FreshOptions() {
   const [selectedFresh, setSelectedFresh] = useState(null);
 
   const [showDetails, setShowDetails] = useState(false);
+
+  const [buyQuantity, setBuyQuantity] = useState(1);
 
 
   // fetch fresh items
@@ -58,6 +60,8 @@ export default function FreshOptions() {
     }
 
   };
+
+  
 
 
   // refetch when filter changes
@@ -247,6 +251,17 @@ export default function FreshOptions() {
             </p>
 
 
+            <label>Enter Quantity (kg)</label>
+
+<input
+  type="number"
+  min="1"
+  max={selectedFresh.weight}
+  value={buyQuantity}
+  onChange={(e)=>setBuyQuantity(e.target.value)}
+/>
+
+
 
 
             <div className="fresh-btns">
@@ -257,11 +272,18 @@ export default function FreshOptions() {
 
                   try{
 
-                    await buyFreshItem(
-                      selectedFresh._id
-                    );
+                    console.log({
+  productId: selectedFresh._id,
+  buyerId: localStorage.getItem("userId")
+});
 
-                    alert("Purchased successfully");
+                    await requestFreshBooking(
+                      {productId: selectedFresh._id,
+                      buyerId: localStorage.getItem("userId"),
+                    quantity: buyQuantity}
+);
+
+alert("Booking request sent to farmer!");
 
                     setShowDetails(false);
 
@@ -270,9 +292,10 @@ export default function FreshOptions() {
                       location.lng,
                       selectedType
                     );
-
                   }
-                  catch{
+                  catch(err){
+
+                    console.log(err);
 
                     alert("Purchase failed");
 
