@@ -1,0 +1,80 @@
+state,district,market,lat,lng,source
+Andhra Pradesh,Kurnool,Allagadda,15.1332048,78.5141594,nominatim
+Andhra Pradesh,Kurnool,Banaganapalli,15.3223031,78.2507163,nominatim
+Andhra Pradesh,Chittor,Palamaner,13.1490375,78.7292763,nominatim
+Andhra Pradesh,Guntur,PiduguralaPalnadu,16.2915189,80.4541588,district_centroid
+Andhra Pradesh,Kurnool,Pattikonda,15.3954238,77.5014036,nominatim
+Andhra Pradesh,East Godavari,Rajahmundry,17.0050454,81.7804732,nominatim
+Andhra Pradesh,Chittor,Chittoor,13.325036,79.6480611,nominatim
+Andhra Pradesh,Chittor,Madanapalli,12.8228649,78.3705177,nominatim
+Andhra Pradesh,Chittor,Kalikiri,13.6823499,78.8032948,nominatim
+Andhra Pradesh,Visakhapatnam,Anakapally,17.6935526,83.2921297,district_centroid
+Andhra Pradesh,Kurnool,Kurnool,15.8266024,78.0293132,nominatim
+Andhra Pradesh,Kurnool,Atmakur,14.669176,79.5743613,nominatim
+Andhra Pradesh,Guntur,Guntur,16.2394568,80.6473769,nominatim
+Andhra Pradesh,Guntur,Tenali,16.239216,80.6484323,nominatim
+Andhra Pradesh,Kurnool,Adoni,15.6261417,77.2723701,nominatim
+Andhra Pradesh,Kurnool,Alur,15.4276919,77.257826,nominatim
+Andhra Pradesh,Kurnool,Nandikotkur,15.8562,78.27,nominatim
+Andhra Pradesh,Guntur,Duggirala,16.328919,80.6238497,nominatim
+Andhra Pradesh,Anantapur,Rayadurg,14.7181496,76.8879739,nominatim
+Andhra Pradesh,Chittor,Punganur,13.4042835,78.5567022,nominatim
+Andhra Pradesh,East Godavari,Sampara,16.9089267,82.1058532,nominatim
+Andhra Pradesh,Cuddapah,Cuddapah,14.4956602,78.8349278,nominatim
+Andhra Pradesh,West Godavari,Gopalavaram,16.6443029,81.5885247,district_centroid
+Andhra Pradesh,Chittor,Vayalapadu,13.6389705,78.6311294,nominatim
+Andhra Pradesh,Krishna,Tiruvuru,17.1144289,80.6101643,nominatim
+Andhra Pradesh,Chittor,Mulakalacheruvu,13.8145575,78.2679622,nominatim
+Andhra Pradesh,Krishna,Nuzvid,16.6501445,80.9622511,nominatim
+Andhra Pradesh,Cuddapah,Rajampet,14.1987099,79.1110344,nominatim
+Andhra Pradesh,Krishna,Divi,17.933364,83.4786296,nominatim
+Andhra Pradesh,Chittor,Tirupati,13.6316368,79.4231711,nominatim
+Andhra Pradesh,West Godavari,Chintalapudi,17.0976285,80.9637011,nominatim
+Andhra Pradesh,Nellore,Gudur,14.3694176,80.0393888,overpass
+Andhra Pradesh,Nellore,Rapur,14.2008674,79.5332484,nominatim
+Andhra Pradesh,Kurnool,Nandyal,15.8013103,78.0483436,nominatim
+Andhra Pradesh,Nellore,Venkatagiri,13.9540361,79.5787874,nominatim
+Andhra Pradesh,Chittor,Puttur,13.4381418,79.5522138,nominatim
+Andhra Pradesh,Anantapur,Hindupur,13.8328005,77.4919044,nominatim
+Andhra Pradesh,Kurnool,Yemmiganur,15.7454966,77.5110453,nominatim
+Andhra Pradesh,East Godavari,Ravulapelem,16.9956639,81.7154378,district_centroid
+Andhra Pradesh,East Godavari,Karapa,16.89914,82.167114,nominatim
+Andhra Pradesh,Nellore,Vakadu,14.0008077,80.0663835,nominatim
+Andhra Pradesh,East Godavari,Tuni,17.3550181,82.5406625,nominatim
+Andhra Pradesh,East Godavari,Peddapuram,17.0988507,81.5715054,nominatim
+Andhra Pradesh,Anantapur,Kadiri,14.6547356,77.6162619,nominatim
+Andhra Pradesh,Anantapur,Tenakallu,14.6783221,77.6065039,district_centroid
+Andhra Pradesh,Krishna,Kanchekacherla,16.2135466,81.0277844,district_centroid
+Andhra Pradesh,Cuddapah,Jammalamadugu,14.8473457,78.382172,nominatim
+Andhra Pradesh,Guntur,Ipur,16.2915189,80.4541588,district_centroid
+Andhra Pradesh,Anantapur,Dharmavaram,14.5833709,77.6321128,nominatim
+Andhra Pradesh,Cuddapah,Proddatur,14.7555953,78.5501531,nominatim
+Andhra Pradesh,Chittor,Piler,13.6625987,78.9280785,nominatim
+Andhra Pradesh,Cuddapah,Pulivendala,14.4956602,78.8349278,district_centroid
+Andhra Pradesh,Guntur,Tadikonda,16.4183389,80.4546278,nominatim
+Andhra Pradesh,Visakhapatnam,Paderu,18.0791533,82.6632234,nominatim
+Andhra Pradesh,East Godavari,Prattipadu,16.4175037,81.0651058,nominatim
+Andhra Pradesh,Krishna,Jaggayyapeta,16.8930111,80.098646,nominatim
+Andhra Pradesh,Visakhapatnam,Chintapally,17.6935526,83.2921297,district_centroid
+Andhra Pradesh,Anantapur,Anantapur,14.6783221,77.6065039,nominatim
+Andhra Pradesh,West Godavari,Denduluru,16.7817255,81.1807255,nominatim
+Andhra Pradesh,West Godavari,Eluru,16.7502863,81.1826126,nominatim
+Andhra Pradesh,East Godavari,Ambajipeta,16.5930349,81.9547431,nominatim
+Andhra Pradesh,Chittor,Vepanjari,13.2162432,79.1050786,district_centroid
+Andhra Pradesh,Krishna,Mylavaram,16.765704,80.645327,nominatim
+Andhra Pradesh,Nellore,AtmakurSPS,14.4493717,79.9873763,district_centroid
+Andhra Pradesh,Anantapur,Kalyandurg,14.5410188,77.2157886,nominatim
+Andhra Pradesh,East Godavari,Kakinada,16.9174762,82.0280289,nominatim
+Andhra Pradesh,East Godavari,Jaggampet,16.9956639,81.7154378,district_centroid
+Andhra Pradesh,Cuddapah,Lakkireddipally,14.4956602,78.8349278,district_centroid
+Andhra Pradesh,Chittor,Bangarupalem,13.1909599,78.912899,nominatim
+Andhra Pradesh,Vijayanagaram,Vijayanagaram,18.1141255,83.4114389,nominatim
+Andhra Pradesh,Nellore,Nellore,14.4493717,79.9873763,nominatim
+Andhra Pradesh,Chittor,Rompicherla,16.2104931,79.9091632,nominatim
+Andhra Pradesh,Tirupathi,Thiruchanur,13.6174358,79.4566872,nominatim
+Andhra Pradesh,Palnadu,Gurazala,16.5589293,79.6368235,nominatim
+Andhra Pradesh,Chittor,Penumuru,13.3697787,79.1950067,nominatim
+Andhra Pradesh,Annamayya,Valmikipuram,13.6573509,78.6974067,nominatim
+Andhra Pradesh,Alluri Sitharama Raju,Rampachodvaram,18.0591962,82.6749006,district_centroid
+Andhra Pradesh,Nellore,Sarvepalli,14.2925091,79.9735549,nominatim
+Andhra Pradesh,Anantapur,RAYADURG,14.7181496,76.8879739,nominatim

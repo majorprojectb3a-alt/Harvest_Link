@@ -1,0 +1,123 @@
+{
+  "sources": [
+    "https://arxiv.org/html/2503.11690v1 - The Impact of Meteorological Factors on Crop Price Volatility in India",
+    "https://www.commoditymarketlive.com/mandi-price - Understanding India's Mandi Market",
+    "https://epubs.icar.org.in - Understanding price volatility and seasonality in agricultural commodities in India"
+  ],
+  "general_factors": [
+    "Vegetable prices rise during off-season due to supply shortages.",
+    "Market arrivals (quantity brought to mandi) strongly influence modal price - higher arrivals typically lower prices.",
+    "Festival months (Diwali, Holi, Pongal, Onam) often increase demand and prices for specific commodities.",
+    "Rainfall and monsoon patterns significantly affect mandi arrivals and pricing.",
+    "Transportation costs and fuel prices impact final commodity prices.",
+    "Cold storage availability affects price stability for perishables.",
+    "Government minimum support prices (MSP) set price floors for certain crops.",
+    "Export-import policies and trade restrictions affect domestic prices.",
+    "Pest infestations and crop diseases can cause sudden supply shortages.",
+    "Irrigation availability determines crop yield and subsequent market supply.",
+    "Climate-induced disruptions can have profound consequences for food security and income stability.",
+    "Temperature anomalies and precipitation patterns are pivotal in understanding food price volatility.",
+    "Export-oriented crops like soybean are more sensitive to global disruptions than domestic vegetables.",
+    "Extreme precipitation makes economic inequality worse in nations that rely heavily on agriculture.",
+    "Weather conditions, especially extreme weather events, significantly impact agricultural productivity and pricing."
+  ],
+  "seasonal_patterns": {
+    "summer": [
+      "Mango, watermelon, and cucumber prices drop due to peak production.",
+      "Leafy vegetables become scarce and expensive due to heat.",
+      "Onion prices typically rise as stored stock depletes before new harvest."
+    ],
+    "monsoon": [
+      "Vegetable prices often spike due to transportation difficulties.",
+      "Leafy greens become expensive due to damage from heavy rains.",
+      "Rice transplanting season affects labor availability and costs."
+    ],
+    "winter": [
+      "Tomato, cauliflower, cabbage prices drop due to abundant supply.",
+      "Potato harvest leads to lower prices in major producing states.",
+      "Peas and carrots are at their cheapest during peak season."
+    ],
+    "post_monsoon": [
+      "Kharif crop arrivals increase, potentially lowering grain prices.",
+      "Onion new crop arrives, stabilizing prices after monsoon spike.",
+      "Festival demand increases prices for specific commodities."
+    ]
+  },
+  "commodity_specific": {
+    "onion": [
+      "Onion prices are highly volatile due to limited storage life.",
+      "Maharashtra, Karnataka, and Madhya Pradesh are major onion producing states.",
+      "Rabi onion (harvested March-May) has better storage life than Kharif.",
+      "Export bans are often imposed when domestic prices spike."
+    ],
+    "tomato": [
+      "Tomato is highly perishable with price swings of 200-300% within weeks.",
+      "Karnataka, Andhra Pradesh, and Maharashtra are major producers.",
+      "Prices peak during monsoon due to crop damage and transport issues.",
+      "Cold chain infrastructure significantly impacts price stability."
+    ],
+    "potato": [
+      "Uttar Pradesh, West Bengal, and Bihar are major potato producers.",
+      "Cold storage capacity affects year-round price stability.",
+      "Prices typically lowest during February-April harvest season.",
+      "Processing industry demand (chips, fries) affects premium variety prices."
+    ],
+    "rice": [
+      "Minimum Support Price (MSP) provides price floor for paddy.",
+      "Government procurement significantly affects market prices.",
+      "Monsoon quality directly impacts Kharif rice production.",
+      "Export policies influence domestic price levels."
+    ]
+  },
+  "regional_factors": {
+    "andhra_pradesh": [
+      "Major producer of rice, chillies, and vegetables.",
+      "Coastal areas affected by cyclones impacting crop production.",
+      "Godavari and Krishna delta regions are highly productive.",
+      "Strong mandi network with electronic trading adoption."
+    ],
+    "maharashtra": [
+      "Leading producer of onions, grapes, and sugarcane.",
+      "Nashik is the onion trading hub of India.",
+      "Drought-prone regions face frequent supply disruptions.",
+      "Well-developed cold chain for export-oriented produce."
+    ],
+    "karnataka": [
+      "Major producer of tomatoes, onions, and pulses.",
+      "Bangalore market influences South India vegetable prices.",
+      "Coffee and spice production in Western Ghats region.",
+      "Irrigation from Cauvery and Krishna rivers crucial for production."
+    ]
+  },
+  "market_dynamics": [
+    "Modal price represents the most frequent transaction price in a mandi.",
+    "Price spread between min and max indicates market volatility.",
+    "Arrival quantity inversely correlates with price in most cases.",
+    "Trader speculation can cause short-term price distortions.",
+    "APMC mandi prices serve as benchmark for regional transactions.",
+    "eNAM (electronic National Agriculture Market) is improving price discovery.",
+    "Wholesale prices typically 30-50% lower than retail prices.",
+    "Commission agents (arthiyas) influence price negotiations.",
+    "APMC Licensing requires farmers to sell through authorized intermediaries in specified mandis.",
+    "In mandi auctions, items are examined, graded, and put up for auction to the highest bidder.",
+    "Supply and demand have a major influence on mandi prices, with government MSP affecting the price floor.",
+    "The Farmers' Produce Trade and Commerce Act 2020 permits farmers to sell to any buyer and eliminates middlemen.",
+    "Activities at Mandi usually begin early in the morning.",
+    "Produce such as wheat, potatoes, and onions are kept in mandis or special storage spaces to sell later at better prices."
+  ],
+  "major_mandis": [
+    "Azadpur Mandi, Delhi: One of the largest fruit and vegetable markets in Asia, receiving 4000-5000 trucks daily.",
+    "Lasalgaon, Maharashtra: Known as the largest onion market in Asia.",
+    "Vashi APMC Market, Mumbai: Major market for fruits, vegetables, grains, and pulses.",
+    "Unjha Mandi, Gujarat: Known for trading spices, especially cumin and fennel.",
+    "Chili Market, Guntur, Andhra Pradesh: One of the largest chili markets in India."
+  ],
+  "meteorological_impact": [
+    "Kharif crops like soybean are strictly sown during monsoon onset (June/July) and harvested in October.",
+    "Meteorological variables impact soybean price volatility at lags of 3-4 months, consistent with sowing and harvesting periods.",
+    "Vegetables like brinjal are cultivated year-round without strict seasonal cycles, showing lower weather correlation.",
+    "Weather forecasts can help farmers optimize sowing and harvesting time for better price realization.",
+    "Apart from meteorological variables, global factors like COVID-19 also significantly affect price volatility.",
+    "Hybrid ARIMAX-LSTM models outperform traditional methods for price forecasting with meteorological data."
+  ]
+}
