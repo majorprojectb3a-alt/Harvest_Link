@@ -317,7 +317,7 @@ const [priceLocked, setPriceLocked] = useState(false);
 
   <div className="prediction-box">
 
-    <h3>🤖 AI Price Prediction</h3>
+    <h3>Prediction Result</h3>
 
     <p>
   <b>Predicted price:</b> ₹{(prediction.price_per_quintal / 100)?.toFixed(2)} / kg
