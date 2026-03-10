@@ -8,6 +8,7 @@ from sklearn.base import clone
 
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from xgboost import XGBRegressor
 
 import joblib
 
@@ -53,7 +54,17 @@ def get_models():
         "LinearRegression": LinearRegression(),
         "Ridge": Ridge(alpha=1.0),
         "RandomForest": RandomForestRegressor(n_estimators=200, max_depth=12, n_jobs=-1, random_state=42),
-        "GradientBoosting": GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, max_depth=5, random_state=42)
+        "GradientBoosting": GradientBoostingRegressor(n_estimators=200, learning_rate=0.05, max_depth=5, random_state=42),
+        "XGBoost": XGBRegressor(
+            n_estimators=500,
+            learning_rate=0.05,
+            max_depth=6,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            objective="reg:squarederror",
+            n_jobs=-1,
+            random_state=42
+        )
     }
 
 def time_series_cv_train(X, y, models):
@@ -62,6 +73,8 @@ def time_series_cv_train(X, y, models):
     results = []
 
     for name, base_model in models.items():
+
+        print(f"\nTraining model: {name}")
        
         mae_list = []
         rmse_list = []
@@ -110,12 +123,18 @@ def train_full_and_save_best(X, y, best_model_name, models):
 
 def run_model_comparison():
 
+    print(1)
+
     df = load_data()
+
+    print(2)
 
     X, y = split_features_target(df)
 
+    print(3)
+
     models = get_models()
-    # print(models)
+    print(models)
 
     results_df = time_series_cv_train(X, y, models)
     results_df = results_df.sort_values("RMSE")
