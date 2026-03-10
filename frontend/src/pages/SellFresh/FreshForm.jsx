@@ -918,7 +918,87 @@ function FreshForm({ onClose, item }) {
       <button onClick={predictPrice}>
         🔮 Predict Price
       </button>
+{prediction && (
 
+  <div className="prediction-box">
+
+    <h3>Prediction Result</h3>
+
+    <p>
+  <b>Predicted price:</b> ₹{(prediction.price_per_quintal / 100)?.toFixed(2)} / kg
+</p>
+
+    <p>
+  <b>Your crop value:</b> ₹{
+    ((prediction.price_per_quintal / 100) *
+    (Number(form.kg || 0) + Number(form.grams || 0)/1000)
+    ).toFixed(2)
+  }
+</p>
+
+    <div className="prediction-explanation">
+      <h4>Why this price?</h4>
+      <p>{prediction.explanation}</p>
+    </div>
+
+    {/* USER CHOICE BUTTONS */}
+
+    {!priceLocked && !manualPriceMode && (
+      <div className="prediction-actions">
+
+        <button
+  className="use-predicted-btn"
+  onClick={() => {
+
+    const pricePerKg = prediction.price_per_quintal / 100;
+
+    const kg = Number(form.kg || 0);
+    const grams = Number(form.grams || 0);
+
+    const totalWeight = kg + grams / 1000;
+
+    const total = (totalWeight * pricePerKg).toFixed(2);
+
+    setForm(prev => ({
+      ...prev,
+      price: pricePerKg.toFixed(2),
+      totalPrice: total
+    }));
+
+    setPriceLocked(true);
+    setManualPriceMode(false);
+
+  }}
+>
+  ✅ Use Predicted Price
+</button>
+
+        <button
+          className="manual-price-btn"
+          onClick={() => setManualPriceMode(true)}
+        >
+          ✏️ Enter Price Manually
+        </button>
+
+      </div>
+    )}
+
+  </div>
+
+)}
+
+{manualPriceMode && (
+
+  <input
+  name="price"
+  type="number"
+  value={form.price}
+  disabled={priceLocked}
+  onChange={handleChange}
+/>
+
+)}
+{/*         
       <input
         name="price"
         type="number"
@@ -926,7 +1006,7 @@ function FreshForm({ onClose, item }) {
         value={form.price}
         disabled={priceLocked && !manualPriceMode}
         onChange={handleChange}
-      />
+      /> */}
 
       <div className="price-box">
         💰 Total Price: ₹{form.totalPrice || 0}

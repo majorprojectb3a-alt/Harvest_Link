@@ -233,16 +233,7 @@ router.get("/buyer/:buyerId", async (req,res)=>{
 
   try{
     console.log('inside buyer booking ', req.params.buyerId);
-//     const bookings = await Booking.find({
-//     buyerId: req.params.buyerId
-// })
-// .populate("farmerId")
-// .populate({
-//   path: "productId",
-//   model: function(doc){
-//     return doc.productModel;
-//   }
-// });
+
 const bookings = await Booking.find({
       buyerId: req.params.buyerId
     })

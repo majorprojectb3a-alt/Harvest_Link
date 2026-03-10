@@ -16,7 +16,7 @@ router.post('/crop-to-biofuel', async (req, res) => {
 router.post("/predict-price", async (req, res) => {
 
   try {
-
+    console.log('inside predict price', req.body)
     const response = await axios.post(
       "http://localhost:8000/predict-fresh-price",
       req.body

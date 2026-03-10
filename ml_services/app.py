@@ -67,17 +67,25 @@ from price_prediction.models.predict_with_explain import predict_and_explain
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODELS_PATH = os.path.join(BASE_DIR, "models", "biofuel_model.joblib")
-model = joblib.load(MODELS_PATH)
+# -----------------------------
+# Load Model and Encoders
+# -----------------------------
 
-class PredictRequest(BaseModel):
-    crop: str
-    region: str
-    harvested_kg: float
-    rpr: float
-    moisture_frac: float
-    LHV_MJ_per_kg: float
-    energy_per_liter: float = 36.0
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, "waste_prediction", "models")
+
+model = joblib.load(os.path.join(MODELS_DIR, "biofuel_model.pkl"))
+le_waste = joblib.load(os.path.join(MODELS_DIR, "waste_encoder.pkl"))
+le_fuel = joblib.load(os.path.join(MODELS_DIR, "fuel_encoder.pkl"))
+
+# -----------------------------
+# Request Schema
+# -----------------------------
+
+class CropWasteRequest(BaseModel):
+    crop_waste: str
+    waste_quantity: float
+
 
 class FreshPriceRequest(BaseModel):
     commodity: str
@@ -86,45 +94,54 @@ class FreshPriceRequest(BaseModel):
     district: str | None = None
     quantity: float
 
+@app.post("/crop-to-biofuel")
+def predict_biofuel(req: CropWasteRequest):
 
+    try:
+        print('crop to biofuel')
 
-@app.post("/predict-price")
-def predict(req: PredictRequest):
-    # 1. Compute derived values
-    residue_kg = req.harvested_kg * req.rpr * (1 - req.moisture_frac)
-    energy_MJ = residue_kg * req.LHV_MJ_per_kg
-    baseline_l = energy_MJ * 0.25 / req.energy_per_liter
+        # Encode waste type
+        waste_encoded = le_waste.transform([req.crop_waste])[0]
 
-    # 2. Create DataFrame (NOT list)
-    X_df = pd.DataFrame([{
-        "crop": req.crop,
-        "region": req.region,
-        "residue_kg": residue_kg,
-        "LHV_MJ_per_kg": req.LHV_MJ_per_kg,
-        "moisture_frac": req.moisture_frac,
-        "baseline_l": baseline_l
-    }])
+        # Create dataframe
+        input_df = pd.DataFrame([{
+            "waste_encoded": waste_encoded,
+            "waste_amount_kg": req.waste_quantity
+        }])
 
-    # 3. Predict
-    predicted_l_per_tonne = float(model.predict(X_df)[0])
+        # Prediction
+        prediction = model.predict(input_df)
 
-    # 4. Convert to total liters
-    predicted_liters = predicted_l_per_tonne * (residue_kg / 1000.0)
+        fuel_encoded = int(round(prediction[0][0]))
+        fuel_amount = float(prediction[0][1])
 
-    # 5. Estimate value
-    price_per_liter = 50.0
-    estimated_value = predicted_liters * price_per_liter
+        # Decode fuel type
+        fuel_type = le_fuel.inverse_transform([fuel_encoded])[0]
 
-    return {
-        "predicted_liters": predicted_liters,
-        "predicted_l_per_tonne": predicted_l_per_tonne,
-        "baseline_liters": baseline_l * (residue_kg / 1000.0),
-        "estimated_value": estimated_value
-    }
+        # print(fuel_type)
 
+        if fuel_type == "Biogas":
+            units = "m3"
+        else:
+            units = "L"
+        return {
+            "success": True,
+            "crop_waste": req.crop_waste,
+            "waste_quantity": req.waste_quantity,
+            "biofuel_type": fuel_type,
+            "biofuel_produced_liters": round(fuel_amount, 2),
+            "units": units
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+    
 @app.post("/predict-fresh-price")
 def predict_fresh_price(req: FreshPriceRequest):
-
+    print('inside predict fresh')
     try:
 
         # Step 1: predict price
