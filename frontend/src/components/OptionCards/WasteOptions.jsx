@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWasteItems, getWasteDetails, buyWasteItem } from "../../api/wasteApi";
+import { getWasteItems, getWasteDetails, requestWasteBooking } from "../../api/wasteApi";
 import WasteCard from "../Card/WasteCard";
 import Filters from "../Filters/Filters";
 import "./WasteOptions.css"
@@ -14,6 +14,7 @@ export default function WasteOptions() {
   // 🔥 DETAILS MODAL STATE
   const [selectedWaste, setSelectedWaste] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [buyQuantity, setBuyQuantity] = useState(1);
 
   // 🔥 FETCH MARKETPLACE DATA WITH FILTER
   const fetchWaste = async (lat, lng, type) => {
@@ -129,6 +130,15 @@ export default function WasteOptions() {
             <hr />
             <br />
 
+            <label>Enter Quantity (kg)</label>
+
+<input
+  type="number"
+  min="1"
+  max={selectedWaste.weight}
+  value={buyQuantity}
+  onChange={(e)=>setBuyQuantity(e.target.value)}
+/>
             <div className="btns">
               
             {/* 🔥 BOOK BUTTON */}
@@ -136,11 +146,17 @@ export default function WasteOptions() {
               className="book-btn"
               onClick={async () => {
                 try {
-                  await buyWasteItem(selectedWaste._id);
+                  await requestWasteBooking({
+                    productId: selectedWaste._id,
+                      buyerId: localStorage.getItem("userId"),
+                    quantity: buyQuantity,
+                  itemType:"Waste"
+                  });
                   alert("✅ Waste booked successfully");
                   setShowDetails(false);
                   fetchWaste(location.lat, location.lng, selectedType);
                 } catch (err) {
+                  console.log(err)
                   alert("❌ Failed to book waste");
                 }
               }}

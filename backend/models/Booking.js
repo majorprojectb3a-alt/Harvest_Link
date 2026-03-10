@@ -3,8 +3,14 @@ import mongoose from "mongoose";
 const bookingSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true
+    required: true,
+    refPath: "productModel"
+  },
+
+  productModel: {
+    type: String,
+    required: true,
+    enum: ["Product", "Waste"]   // models you allow booking for
   },
 
   buyerId: {
