@@ -72,7 +72,7 @@ const wasteSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
-    predictedPrice: {
+    totalPrice: {
       type: Number,
       required: true
     },

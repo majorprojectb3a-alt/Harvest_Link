@@ -40,6 +40,7 @@ function WasteForm({ onClose, item }) {
       return;
     }
 
+    // const details = await axios.post()
     const totalWeight =
       Number(form.kg || 0) + Number(form.grams || 0) / 1000;
     

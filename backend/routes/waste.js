@@ -215,14 +215,16 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
     // if (!req.session.user) {
     //   return res.status(401).json({ msg: "Not logged in" });
     // }
-
+    console.log('inside add waste item');
     const userId = req.session.user.id;
     const userName = req.session.user.name;
 
-    let { type, weight, pricePerKg, predictedPrice, lat, lng } = req.body;
+    let { type, weight, pricePerKg, totalPrice } = req.body;
 
-    lat = Number(lat);
-    lng = Number(lng);
+    const user = await User.findById(userId);
+    console.log(user.location.coordinates[0]);
+    let lat = Number(user.location.coordinates[1]);
+    let lng = Number(user.location.coordinates[0]);
 
     if (!lat || !lng) {
       return res.status(400).json({ msg: "Location is required" });
@@ -234,7 +236,7 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
       type,
       weight,
       pricePerKg,
-      predictedPrice,
+      totalPrice,
       location: {
         lat,
         lng
@@ -270,6 +272,9 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
       message: `${buyers.length} buyers notified`,
       waste
     });
+
+
+
     // const message = new waste available ${type} (${weight} kg) at ${userName}. Expected price: ${predictedPrice};
 
     // const maxDistanceMeters = 50_000;

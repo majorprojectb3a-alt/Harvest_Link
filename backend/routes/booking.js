@@ -1,6 +1,6 @@
 import express from "express";
 import Booking from "../models/Booking.js";
-// import Product from "../models/product.js";
+import Product from "../models/product.js";
 import Waste from "../models/Waste.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
@@ -233,17 +233,24 @@ router.get("/buyer/:buyerId", async (req,res)=>{
 
   try{
     console.log('inside buyer booking ', req.params.buyerId);
-    const bookings = await Booking.find({
-    buyerId: req.params.buyerId
-})
-.populate("farmerId")
-.populate({
-  path: "productId",
-  model: function(doc){
-    return doc.productModel;
-  }
-});
+//     const bookings = await Booking.find({
+//     buyerId: req.params.buyerId
+// })
+// .populate("farmerId")
+// .populate({
+//   path: "productId",
+//   model: function(doc){
+//     return doc.productModel;
+//   }
+// });
+const bookings = await Booking.find({
+      buyerId: req.params.buyerId
+    })
+    .populate("farmerId")
+    .populate("productId");
 
+  res.status(200).json(bookings);
+console.log('populated booking for waste');
   }
   catch(err){
 
