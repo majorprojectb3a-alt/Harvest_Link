@@ -23,20 +23,10 @@ const wasteSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
-    predictedPrice: {
+    totalPrice: {
       type: Number,
       required: true
     },
-    location: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true }
-     
-    },
-    locationGeo: {
-      type: { type: String, enum: ["Point"], default: "Point" },
-      coordinates: { type: [Number], index: "2dsphere" } // [lng, lat]
-    },
-    
     status: {
       type: String,
       enum: ["available", "sold"],
@@ -47,7 +37,6 @@ const wasteSchema = new mongoose.Schema(
       ref: "User",
       default: null
     },
-
     soldAt: {
       type: Date,
       default: null

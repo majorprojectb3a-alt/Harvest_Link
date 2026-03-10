@@ -6,6 +6,10 @@ import sendSMS from "../utils/sendSMS.js";
 
 const router = express.Router();
 
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // max distance
 const MAX_DISTANCE_METERS = 500000;
 async function notifyNearByBuyers(product, action = "added"){
@@ -92,14 +96,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // GET all available fresh products
 router.get("/", requireAuth, async (req, res) => {
-
+  console.log('inside /fresh')
   try {
 
-    const {
-      buyerLat,
-      buyerLng,
-      maxDistance,
-      crop
+    const { buyerLat, buyerLng, cropType, distance
     } = req.query;
 
 
@@ -109,10 +109,12 @@ router.get("/", requireAuth, async (req, res) => {
 
 
     // filter by crop
-    if (crop && crop !== "All") {
+    if (cropType && cropType !== "All") {
+
+      const safeCrop = escapeRegex(cropType);
 
       query.crop = {
-        $regex: `^${crop}$`,
+        $regex: `^${safeCrop}$`,
         $options: "i"
       };
 
@@ -131,17 +133,14 @@ router.get("/", requireAuth, async (req, res) => {
         if (
           buyerLat &&
           buyerLng &&
-          product.location?.lat != null &&
-          product.location?.lng != null
+          product.location?.coordinates?.length === 2
         ) {
 
           const lat1 = parseFloat(buyerLat);
-
           const lng1 = parseFloat(buyerLng);
 
-          const lat2 = parseFloat(product.location.lat);
-
-          const lng2 = parseFloat(product.location.lng);
+          const lng2 = parseFloat(product.location.coordinates[0]);
+          const lat2 = parseFloat(product.location.coordinates[1]);
 
           if (
             !isNaN(lat1) &&
@@ -175,13 +174,12 @@ router.get("/", requireAuth, async (req, res) => {
       });
 
 
-    if (maxDistance) {
+    if (distance && distance !== "all") {
 
-      result =
-        result.filter(item =>
-          item.distance !== null &&
-          item.distance <= parseFloat(maxDistance)
-        );
+      result = result.filter(item =>
+        item.distance !== null &&
+        item.distance <= parseFloat(distance)
+      );
 
     }
 
@@ -239,9 +237,7 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
   try {
 
     const userId = req.session.user.id;
-
     const userName = req.session.user.name;
-
 
     const {crop, weight, price, totalPrice, state, district, mandi, lat, lng } = req.body;
 
@@ -289,6 +285,33 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
 
 });
 
+
+router.put("/update/:id", requireAuth, async(req, res) =>{
+  try{
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {new: true});
+
+    res.json(updated);
+  }
+  catch(err){
+    res.status(500).json({msg: "Falied to update product"});
+  }
+})
+
+router.delete("/delete/:id", requireAuth, async(req, res) =>{
+  try{
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+
+    if(!deleted){
+      return res.status(404).json({msg: "Item not found"});
+    }
+    console.log(deleted, 'deleted');
+    res.json({success: true, message : "Item deleted Successfully"});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({message: "Server error"});
+  }
+});
 
 // GET farmer products
 router.get("/my", requireRole("farmer"), async (req, res) => {

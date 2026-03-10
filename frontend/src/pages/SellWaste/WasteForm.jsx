@@ -3,33 +3,17 @@ import axios from "axios";
 import "./WasteForm.css";
 import { CROP_WASTE_TYPES } from "../../constants/cropWasteTypes";
 
-function WasteForm({ onClose }) {
+function WasteForm({ onClose, item }) {
 
   const [form, setForm] = useState({
     type: "",
     kg: "",
     grams: "",
     pricePerKg: "",
-    predictedPrice: ""
+    totalPrice: ""
   });
 
-  const [location, setLocation] = useState({ lat: null, lng: null });
-
-  // GET USER LOCATION
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude
-        });
-      },
-      () => {
-        alert("Location access is required to sell waste");
-      }
-    );
-  }, []);
-
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   // HANDLE INPUT CHANGE (KG + GRAMS LOGIC)
   const handleChange = (e) => {
     const updated = { ...form, [e.target.name]: e.target.value };
@@ -40,10 +24,10 @@ function WasteForm({ onClose }) {
 
     // AUTO CALCULATE PRICE
     if (totalWeight > 0 && updated.pricePerKg) {
-      updated.predictedPrice =
+      updated.totalPrice = 
         (totalWeight * Number(updated.pricePerKg)).toFixed(2);
     } else {
-      updated.predictedPrice = "";
+      updated.totalPrice = "";
     }
 
     setForm(updated);
@@ -56,40 +40,77 @@ function WasteForm({ onClose }) {
       return;
     }
 
-    if (!location.lat || !location.lng) {
-      alert("Location not detected yet");
-      return;
-    }
-
     const totalWeight =
       Number(form.kg || 0) + Number(form.grams || 0) / 1000;
-
+    
+    setLoadingSubmit(true);
     try {
-      await axios.post(
-        "http://localhost:5000/waste/add",
-        {
+      const payLoad = {
           type: form.type,
           weight: totalWeight,          // STORE DECIMAL KG
           pricePerKg: form.pricePerKg,
-          predictedPrice: form.predictedPrice,
-          lat: location.lat,
-          lng: location.lng
-        },
-        { withCredentials: true }
-      );
+          totalPrice: form.totalPrice
+      }
 
-      alert("✅ Item added successfully");
+      if(item){
+        await axios.put(`http://localhost:5000/waste/update/${item._id}`,payLoad, { withCredentials: true });
+        alert("Waste Item Updated Successfully");
+      }
+      else{
+        await axios.post("http://localhost:5000/waste/add", payLoad, { withCredentials: true });   
+        alert("✅Waste Item added successfully");
+      }
       onClose();
 
     } catch (err) {
+      if(err.response?.data?.redirect){
+        window.location.href = err.response.data.redirect;
+      }
+      else{
       console.log(err);
       alert("❌ Failed to add waste item");
+      }
     }
   };
 
+  const handleDelete = async () =>{
+    if(!item)
+      return ;
+
+    const confirmDelete = window.confirm('are you sure to want to delete this item?');
+    if(!confirmDelete)
+      return ;
+
+    try{
+      const res = await axios.delete(`http://localhost:5000/waste/delete/${item._id}`,
+      { withCredentials: true });
+
+      alert("Item deleted successfully");
+      onClose();
+    }
+    catch(err){
+      console.log(err);
+      alert("Failed to delete the item");
+    }
+  }
+  useEffect(() => {
+  if (!item) return;
+
+  const kg = Math.floor(item.weight);
+  const grams = Math.round((item.weight - kg) * 1000);
+
+  setForm({
+    type: item.type || "",
+    kg: kg,
+    grams: grams,
+    pricePerKg: item.pricePerKg || "",
+    totalPrice: item.totalPrice || ""
+  });
+  }, [item]);
+
   return (
     <div className="waste-form">
-      <h2>♻️ Add Waste Item</h2>
+      <h2>{item ? "Edit Waste Item" : "♻️ Add Waste Item"}</h2>
 
       {/* TYPE */}
       <select
@@ -98,7 +119,7 @@ function WasteForm({ onClose }) {
         onChange={handleChange}
       >
         <option value="">Select Crop Waste Type</option>
-        {CROP_WASTE_TYPES.map(type => (
+        {[...new Set(CROP_WASTE_TYPES)].sort((a,b)=>a.localeCompare(b)).map(type => (
           <option key={type} value={type}>
             {type}
           </option>
@@ -112,6 +133,7 @@ function WasteForm({ onClose }) {
           type="number"
           placeholder="Kg"
           min="0"
+          value={form.kg}
           onChange={handleChange}
         />
 
@@ -121,6 +143,7 @@ function WasteForm({ onClose }) {
           placeholder="Grams"
           min="0"
           max="999"
+          value={form.grams}
           onChange={handleChange}
         />
       </div>
@@ -130,12 +153,13 @@ function WasteForm({ onClose }) {
         name="pricePerKg"
         type="number"
         placeholder="Price per kg (₹)"
+        value={form.pricePerKg}
         onChange={handleChange}
       />
 
       {/* TOTAL PRICE */}
-      <div className="price-box">
-        💰 Total Price: ₹{form.predictedPrice || 0}
+      <div className="price-box" >
+        💰 Total Price: ₹{form.totalPrice || 0}
       </div>
 
       {/* ACTION BUTTONS */}
@@ -143,8 +167,9 @@ function WasteForm({ onClose }) {
         <button type="button" className="cancel-btn" onClick={onClose}>
           Cancel
         </button>
-        <button type="button" className="add-btn" onClick={handleSubmit}>
-          ➕ Add Item
+        {item && <button name="delete-btn" type="button" onClick={handleDelete}>Delete</button>}
+        <button type="button" className="add-btn" onClick={handleSubmit} disabled={loadingSubmit}>
+          {loadingSubmit? (item ? "Updating..." : "Adding..."): (item ? "Update Item" : "➕ Add Item")}
         </button>
       </div>
     </div>

@@ -2,18 +2,17 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import BuyerHome from './pages/HomePages/BuyerHome';
 import FarmerHome from "./pages/HomePages/FarmerHome";
-import EditProfile from "./pages/EditProfile/EditProfile";
 import BuyFresh from "./pages/BuyFresh/BuyFresh";
 import BuyWaste from "./pages/BuyWaste/BuyWaste";
 import FarmerAuth from "./pages/Auth/FarmerAuth";
 import BuyerAuth from "./pages/Auth/BuyerAuth";
 import CropWasteEstimator from "./pages/CropWasteEstimator/CropWasteEstimator";
 import Unauthorized from "./pages/Auth/Unauthorized";
-import SellWaste from "./pages/Sellwaste/SellWaste";
+import SellWaste from "./pages/SellWaste/SellWaste";
 import SellFresh from "./pages/SellFresh/SellFresh";   
 import axios from "axios";
 import RoleProtectedRoute from "./pages/Auth/RoleProtectedRoute";
-import Profile from "./pages/Profile/Profile";
+import Profile from "./pages/Profile/profile";
 
 
 function App() {
@@ -33,7 +32,6 @@ function App() {
             <FarmerHome />
           </RoleProtectedRoute>
           }/>
-        <Route path = "/edit-profile" element = {<EditProfile />} />
         <Route path = "/buy-fresh" element = {
           <RoleProtectedRoute allow = {['buyer']}>
             <BuyFresh />

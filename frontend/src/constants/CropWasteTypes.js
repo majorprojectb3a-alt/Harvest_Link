@@ -1,14 +1,11 @@
 export const CROP_WASTE_TYPES = [
-  "Rice Straw",
   "Rice Husk",
+  "Rice Straw",
   "Wheat Straw",
-  "Maize Stover",
   "Sugarcane Bagasse",
-  "Sugarcane Trash",
-  "Cotton Stalk",
-  "Groundnut Shell",
-  "Coconut Shell",
-  "Corn Cob",
-  "Sorghum Stalk",
-  "Millet Straw"
+  "Corn Stover",
+  "Sunflower Husk",
+  "Soybean Straw",
+  "Sugarcane Straw",
+  "Maize Stover"
 ];

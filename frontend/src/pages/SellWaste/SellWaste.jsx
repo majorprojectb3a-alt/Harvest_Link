@@ -8,6 +8,7 @@ import "./SellWaste.css";
 function SellWaste() {
   const [items, setItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
   // FETCH SELLER'S OWN WASTE
   const fetchItems = async () => {
@@ -16,7 +17,6 @@ function SellWaste() {
         "http://localhost:5000/waste/my",
         { withCredentials: true }
       );
-
       setItems(res.data.items || []);
     } catch (err) {
       console.log("🔥 Fetch seller waste error:", err);
@@ -37,7 +37,10 @@ function SellWaste() {
         {items.length > 0 ? (
           <div className="seller-list">
             {items.map((item) => (
-              <div key={item._id} className="seller-row">
+              <div key={item._id} className="seller-row" onClick={() =>{
+                setEditingItem(item);
+                setShowForm(true);
+              }}>
 
                 {/* LEFT SIDE */}
                 <div className="seller-info">
@@ -47,7 +50,7 @@ function SellWaste() {
 
                 {/* MIDDLE */}
                 <div className="seller-price">
-                  ₹{item.predictedPrice}
+                  ₹{item.totalPrice}
                 </div>
 
                 {/* RIGHT SIDE */}
@@ -78,11 +81,12 @@ function SellWaste() {
 
       {/* Overlay + Form */}
       {showForm && (
-        <div className="modal-overlay" onClick={() => setShowForm(false)}>
+        <div className="modal-overlay" onClick={() => {setShowForm(false); setEditingItem(null);}}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <WasteForm
+            <WasteForm item={editingItem}
               onClose={() => {
                 setShowForm(false);
+                setEditingItem(null);
                 fetchItems();
               }}
             />

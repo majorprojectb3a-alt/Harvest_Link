@@ -9,6 +9,65 @@ import {toE164} from '../utils/formatPhone.js';
 
 const router = express.Router();
 
+async function notifyNearByBuyers(waste, user, action = "added"){
+
+  if(!user?.location?.coordinates){
+    return ;
+  }
+  const [lng, lat] = user.location.coordinates;
+
+  if(lat == null || lng == null)
+      return ;
+  
+  console.log('inside notifying waste product buyers');
+
+  try{
+    const buyers = await User.find({
+      role: "buyer",
+      location:{
+        $near:{
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat]
+          },
+          $maxDistance: 50000
+        }
+      }
+    });
+
+    console.log('buyers: ', buyers);
+
+    if(!buyers || buyers.length === 0)
+      return ;
+// type,
+//       weight,
+//       pricePerKg,
+//       totalPrice,
+      // status: "available"
+    const actionVerb = action === "updated"? "updated": "added a new listing";
+    const wasteType = waste.type || "waste item";
+    const price = waste.totalPrice != null? `₹${waste.totalPrice}` : "";
+    const weight = waste.weight ? `${waste.weight} kg` : "";
+    const msgBase = `${user.name} has ${actionVerb}: ${wasteType} ${weight} ${price}.`;
+
+    for(const buyer of buyers){
+      if(!buyer.phone)
+        return ;
+
+      const body = `${msgBase} Check the app to view details.`;
+      try{
+        await sendSMS(buyer.phone, body);
+        console.log(`Notified ${buyer.phone} about product ${waste._id}`);
+      }
+      catch(err){
+        console.log(`failed to message ${buyer.phone}`, err.message);
+      }
+    }
+  }
+  catch(err){
+    console.log("notifyNearByBuyers error", err);
+  }
+}
 // 🔥 Distance calculation (km)
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth radius in KM
@@ -117,14 +176,15 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
     const userId = req.session.user.id;
     const userName = req.session.user.name;
 
-    let { type, weight, pricePerKg, predictedPrice, lat, lng } = req.body;
-
-    lat = Number(lat);
-    lng = Number(lng);
-
-    if (!lat || !lng) {
-      return res.status(400).json({ msg: "Location is required" });
+    const user = await User.findById(userId);
+    
+    if(!user.address || !user.address.pincode || !user.location || !user.location.coordinates || user.location.coordinates.length !== 2){
+      return res.status(400).json({msg: "Please update your profile address before adding waste details",
+        redirect: "/profile"
+      });
     }
+    let { type, weight, pricePerKg, totalPrice } = req.body;
+    console.log(req.body);
 
     const waste = await Waste.create({
       userId,
@@ -132,105 +192,45 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
       type,
       weight,
       pricePerKg,
-      predictedPrice,
-      location: {
-        lat,
-        lng
-      },
-      locationGeo: { type: "Point", coordinates: [lng, lat] },
+      totalPrice,
       status: "available"   // VERY IMPORTANT
     });
     
-    const buyers = await User.find({
-      role: "buyer",
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [lng, lat]
-          },
-          $maxDistance: 200 * 1000
-        }
-      }
-    });
-    console.log(buyers);
-    // ⭐ SEND SMS TO ALL BUYERS
-    for (let buyer of buyers) {
-      const resp = await sendSMS(
-        buyer.phone,
-        `New waste available: ${type} (${weight}kg) near your location`
-      );
-      console.log(resp);
-    }
-
-
-    res.status(201).json({
-      message: `${buyers.length} buyers notified`,
-      waste
-    });
-    // const message = `new waste available ${type} (${weight} kg) at ${userName}. Expected price: ${predictedPrice}`;
-
-    // const maxDistanceMeters = 50_000;
-
-    // const buyers = await User.find({ 
-    //   role: "buyer",
-    //   location: {
-    //   $near:{
-    //     $geometry: {type: "Point", coordinates: [lat, lng]},
-    //     $maxDistance: maxDistanceMeters
-    //   }
-    // }}).lean();
-    
-    // const limit = plimit(5);
-    // const sendTasks = [];
-
-    // for (let buyer of buyers) {
-    //   const phoneE164 = toE164(buyer.phone, "IN");
-    //   const notify = await Notification.create({
-    //     buyer: buyer._id,
-    //     phone: phoneE164,
-    //     waste: waste._id,
-    //     message, 
-    //     status: 'pending'
-    //   });
-      
-    //   if (!phoneE164) {
-    //     // update notification as failed due to invalid number
-    //     await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: "invalid phone" });
-    //     continue;
-    //   }
-
-    //   const task = limit(async () => {
-    //     try {
-    //       const tw = await sendSMS(phoneE164, message, { wasteId: waste._id });
-    //       // update notification with messageSid and status (queued or sent)
-    //       await Notification.findByIdAndUpdate(notif._id, {
-    //         messageSid: tw.sid,
-    //         status: tw.status || "queued"
-    //       });
-    //       return { ok: true, buyer: buyer._id, sid: tw.sid };
-    //     } catch (err) {
-    //       await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: err.message });
-    //       return { ok: false, buyer: buyer._id, error: err.message };
-    //     }
-    //   });
-
-    //   sendTasks.push(task);
-
-    //   const results = await Promise.allSettled(sendTasks);
+    notifyNearByBuyers(waste, user, "added");
 
     // res.status(201).json({
-    //   message: "Waste added; notifications persisted; SMS sends attempted",
-    //   waste,
-    //   buyerCount: buyers.length,
-    //   smsResults: results.map(r => (r.status === "fulfilled" ? r.value : { ok: false, error: r.reason }))
+    //   message: `${buyers.length} buyers notified`,
+    //   waste
     // });
+    res.status(200).json({msg: "waste item added successfully"});
 
-    // }
-     
   } catch (err) {
     console.log("🔥 Add waste error:", err);
     res.status(500).json({ msg: "Failed to add item" });
+  }
+});
+
+router.put("/update/:id", requireAuth, async (req, res) =>{
+  try{
+    const updated = await Waste.findByIdAndUpdate(req.params.id, req.body, {new: true});
+    res.json(updated);
+  }catch(err){
+    res.status(500).json({msg: "Failed to update the waste item"});
+  }
+});
+
+router.delete("/delete/:id", requireAuth, async (req, res) => {
+  try {
+    const deleted = await Waste.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.json({ success: true, message: "Item deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -372,11 +372,8 @@ router.get("/seller/history", async (req, res) => {
 
   }
   catch(err){
-
     res.status(500).json({ msg: "Error" });
-
   }
-
 });
 
 

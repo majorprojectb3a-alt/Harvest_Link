@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@countrystatecity/countries": "^1.0.5",
+    "@react-google-maps/api": "^2.20.8",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "papaparse": "^5.5.3",

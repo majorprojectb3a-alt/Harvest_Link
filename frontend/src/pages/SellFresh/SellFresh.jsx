@@ -7,10 +7,9 @@ import Navbar from "../../components/Navbar/Navbar";
 function SellFresh() {
   const [items, setItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  
 
   const fetchItems = async () =>{
     axios.get("http://localhost:5000/fresh/my",
@@ -19,6 +18,10 @@ function SellFresh() {
       .catch(err => console.error(err));
   }
 
+  useEffect(() => {
+    fetchItems();
+  }, []);
+  
   return (
     <>
       <Navbar />
@@ -29,7 +32,10 @@ function SellFresh() {
         {items && items.length > 0 ? (
           <div className="seller-list">
             {items.map((item) => (
-              <div key={item._id} className="seller-row">
+              <div key={item._id} className="seller-row" onClick={() =>{
+                setEditingItem(item);
+                setShowForm(true);
+              }}>
 
                 {/* LEFT SIDE */}
                 <div className="seller-info">
@@ -48,7 +54,7 @@ function SellFresh() {
                 <div className="seller-status">
                   <span
                     className={`status-badge ${
-                      items.status === "sold" ? "sold" : "available"
+                      item.status === "sold" ? "sold" : "available"
                     }`}
                   >
                     {item.status}
@@ -72,11 +78,12 @@ function SellFresh() {
 
         {/* Overlay + Form */}
       {showForm && (
-        <div className="modal-overlay" onClick={() => setShowForm(false)}>
+        <div className="modal-overlay" onClick={() => {setShowForm(false); setEditingItem(null)}}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <FreshForm
+            <FreshForm item = {editingItem}
               onClose={() => {
                 setShowForm(false);
+                setEditingItem(null);
                 fetchItems();
               }}
             />

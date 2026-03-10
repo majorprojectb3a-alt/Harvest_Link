@@ -72,6 +72,8 @@ router.post("/signup", async (req, res) => {
 /* ---------- LOGIN ---------- */
 router.post("/login", async (req, res) => {
   try {
+    console.log('inside login');
+
     const { role, email, password } = req.body;
 
     if (!email || !password)
@@ -104,7 +106,7 @@ router.post("/login", async (req, res) => {
 router.get("/profile", async (req, res) => {
 
   try {
-
+    console.log('inside fetching profile', req.session.user);
     if (!req.session.user)
       return res.status(401).json({ msg: "Unauthorized" });
 
@@ -112,8 +114,9 @@ router.get("/profile", async (req, res) => {
       await User.findById(
         req.session.user.id
       ).select("-password");
+    console.log(user);
 
-    res.json({ user });
+    res.json( {user} );
 
   }
   catch(err){
@@ -130,24 +133,50 @@ router.get("/profile", async (req, res) => {
 router.put("/update-profile", async (req, res) => {
 
   try {
+    console.log('inside update profile');
+    if(!req.session.user)
+        return res.status(401).json({msg: "Unauthorised"});
 
-    const userId =
-      req.session.user.id;
+    const userId = req.session.user.id;
+    const { 
+      name, 
+      phone, 
+      profileImage, 
+      notifyOnNearbyProducts, 
+      dno,
+      street,
+      village,
+      district,
+      pincode,
+      lat,
+      lng } = req.body;
+    
+    const updateData = { name, phone, profileImage, notifyOnNearbyProducts };
 
-    const { name, phone, profileImage } =
-      req.body;
-
+    updateData.address = {
+      dno,
+      street,
+      village,
+      district,
+      pincode,
+      state: "Andhra Pradesh",
+      country: "India"
+    };
+console.log( updateData);
+    if(lat && lng){
+      updateData.location = {
+        type: "Point",
+        coordinates: [Number(lng), Number(lat)]
+      };
+    }
     const user =
       await User.findByIdAndUpdate(
         userId,
-        {
-          name,
-          phone,
-          profileImage
-        },
+        updateData,
         { new: true }
       );
-
+    
+      console.log(user, updateData);
     res.json({ user });
 
   }
