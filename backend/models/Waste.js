@@ -1,3 +1,52 @@
+// import mongoose from "mongoose";
+
+// const wasteSchema = new mongoose.Schema(
+//   {
+//     userId: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "User",
+//       required: true
+//     },
+//     userName: {
+//       type: String,
+//       required: true
+//     },
+//     type: {
+//       type: String,
+//       required: true
+//     },
+//     weight: {
+//       type: Number,
+//       required: true
+//     },
+//     pricePerKg: {
+//       type: Number,
+//       required: true
+//     },
+//     totalPrice: {
+//       type: Number,
+//       required: true
+//     },
+//     status: {
+//       type: String,
+//       enum: ["available", "sold"],
+//       default: "available"
+//     },
+//     buyerId: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "User",
+//       default: null
+//     },
+//     soldAt: {
+//       type: Date,
+//       default: null
+//     }
+//   },
+//   { timestamps: true }
+// );
+
+// export default mongoose.model("Waste", wasteSchema);
+
 import mongoose from "mongoose";
 
 const wasteSchema = new mongoose.Schema(
@@ -23,7 +72,7 @@ const wasteSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
-    predictedPrice: {
+    totalPrice: {
       type: Number,
       required: true
     },

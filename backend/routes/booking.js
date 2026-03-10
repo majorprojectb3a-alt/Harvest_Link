@@ -232,18 +232,25 @@ router.get("/farmer/:farmerId", async (req,res)=>{
 router.get("/buyer/:buyerId", async (req,res)=>{
 
   try{
+    console.log('inside buyer booking ', req.params.buyerId);
+//     const bookings = await Booking.find({
+//     buyerId: req.params.buyerId
+// })
+// .populate("farmerId")
+// .populate({
+//   path: "productId",
+//   model: function(doc){
+//     return doc.productModel;
+//   }
+// });
+const bookings = await Booking.find({
+      buyerId: req.params.buyerId
+    })
+    .populate("farmerId")
+    .populate("productId");
 
-    const bookings = await Booking.find({
-  buyerId: req.params.buyerId
-})
-.populate("farmerId")
-.populate({
-  path: "productId",
-  model: function(doc){
-    return doc.productModel;
-  }
-});
-
+  res.status(200).json(bookings);
+console.log('populated booking for waste');
   }
   catch(err){
 

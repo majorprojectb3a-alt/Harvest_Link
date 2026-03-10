@@ -1,315 +1,498 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./FarmerProfile.css";
-
 import HistoryTable from "../../components/History/HistoryTable";
 import Navbar from "../../components/Navbar/Navbar";
 
 export default function FarmerProfile(){
 
-  const [profile, setProfile] = useState(null);
+const [profile,setProfile] = useState(null);
+const [showEdit,setShowEdit] = useState(false);
+const [suggestions,setSuggestions] = useState([]);
 
-  const [freshHistory, setFreshHistory] = useState([]);
+const [freshHistory,setFreshHistory] = useState([]);
+const [wasteHistory,setWasteHistory] = useState([]);
 
-  const [wasteHistory, setWasteHistory] = useState([]);
+const [freshPage,setFreshPage] = useState(1);
+const [wastePage,setWastePage] = useState(1);
 
-  const [freshPage, setFreshPage] = useState(1);
+const [freshTotalPages,setFreshTotalPages] = useState(1);
+const [wasteTotalPages,setWasteTotalPages] = useState(1);
 
-  const [wastePage, setWastePage] = useState(1);
+const [limit,setLimit] = useState(5);
+const [statusFilter,setStatusFilter] = useState("all");
 
-  const [freshTotalPages, setFreshTotalPages] = useState(1);
+const [editForm,setEditForm] = useState({
 
-  const [wasteTotalPages, setWasteTotalPages] = useState(1);
+name:"",
+phone:"",
+profileImage:"",
 
-  const [limit, setLimit] = useState(5);
+notifyOnNearbyProducts:true,
 
-  const [statusFilter, setStatusFilter] = useState("all");
+dno:"",
+addressText:"",
+street:"",
+village:"",
+district:"",
+pincode:"",
 
-  const [showEdit, setShowEdit] = useState(false);
+lat:null,
+lng:null
 
-  const [editForm, setEditForm] = useState({
-    name:"",
-    phone:"",
-    profileImage:""
-  });
-
-  const fetchProfile = async ()=>{
-
-    const res =
-      await axios.get(
-        "http://localhost:5000/auth/profile",
-        { withCredentials:true }
-      );
-
-    setProfile(res.data.user);
-
-    setEditForm(res.data.user);
-
-  };
+});
 
 
-  const fetchFreshHistory = async ()=>{
+/* ADDRESS SEARCH */
 
-    const res =
-      await axios.get(
-        `http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
-        { withCredentials:true }
-      );
+const searchAddress = async(text)=>{
 
-    setFreshHistory(res.data.items);
+setEditForm({...editForm,addressText:text});
 
-    setFreshTotalPages(res.data.totalPages);
+if(text.length < 3){
+setSuggestions([]);
+return;
+}
 
-  };
+const res = await fetch(`https://photon.komoot.io/api/?q=${text}&limit=5`);
 
+const data = await res.json();
 
-  const fetchWasteHistory = async ()=>{
-
-    const res =
-      await axios.get(
-        `http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
-        { withCredentials:true }
-      );
-
-    setWasteHistory(res.data.items);
-
-    setWasteTotalPages(res.data.totalPages);
-
-  };
-
-
-  useEffect(()=>{
-    fetchProfile();
-  },[]);
-
-
-  useEffect(()=>{
-    fetchFreshHistory();
-  },[freshPage,limit,statusFilter]);
-
-
-  useEffect(()=>{
-    fetchWasteHistory();
-  },[wastePage,limit,statusFilter]);
-
-
-
-
-
-  const updateProfile = async ()=>{
-
-    await axios.put(
-      "http://localhost:5000/auth/update-profile",
-      editForm,
-      { withCredentials:true }
-    );
-
-    setShowEdit(false);
-
-    fetchProfile();
-
-  };
-
-  const handleImageUpload = (e)=>{
-
-  const file = e.target.files[0];
-
-  if(!file) return;
-
-  const reader = new FileReader();
-
-  reader.onloadend = ()=>{
-
-    setEditForm({
-      ...editForm,
-      profileImage: reader.result   // base64 image
-    });
-
-  };
-
-  reader.readAsDataURL(file);
+setSuggestions(data.features);
 
 };
 
 
+/* SELECT ADDRESS */
 
-  if(!profile)
-    return <div>Loading...</div>;
+const selectAddress = (place)=>{
 
+const props = place.properties;
+const coords = place.geometry.coordinates;
 
-  return(
+setEditForm({
 
-    <div className="profile-container">
+...editForm,
 
-      <Navbar/>
+addressText:
+props.name +
+(props.city ? ", "+props.city : "") +
+(props.state ? ", "+props.state : ""),
 
-      {/* PROFILE CARD */}
+street:props.street || "",
+village:props.city || props.name || "",
+district:props.district || props.state || "",
+pincode:props.postcode || "",
 
-      <div className="profile-card">
+lat:coords[1],
+lng:coords[0]
 
-        <div className="profile-left">
+});
 
-          <img
-            src={
-              profile.profileImage ||
-              "/default_profile_image.png"
-            }
-            className="profile-image"
-          />
+setSuggestions([]);
 
-          <div>
-
-            <h2>{profile.name}</h2>
-
-            <p>{profile.email}</p>
-
-            <p>{profile.phone}</p>
-
-          </div>
-
-        </div>
-
-        <button
-          className="edit-btn"
-          onClick={()=>setShowEdit(true)}
-        >
-          Edit Profile
-        </button>
-
-      </div>
+};
 
 
-      {/* FILTER ROW */}
+/* CURRENT LOCATION */
 
-      <div className="filter-row">
+const getLocation = ()=>{
 
-        <select
-          value={statusFilter}
-          onChange={(e)=>{
-            setStatusFilter(e.target.value);
-            setFreshPage(1);
-            setWastePage(1);
-          }}
-        >
+if(!navigator.geolocation){
+alert("Geolocation not supported");
+return;
+}
 
-          <option value="all">All</option>
-          <option value="available">Available</option>
-          <option value="sold">Sold</option>
+navigator.geolocation.getCurrentPosition((pos)=>{
 
-        </select>
+setEditForm({
 
+...editForm,
+lat:pos.coords.latitude,
+lng:pos.coords.longitude
 
-        <select
-          value={limit}
-          onChange={(e)=>{
-            setLimit(Number(e.target.value));
-            setFreshPage(1);
-            setWastePage(1);
-          }}
-        >
+});
 
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
+alert("Location captured");
 
-        </select>
+});
 
-      </div>
+};
 
 
-      {/* HISTORY TABLES */}
+/* FETCH PROFILE */
 
-      <HistoryTable
-        title="Sell Fresh History"
-        data={freshHistory}
-        page={freshPage}
-        totalPages={freshTotalPages}
-        setPage={setFreshPage}
-      />
+const fetchProfile = async()=>{
 
+const res = await axios.get(
+"http://localhost:5000/auth/profile",
+{withCredentials:true}
+);
 
-      <HistoryTable
-        title="Sell Waste History"
-        data={wasteHistory}
-        page={wastePage}
-        totalPages={wasteTotalPages}
-        setPage={setWastePage}
-      />
+const u = res.data.user;
 
+setProfile(u);
 
-      {/* EDIT MODAL */}
+setEditForm({
 
-      {showEdit && (
+name:u.name,
+phone:u.phone,
+profileImage:u.profileImage,
 
-  <div className="modal">
+notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
 
-    <div className="modal-content">
+dno:u.address?.dno || "",
+addressText:"",
 
-      <h3>Edit Profile</h3>
+street:u.address?.street || "",
+village:u.address?.village || "",
+district:u.address?.district || "",
+pincode:u.address?.pincode || "",
 
-      {/* PROFILE IMAGE PREVIEW */}
-      <div className="image-upload-container">
+lat:u.location?.coordinates?.[1] || null,
+lng:u.location?.coordinates?.[0] || null
 
-        <img
-          src={
-            editForm.profileImage ||
-            "/default_profile_image.png"
-          }
-          className="edit-profile-image"
-        />
+});
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-        />
-
-      </div>
+};
 
 
-      {/* NAME */}
-      <input
-        placeholder="Name"
-        value={editForm.name}
-        onChange={(e)=>
-          setEditForm({
-            ...editForm,
-            name:e.target.value
-          })
-        }
-      />
+/* HISTORY */
+
+const fetchFreshHistory = async()=>{
+
+const res = await axios.get(
+`http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
+{withCredentials:true}
+);
+
+setFreshHistory(res.data.items);
+setFreshTotalPages(res.data.totalPages);
+
+};
+
+const fetchWasteHistory = async()=>{
+
+const res = await axios.get(
+`http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+{withCredentials:true}
+);
+
+setWasteHistory(res.data.items);
+setWasteTotalPages(res.data.totalPages);
+
+};
 
 
-      {/* PHONE */}
-      <input
-        placeholder="Phone"
-        value={editForm.phone}
-        onChange={(e)=>
-          setEditForm({
-            ...editForm,
-            phone:e.target.value
-          })
-        }
-      />
+/* UPDATE PROFILE */
+
+const updateProfile = async()=>{
+
+await axios.put(
+"http://localhost:5000/auth/update-profile",
+editForm,
+{withCredentials:true}
+);
+
+setShowEdit(false);
+fetchProfile();
+
+};
 
 
-      <button onClick={updateProfile}>
-        Save
-      </button>
+/* IMAGE */
 
-      <button onClick={()=>setShowEdit(false)}>
-        Cancel
-      </button>
+const handleImageUpload = (e)=>{
 
-    </div>
+const file = e.target.files[0];
+if(!file) return;
 
-  </div>
+const reader = new FileReader();
+
+reader.onloadend = ()=>{
+setEditForm({
+...editForm,
+profileImage:reader.result
+});
+};
+
+reader.readAsDataURL(file);
+
+};
+
+
+/* EFFECTS */
+
+useEffect(()=>{
+fetchProfile();
+},[]);
+
+useEffect(()=>{
+fetchFreshHistory();
+},[freshPage,limit,statusFilter]);
+
+useEffect(()=>{
+fetchWasteHistory();
+},[wastePage,limit,statusFilter]);
+
+
+if(!profile) return <div>Loading...</div>;
+
+
+return(
+
+<div className="profile-container">
+
+<Navbar/>
+
+{/* PROFILE CARD */}
+
+<div className="profile-card">
+
+<div className="profile-left">
+
+<img
+src={profile.profileImage || "/default_profile_image.png"}
+className="profile-image"
+/>
+
+<div>
+<h2>{profile.name}</h2>
+<p>{profile.email}</p>
+<p>{profile.phone}</p>
+</div>
+
+</div>
+
+<button
+className="edit-btn"
+onClick={()=>setShowEdit(true)}
+>
+Edit Profile
+</button>
+
+</div>
+
+
+{/* FILTER */}
+
+<div className="filter-row">
+
+<select
+value={statusFilter}
+onChange={(e)=>{
+setStatusFilter(e.target.value);
+setFreshPage(1);
+setWastePage(1);
+}}
+>
+
+<option value="all">All</option>
+<option value="available">Available</option>
+<option value="sold">Sold</option>
+
+</select>
+
+<select
+value={limit}
+onChange={(e)=>{
+setLimit(Number(e.target.value));
+setFreshPage(1);
+setWastePage(1);
+}}
+>
+
+<option value={5}>5</option>
+<option value={10}>10</option>
+<option value={20}>20</option>
+
+</select>
+
+</div>
+
+
+<HistoryTable
+title="Sell Fresh History"
+data={freshHistory}
+page={freshPage}
+totalPages={freshTotalPages}
+setPage={setFreshPage}
+/>
+
+<HistoryTable
+title="Sell Waste History"
+data={wasteHistory}
+page={wastePage}
+totalPages={wasteTotalPages}
+setPage={setWastePage}
+/>
+
+
+{/* EDIT MODAL */}
+
+{showEdit &&(
+
+<div className="modal">
+
+<div className="modal-content">
+
+<h3>Edit Profile</h3>
+
+<div className="image-upload-container">
+
+<img
+src={editForm.profileImage || "/default_profile_image.png"}
+className="edit-profile-image"
+/>
+
+<input
+type="file"
+accept="image/*"
+onChange={handleImageUpload}
+/>
+
+</div>
+
+
+<input
+placeholder="Name"
+value={editForm.name}
+onChange={(e)=>setEditForm({...editForm,name:e.target.value})}
+/>
+
+<input
+placeholder="Phone"
+value={editForm.phone}
+onChange={(e)=>setEditForm({...editForm,phone:e.target.value})}
+/>
+
+
+{/* ADDRESS SEARCH */}
+
+<div className="address-box">
+
+<input
+type="text"
+placeholder="Search Address"
+value={editForm.addressText}
+onChange={(e)=>searchAddress(e.target.value)}
+/>
+
+{suggestions.length>0 &&(
+
+<div className="suggestions">
+
+{suggestions.map((s,i)=>{
+
+const p = s.properties;
+
+return(
+
+<div
+key={i}
+className="suggestion-item"
+onClick={()=>selectAddress(s)}
+>
+
+{p.name}
+{p.city && `, ${p.city}`}
+{p.state && `, ${p.state}`}
+{p.country && `, ${p.country}`}
+
+</div>
+
+);
+
+})}
+
+</div>
 
 )}
 
+</div>
 
-    </div>
 
-  );
+<div className="address-grid">
+
+<input
+placeholder="Door No"
+value={editForm.dno}
+onChange={(e)=>setEditForm({...editForm,dno:e.target.value})}
+/>
+
+<input
+placeholder="Street"
+value={editForm.street}
+onChange={(e)=>setEditForm({...editForm,street:e.target.value})}
+/>
+
+<input
+placeholder="Village"
+value={editForm.village}
+onChange={(e)=>setEditForm({...editForm,village:e.target.value})}
+/>
+
+<input
+placeholder="District"
+value={editForm.district}
+onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
+/>
+
+<input
+placeholder="Pincode"
+value={editForm.pincode}
+onChange={(e)=>setEditForm({...editForm,pincode:e.target.value})}
+/>
+
+</div>
+
+
+<button
+className="location-btn"
+onClick={getLocation}
+>
+Use Current Location
+</button>
+
+<p className="coords">
+Coordinates: {editForm.lat || "-"} , {editForm.lng || "-"}
+</p>
+
+
+<label className="notify-toggle">
+
+<input
+type="checkbox"
+checked={editForm.notifyOnNearbyProducts}
+onChange={(e)=>
+setEditForm({
+...editForm,
+notifyOnNearbyProducts:e.target.checked
+})
+}
+/>
+
+Receive notifications for nearby waste
+
+</label>
+
+
+<button onClick={updateProfile}>
+Save
+</button>
+
+<button onClick={()=>setShowEdit(false)}>
+Cancel
+</button>
+
+</div>
+
+</div>
+
+)}
+
+</div>
+
+);
 
 }

@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+const AddressSchema = new mongoose.Schema({
+  dno: { type: String, trim: true },
+  street: {type: String, trim: true},
+  village: {type: String, trim: true},
+  district: {type: String, trim: true},
+  state: {type: String, trim: true, default: 'Andhra Pradesh'},
+  country: {type: String, trim: true, default: 'India'},
+  pincode: {type: String, trim: true}
+}, {_id: false});
+
 const userSchema = new mongoose.Schema(
   {
     role: {
@@ -14,7 +24,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
+      // unique: true,
       required: true,
     },
     phone: {
@@ -33,6 +43,7 @@ const userSchema = new mongoose.Schema(
 
     notifyOnNearbyProducts: { type: Boolean, default: true },
 
+    address :{type: AddressSchema, default: {}},
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
       coordinates: { type: [Number], index: "2dsphere" } // [lng, lat]

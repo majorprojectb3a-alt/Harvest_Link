@@ -14,6 +14,15 @@ export default function BuyerAuth() {
     password: ""
   });
 
+  const [otpSent, setOtpSent] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+
+  const [resetForm, setResetForm] = useState({
+    phone: "",
+    otp: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
@@ -56,6 +65,7 @@ export default function BuyerAuth() {
     if (!validateLogin()) return;
 
     try {
+      // console.log
       const res = await axios.post(
         "http://localhost:5000/auth/login",
         {
@@ -80,19 +90,6 @@ export default function BuyerAuth() {
   const handleSignup = async () => {
     if (!validateSignup()) return;
 
-    // try {
-    //   const res = await axios.post(
-    //     "http://localhost:5000/auth/signup",
-    //     {
-    //       role: "buyer",
-    //       ...form
-    //     },
-    //     { withCredentials: true }
-    //   );
-    //   alert(res.data.msg);
-    // } catch (err) {
-    //   alert(err.response.data.msg);
-    // }
     if(!navigator.geolocation){
           alert("geolocation not supported by browser");
           return ;
@@ -126,6 +123,56 @@ export default function BuyerAuth() {
         }
       );
   };
+
+    const sendOtp = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/auth/send-otp",
+        { phone: resetForm.phone, role: "buyer" }
+      );
+
+      alert(res.data.msg);
+      setOtpSent(true);
+    } catch (err) {
+      alert(err.response?.data?.msg);
+    }
+  };
+
+  const resetPassword = async () => {
+
+  if (resetForm.newPassword !== resetForm.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+
+    await axios.post("http://localhost:5000/auth/verify-otp", {
+
+      phone: resetForm.phone,
+      otp: resetForm.otp,
+      role: "buyer"
+    });
+
+    const res = await axios.post(
+      "http://localhost:5000/auth/reset-password",
+      { 
+        role: "buyer",
+        phone: resetForm.phone,
+        newPassword: resetForm.newPassword
+      }
+    );
+
+    alert(res.data.msg);
+
+    setShowForgotModal(false);
+    setOtpSent(false);
+    navigate("/buyer");
+
+  } catch (err) {
+    alert(err.response?.data?.msg);
+  }
+};
 
   return (
     <>
@@ -162,6 +209,76 @@ export default function BuyerAuth() {
             <button className="submit btn" onClick={handleLogin}>
               Sign In
             </button>
+            <p className="forgot-link" onClick={() => setShowForgotModal(true)}>  Forgot Password?</p>
+
+           {showForgotModal && (
+  <div className="modal-overlay">
+
+    <div className="modal-box">
+
+      <h2>Reset Password</h2>
+
+      <input
+        placeholder="Phone Number"
+        value={resetForm.phone}
+        onChange={(e) =>
+          setResetForm({ ...resetForm, phone: e.target.value })
+        }
+      />
+
+      {!otpSent ? (
+        <button onClick={sendOtp}>Send OTP</button>
+      ) : (
+        <>
+          <input
+            placeholder="OTP"
+            value={resetForm.otp}
+            onChange={(e) =>
+              setResetForm({ ...resetForm, otp: e.target.value })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="New Password"
+            value={resetForm.newPassword}
+            onChange={(e) =>
+              setResetForm({
+                ...resetForm,
+                newPassword: e.target.value
+              })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={resetForm.confirmPassword}
+            onChange={(e) =>
+              setResetForm({
+                ...resetForm,
+                confirmPassword: e.target.value
+              })
+            }
+          />
+
+          <button onClick={resetPassword}>
+            Update Password
+          </button>
+        </>
+      )}
+
+      <button
+        className="close-btn"
+        onClick={() => setShowForgotModal(false)}
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+)}
           </div>
 
           {/* SLIDER */}

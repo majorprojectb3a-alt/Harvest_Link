@@ -2,11 +2,10 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:5000/fresh";
 
-
-export const getFreshItems = async(lat,lng)=>{
+export const getFreshItems = async(lat,lng, type, distance)=>{
 
   const res = await axios.get(BASE_URL,{
-    params:{buyerLat:lat,buyerLng:lng},
+    params:{buyerLat:lat,buyerLng:lng, cropType: type, distance: distance},
     withCredentials:true
   });
 

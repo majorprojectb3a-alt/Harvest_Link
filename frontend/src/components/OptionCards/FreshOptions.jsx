@@ -6,19 +6,18 @@ import {
 } from "../../api/freshApi";
 
 import FreshCard from "../Card/FreshCard";
-import Filters from "../Filters/Filters";
+import Filters from "../Filters/FreshFilters";
 
 import "./FreshOptions.css";
 
 export default function FreshOptions() {
 
   const [items, setItems] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState(null);
 
   const [selectedType, setSelectedType] = useState("All");
+  const [selectedDistance, setSelectedDistance] = useState("all");
 
   const [location, setLocation] = useState({
     lat: null,
@@ -27,36 +26,26 @@ export default function FreshOptions() {
 
   // modal state
   const [selectedFresh, setSelectedFresh] = useState(null);
-
   const [showDetails, setShowDetails] = useState(false);
 
   const [buyQuantity, setBuyQuantity] = useState(1);
 
 
   // fetch fresh items
-  const fetchFresh = async (lat, lng, type) => {
+  const fetchFresh = async (lat, lng, type, dist) => {
 
     try {
 
-      const data = await getFreshItems(
-        lat,
-        lng,
-        type
-      );
+      const data = await getFreshItems( lat, lng, type, dist);
 
       setItems(data);
-
       setLoading(false);
 
     }
     catch(err){
-
       console.log(err);
-
       setError("Failed to load fresh items");
-
       setLoading(false);
-
     }
 
   };
@@ -66,92 +55,70 @@ export default function FreshOptions() {
 
   // refetch when filter changes
   useEffect(()=>{
-
-    if(location.lat && location.lng){
-
+    if(location.lat !== null && location.lng != null){
       setLoading(true);
-
       fetchFresh(
         location.lat,
         location.lng,
-        selectedType
+        selectedType,
+        selectedDistance
       );
 
     }
 
-  },[selectedType]);
+    console.log(location.lat, location.lng);
 
+  },[selectedType, selectedDistance]);
 
-  // initial location fetch
-  useEffect(()=>{
+  useEffect(() =>{
+    const fetchLocation = async () =>{
+      try{
+        console.log('inside fetch location');
+        const res = await fetch("http://localhost:5000/auth/profile", {
+          credentials: "include"
+        });
 
-    if(!navigator.geolocation){
+        const resp = await res.json();
+        const data = resp.user;
+        console.log(data);
+        const lat = data?.location?.coordinates?.[1];
+        const lng = data?.location?.coordinates?.[0];
 
-      setError("Geolocation not supported");
-
-      setLoading(false);
-
-      return;
-
-    }
-
-
-    navigator.geolocation.getCurrentPosition(
-
-      (pos)=>{
-
-        const lat = pos.coords.latitude;
-
-        const lng = pos.coords.longitude;
-
-        setLocation({lat,lng});
-
-        fetchFresh(lat,lng,selectedType);
-
-      },
-
-      (err)=>{
-
-        console.log(err);
-
-        setError("Allow location access");
-
-        setLoading(false);
-
+        if (!lat || !lng) {
+        setError("Location not set in profile");
+        return;
       }
 
-    );
+        setLocation({lat, lng});
 
-  },[]);
-
+        fetchFresh(lat, lng, selectedType, selectedDistance);
+      }
+      catch{
+        setError("Unable to load location");
+      }
+    };
+    fetchLocation();
+  }, []);
 
   // open modal
   const openDetails = async(id)=>{
 
     try{
-
       const data = await getFreshDetails(id);
-
       setSelectedFresh(data);
-
       setShowDetails(true);
-
     }
     catch{
-
       alert("Failed to load details");
-
     }
 
   };
-
 
   // loading state
   if(loading)
     return <p className="fresh-loading">
       Loading fresh items...
     </p>;
-
 
   // error state
   if(error)
@@ -169,17 +136,15 @@ export default function FreshOptions() {
       <Filters
         selectedType={selectedType}
         setSelectedType={setSelectedType}
+        selectedDistance={selectedDistance}
+        setSelectedDistance={setSelectedDistance}
       />
 
 
       {/* LIST */}
 
       {items.length === 0 ? (
-
-        <p className="fresh-empty">
-          No fresh items available
-        </p>
-
+        <p className="fresh-empty">No fresh items available</p>
       )
       :
       (
@@ -205,33 +170,17 @@ export default function FreshOptions() {
 
       {showDetails && selectedFresh && (
 
-        <div
-          className="fresh-modal-overlay"
-          onClick={()=>setShowDetails(false)}
-        >
+        <div className="fresh-modal-overlay" onClick={()=>setShowDetails(false)}>
 
-          <div
-            className="fresh-modal-content"
-            onClick={(e)=>e.stopPropagation()}
-          >
+          <div className="fresh-modal-content" onClick={(e)=>e.stopPropagation()}>
 
             <h2>{selectedFresh.type}</h2>
 
-            <p>
-              Quantity: {selectedFresh.weight} kg
-            </p>
-
-            <p>
-              Price: ₹{selectedFresh.price}/kg
-            </p>
-
-            <p>
-              Total Price: ₹{selectedFresh.totalPrice}/kg
-            </p>
-
+            <p>Quantity: {selectedFresh.weight} kg</p>
+            <p>Price: ₹{selectedFresh.price}/kg</p>
+            <p>Total Price: ₹{selectedFresh.totalPrice}/kg</p>
 
             <hr/>
-
 
             <h3>Seller Details</h3>
 
@@ -253,13 +202,13 @@ export default function FreshOptions() {
 
             <label>Enter Quantity (kg)</label>
 
-<input
-  type="number"
-  min="1"
-  max={selectedFresh.weight}
-  value={buyQuantity}
-  onChange={(e)=>setBuyQuantity(e.target.value)}
-/>
+            <input
+              type="number"
+              min="1"
+              max={selectedFresh.weight}
+              value={buyQuantity}
+              onChange={(e)=>setBuyQuantity(e.target.value)}
+            />
 
 
 
@@ -284,14 +233,14 @@ export default function FreshOptions() {
                   itemType:"Fresh"}
 );
 
-alert("Booking request sent to farmer!");
+                  alert("Booking request sent to farmer!");
 
                     setShowDetails(false);
-
                     fetchFresh(
                       location.lat,
                       location.lng,
-                      selectedType
+                      selectedType,
+                      selectedDistance
                     );
                   }
                   catch(err){
@@ -299,36 +248,17 @@ alert("Booking request sent to farmer!");
                     console.log(err);
 
                     alert("Purchase failed");
-
                   }
 
                 }}
               >
-
                 🛒 Buy Fresh
-
               </button>
-
-
-              <button
-                className="fresh-close-btn"
-                onClick={()=>setShowDetails(false)}
-              >
-
-                Close
-
-              </button>
-
+              <button className="fresh-close-btn" onClick={()=>setShowDetails(false)}> Close </button>
             </div>
-
           </div>
-
         </div>
-
       )}
-
     </>
-
   );
-
 }

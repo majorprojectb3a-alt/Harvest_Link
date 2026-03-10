@@ -5,6 +5,7 @@ import Otp from "../models/Otp.js"
 import twilio from "twilio";
 
 const router = express.Router();
+const otpStore = {};
 
 /* ---------- HELPERS ---------- */
 const isValidEmail = (email) =>
@@ -31,7 +32,7 @@ router.post("/signup", async (req, res) => {
     if (password.length < 8)
       return res.status(400).json({ msg: "Weak password" });
 
-    const existingEmail = await User.findOne({ email });
+    const existingEmail = await User.findOne({ email, role });
     if (existingEmail)
       return res.status(400).json({ msg: "Email already registered" });
 
@@ -72,6 +73,8 @@ router.post("/signup", async (req, res) => {
 /* ---------- LOGIN ---------- */
 router.post("/login", async (req, res) => {
   try {
+    console.log('inside login');
+
     const { role, email, password } = req.body;
 
     if (!email || !password)
@@ -101,10 +104,124 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.post("/farmerLogin", async (req, res) => {
+  try {
+    console.log('inside farmer login');
+
+    const { role, phone, password } = req.body;
+
+    if (!phone || !password)
+      return res.status(400).json({ msg: "phone number & password required" });
+
+    const user = await User.findOne({ phone, role });
+    if (!user)
+      return res.status(400).json({ msg: "User not found" });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({ msg: "Incorrect password" });
+
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      role: user.role,
+      profileImage: user.profileImage || ""
+    };
+
+    res.json({
+      msg: "Login successful",
+      user: req.session.user
+    });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// router.post('/send-otp', async(req, res) =>{
+//   try{
+//     const {phone, role} = req.body;
+
+//     if(!phone){
+//       return res.status(400).json({msg: "Phone required"});
+//     }
+
+//     const user = await User.findOne({phone, role});
+
+//     if(!user)
+//       return res.status(400).json({msg: "phone not registered for this role"});
+
+//     const otp = Math.floor(10000 + Math.random * 900000);
+
+//     otpStore[phone] = {otp, expires: Date.now() + 5 * 60 * 1000};
+
+//     console.log("OTP: ", otp);
+    
+//     res.json({msg: "OTP sent successfully"});
+//   }
+//   catch(err){
+//     res.status(500).json({msg: "Server error"});
+//   }
+// });
+
+// router.post("/verify-otp", async (req, res) =>{
+//   try{
+//     const {phone, otp} = req.body;
+
+//     const record = otpStore[phone];
+
+//     if(!record)
+//       return res.status(400).json({msg: "OTP not registered"});
+
+//     if(Number(otp) !== record.otp)
+//         return res.status(400).json({msg: "Invalid OTP"});
+
+//     if(record.expires < Date.now())
+//       return res.status(400).json({msg: "OTP expired"});
+
+//     res.json({msg: "OTP required"});
+
+//   }
+//   catch(err){
+//     res.status(500).json({msg: "Server error"});
+//   }
+// })
+
+router.post('/reset-password', async (req, res) =>{
+  try{
+    const {role, phone, newPassword} = req.body;
+
+    if (newPassword.length < 8)
+      return res.status(400).json({ msg: "Weak password" });
+
+    const user = await User.findOne({ phone, role });
+
+    if (!user)
+      return res.status(400).json({ msg: "User not found" });
+
+    const isSame = await bcrypt.compare(newPassword, user.password);
+
+    if (isSame)
+      return res.status(400).json({
+        msg: "New password cannot be same as old password"
+      });
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashed;
+    await user.save();
+
+    delete otpStore[phone];
+
+    res.json({ msg: "Password updated successfully" });
+  }
+  catch(err){
+    res.status(500).json({msg: "Server error"});
+  }
+})
 router.get("/profile", async (req, res) => {
 
   try {
-
+    console.log('inside fetching profile', req.session.user);
     if (!req.session.user)
       return res.status(401).json({ msg: "Unauthorized" });
 
@@ -112,8 +229,9 @@ router.get("/profile", async (req, res) => {
       await User.findById(
         req.session.user.id
       ).select("-password");
+    console.log(user);
 
-    res.json({ user });
+    res.json( {user} );
 
   }
   catch(err){
@@ -130,24 +248,50 @@ router.get("/profile", async (req, res) => {
 router.put("/update-profile", async (req, res) => {
 
   try {
+    console.log('inside update profile');
+    if(!req.session.user)
+        return res.status(401).json({msg: "Unauthorised"});
 
-    const userId =
-      req.session.user.id;
+    const userId = req.session.user.id;
+    const { 
+      name, 
+      phone, 
+      profileImage, 
+      notifyOnNearbyProducts, 
+      dno,
+      street,
+      village,
+      district,
+      pincode,
+      lat,
+      lng } = req.body;
+    
+    const updateData = { name, phone, profileImage, notifyOnNearbyProducts };
 
-    const { name, phone, profileImage } =
-      req.body;
-
+    updateData.address = {
+      dno,
+      street,
+      village,
+      district,
+      pincode,
+      state: "Andhra Pradesh",
+      country: "India"
+    };
+console.log( updateData);
+    if(lat && lng){
+      updateData.location = {
+        type: "Point",
+        coordinates: [Number(lng), Number(lat)]
+      };
+    }
     const user =
       await User.findByIdAndUpdate(
         userId,
-        {
-          name,
-          phone,
-          profileImage
-        },
+        updateData,
         { new: true }
       );
-
+    
+      console.log(user, updateData);
     res.json({ user });
 
   }

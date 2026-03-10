@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import mandisRoutes from "./routes/mandis.js";
-import estimateRoutes from "./routes/estimate.js";
+import cropToBiofuelRoutes from "./routes/cropToBiofuel.js";
 import authRoutes from "./routes/auth.js"; 
 import wasteRoutes from "./routes/waste.js";
 import productRoutes from "./routes/products.js";  // ✅ products route
@@ -41,9 +41,9 @@ app.use(session({
     mongoUrl: process.env.MONGO_URI
   })
 }));
-// FQXJBNDABY6UGM1DSBGFME3C
+
 app.use("/auth", authRoutes);
-app.use("/estimator", estimateRoutes);
+app.use("/estimator", cropToBiofuelRoutes);
 app.use("/waste", wasteRoutes);
 app.use("/fresh", productRoutes);   
 app.use("/api/mandis", mandisRoutes);

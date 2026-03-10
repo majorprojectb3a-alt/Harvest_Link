@@ -2,31 +2,101 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./BuyerProfile.css";
 import Navbar from "../../components/Navbar/Navbar";
-
 import HistoryTable from "../../components/History/HistoryTable";
 
 export default function BuyerProfile(){
 
   const [profile, setProfile] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
   const [buyHistory, setBuyHistory] = useState([]);
+  const [freshHistory,setFreshHistory] = useState([]);
+  const [wasteHistory,setWasteHistory] = useState([]);
 
-  const [page, setPage] = useState(1);
+  const [freshPage,setFreshPage] = useState(1);
+  const [wastePage,setWastePage] = useState(1);
 
-  const [totalPages, setTotalPages] = useState(1);
+  const [freshTotalPages,setFreshTotalPages] = useState(1);
+  const [wasteTotalPages,setWasteTotalPages] = useState(1);
 
   const [limit, setLimit] = useState(5);
 
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const [showEdit, setShowEdit] = useState(false);
-
   const [editForm, setEditForm] = useState({
     name:"",
     phone:"",
-    profileImage:""
+    profileImage:"",
+
+    notifyOnNearbyProducts:true,
+
+    dno:"",
+    addressText:"",
+    street:"",
+    village:"",
+    district:"",
+    pincode:"",
+
+    lat:null,
+    lng:null
   });
 
+  const searchAddress = async(text) =>{
+    setEditForm({...editForm, addressText: text});
+
+    if(text.length < 3){
+      setSuggestions([]);
+      return ;
+    }
+
+    const res = await fetch(`https://photon.komoot.io/api/?q=${text}&limit=5`);
+
+    const data = await res.json();
+
+    setSuggestions(data.features);
+
+  };
+
+  const selectAddress = (place) =>{
+    const props = place.properties;
+    const coords = place.geometry.coordinates;
+
+    setEditForm({
+      ...editForm,
+
+      addressText: 
+      props.name + (props.city ? ", "+props.city : "") +
+      (props.state ? ", "+props.state : ""),
+
+      street:props.street || "",
+      village:props.city || props.name || "",
+      district:props.district || props.state || "",
+      pincode:props.postcode || "",
+
+      lat:coords[1],
+      lng:coords[0]
+    });
+
+    setSuggestions([]);
+  }
+
+  const getLocation = () =>{
+    if(!navigator.geolocation){
+      alert("Geolocation not supported");
+      return ;
+    }
+
+    navigator.geolocation.getCurrentPosition((pos) =>{
+      setEditForm({
+        ...editForm,
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      });
+
+      alert("Location captured");
+    });
+  };
 
   /* FETCH PROFILE */
   const fetchProfile = async ()=>{
@@ -36,41 +106,55 @@ export default function BuyerProfile(){
       { withCredentials:true }
     );
 
+    const u = res.data.user;
     setProfile(res.data.user);
 
     setEditForm({
-      name:res.data.user.name,
-      phone:res.data.user.phone,
-      profileImage:res.data.user.profileImage
+      name:u.name,
+      phone:u.phone,
+      profileImage:u.profileImage,
+
+      notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
+
+      dno:u.address?.dno || "",
+      addressText:"",
+
+      street:u.address?.street || "",
+      village:u.address?.village || "",
+      district:u.address?.district || "",
+      pincode:u.address?.pincode || "",
+
+      lat:u.location?.coordinates?.[1] || null,
+      lng:u.location?.coordinates?.[0] || null
     });
 
   };
 
 
   /* FETCH BUY HISTORY */
-  const fetchBuyHistory = async ()=>{
+  const fetchFreshHistory = async ()=>{
 
     const res = await axios.get(
-      `http://localhost:5000/waste/buyer/history?page=${page}&limit=${limit}&status=${statusFilter}`,
-      { withCredentials:true }
+    `http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
+    {withCredentials:true}
     );
-
-    setBuyHistory(res.data.items);
-
-    setTotalPages(res.data.totalPages);
+    
+    setFreshHistory(res.data.items);
+    setFreshTotalPages(res.data.totalPages);
 
   };
 
-
-  useEffect(()=>{
-    fetchProfile();
-  },[]);
-
-
-  useEffect(()=>{
-    fetchBuyHistory();
-  },[page,limit,statusFilter]);
-
+  const fetchWasteHistory = async()=>{
+  
+  const res = await axios.get(
+  `http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+  {withCredentials:true}
+  );
+  
+  setWasteHistory(res.data.items);
+  setWasteTotalPages(res.data.totalPages);
+  
+  };
 
   /* UPDATE PROFILE */
   const updateProfile = async ()=>{
@@ -82,9 +166,7 @@ export default function BuyerProfile(){
     );
 
     setShowEdit(false);
-
     fetchProfile();
-
   };
 
 
@@ -113,6 +195,17 @@ export default function BuyerProfile(){
 
   };
 
+  useEffect(()=>{
+  fetchProfile();
+  },[]);
+
+  useEffect(()=>{
+  fetchFreshHistory();
+  },[freshPage,limit,statusFilter]);
+
+  useEffect(()=>{
+  fetchWasteHistory();
+  },[wastePage,limit,statusFilter]);
 
   if(!profile)
     return <div>Loading...</div>;
@@ -169,7 +262,8 @@ export default function BuyerProfile(){
           value={statusFilter}
           onChange={(e)=>{
             setStatusFilter(e.target.value);
-            setPage(1);
+            setFreshPage(1);
+            setWastePage(1);
           }}
         >
           <option value="all">All</option>
@@ -182,7 +276,8 @@ export default function BuyerProfile(){
           value={limit}
           onChange={(e)=>{
             setLimit(Number(e.target.value));
-            setPage(1);
+            setFreshPage(1);
+            setWastePage(1);
           }}
         >
           <option value={5}>5</option>
@@ -196,15 +291,22 @@ export default function BuyerProfile(){
 
       {/* BUY HISTORY */}
       <HistoryTable
-        title="Buying History"
-        data={buyHistory}
-        page={page}
-        totalPages={totalPages}
-        setPage={setPage}
+        title="Fresh Products Buying History"
+        data={freshHistory}
+        page={freshPage}
+        totalPages={freshTotalPages}
+        setPage={setFreshPage}
       />
 
 
-
+      <HistoryTable
+      title="Sell Waste History"
+      data={wasteHistory}
+      page={wastePage}
+      totalPages={wasteTotalPages}
+      setPage={setWastePage}
+      />
+      
       {/* EDIT MODAL */}
       {showEdit && (
 
@@ -218,23 +320,17 @@ export default function BuyerProfile(){
             <div className="buyer-image-upload">
 
               <img
-                src={
-                  editForm.profileImage ||
-                  "/default_profile_image.png"
-                }
+                src={editForm.profileImage || "/default_profile_image.png"}
                 className="buyer-edit-image"
               />
 
-              <input
-                type="file"
-                onChange={handleImageUpload}
-              />
+              <input type="file" accept="image/*" onChange={handleImageUpload}/>
 
             </div>
 
 
             <input
-              value={editForm.name}
+              placeholder="Name" value={editForm.name}
               onChange={(e)=>
                 setEditForm({
                   ...editForm,
@@ -245,6 +341,7 @@ export default function BuyerProfile(){
 
 
             <input
+              placeholder="Phone"
               value={editForm.phone}
               onChange={(e)=>
                 setEditForm({
@@ -254,7 +351,114 @@ export default function BuyerProfile(){
               }
             />
 
+            {/* ADDRESS SEARCH */}
 
+          <div className="address-box">
+
+          <input
+          type="text"
+          placeholder="Search Address"
+          value={editForm.addressText}
+          onChange={(e)=>searchAddress(e.target.value)}
+          />
+
+          {suggestions.length>0 &&(
+
+          <div className="suggestions">
+
+          {suggestions.map((s,i)=>{
+
+          const p = s.properties;
+
+          return(
+
+          <div
+          key={i}
+          className="suggestion-item"
+          onClick={()=>selectAddress(s)}
+          >
+
+          {p.name}
+          {p.city && `, ${p.city}`}
+          {p.state && `, ${p.state}`}
+          {p.country && `, ${p.country}`}
+
+          </div>
+
+          );
+
+          })}
+
+          </div>
+
+          )}
+
+          </div>
+
+
+          <div className="address-grid">
+
+          <input
+          placeholder="Door No"
+          value={editForm.dno}
+          onChange={(e)=>setEditForm({...editForm,dno:e.target.value})}
+          />
+
+          <input
+          placeholder="Street"
+          value={editForm.street}
+          onChange={(e)=>setEditForm({...editForm,street:e.target.value})}
+          />
+
+          <input
+          placeholder="Village"
+          value={editForm.village}
+          onChange={(e)=>setEditForm({...editForm,village:e.target.value})}
+          />
+
+          <input
+          placeholder="District"
+          value={editForm.district}
+          onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
+          />
+
+          <input
+          placeholder="Pincode"
+          value={editForm.pincode}
+          onChange={(e)=>setEditForm({...editForm,pincode:e.target.value})}
+          />
+
+          </div>
+
+
+          <button
+          className="location-btn"
+          onClick={getLocation}
+          >
+          Use Current Location
+          </button>
+
+          <p className="coords">
+          Coordinates: {editForm.lat || "-"} , {editForm.lng || "-"}
+          </p>
+
+
+          <label className="notify-toggle">
+
+          <input
+          type="checkbox"
+          checked={editForm.notifyOnNearbyProducts}
+          onChange={(e)=>
+          setEditForm({
+          ...editForm,
+          notifyOnNearbyProducts:e.target.checked
+          })
+          }
+          />
+
+          Receive notifications for nearby waste
+
+          </label>
             <button onClick={updateProfile}>
               Save
             </button>
