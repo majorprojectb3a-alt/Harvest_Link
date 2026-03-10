@@ -9,6 +9,7 @@ import cropToBiofuelRoutes from "./routes/cropToBiofuel.js";
 import authRoutes from "./routes/auth.js"; 
 import wasteRoutes from "./routes/waste.js";
 import productRoutes from "./routes/products.js";  // ✅ products route
+import bookingRoutes from "./routes/booking.js";
 
 import notificationRoutes from "./routes/notificationRoutes.js";
 
@@ -47,6 +48,7 @@ app.use("/waste", wasteRoutes);
 app.use("/fresh", productRoutes);   
 app.use("/api/mandis", mandisRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/bookings", bookingRoutes);
 app.post("/twilio/status", async (req, res) => {
   try {
     const messageSid = req.body.MessageSid || req.body.MessageSid;

@@ -41,6 +41,11 @@ function Navbar() {
           <li>
             <a href="/contact">Contact</a>
           </li>
+          <li>
+  <a href="/booking-requests">
+    Booking Requests
+  </a>
+</li>
         </ul>
 
         <a href="/profile">

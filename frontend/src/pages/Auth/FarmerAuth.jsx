@@ -9,7 +9,6 @@ export default function FarmerAuth() {
   const navigate = useNavigate();
 
   const [isSignUp, setIsSignUp] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -19,6 +18,15 @@ export default function FarmerAuth() {
     otp: ""
   });
 
+  const [otpSent, setOtpSent] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+
+  const [resetForm, setResetForm] = useState({
+    phone: "",
+    otp: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
   const [errors, setErrors] = useState({});
 
   /* ---------- VALIDATIONS ---------- */
@@ -32,52 +40,127 @@ export default function FarmerAuth() {
     setErrors({});
   };
 
-  /* ---------- LOGIN ---------- */
-  const validateSendOtp = () => {
+  const validateLogin = () => {
     let e = {};
-    if (!isValidPhone(form.phone)) e.phone = "Enter valid 10-digit phone number";
+    if (!isValidPhone(form.phone)) e.phone = "Invalid phone number";
+    if (!form.password) e.password = "Password required";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const validateVerifyOtp = () => {
-    let e = {};
-    if (!form.otp || form.otp.length !== 6) e.otp = "Enter valid 6-digit OTP";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  /* ---------- LOGIN ---------- */
+  // const validateSendOtp = () => {
+  //   let e = {};
+  //   if (!isValidPhone(form.phone)) e.phone = "Enter valid 10-digit phone number";
+  //   setErrors(e);
+  //   return Object.keys(e).length === 0;
+  // };
+
+  // const validateVerifyOtp = () => {
+  //   let e = {};
+  //   if (!form.otp || form.otp.length !== 6) e.otp = "Enter valid 6-digit OTP";
+  //   setErrors(e);
+  //   return Object.keys(e).length === 0;
+  // };
 
   const sendOtp = async () => {
-    if (!validateSendOtp()) return;
     try {
       const res = await axios.post(
         "http://localhost:5000/auth/send-otp",
-        { phone: form.phone, role: "farmer" }
+        { phone: resetForm.phone, role: "farmer" }
       );
       alert(res.data.msg);
       setOtpSent(true);
-      setForm({ ...form, otp: "" });
     } catch (err) {
-      setErrors({ phone: err.response?.data?.msg || "Failed to send OTP" });
+      alert(err.response?.data?.msg);
+      // setErrors({ phone: err.response?.data?.msg || "Failed to send OTP" });
     }
   };
 
-  const verifyOtp = async () => {
-    if (!validateVerifyOtp()) return;
+  const resetPassword = async () => {
+  
+    if (resetForm.newPassword !== resetForm.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+  
     try {
+  
+      await axios.post("http://localhost:5000/auth/verify-otp", {
+  
+        phone: resetForm.phone,
+        otp: resetForm.otp,
+        role: "farmer"
+      });
+  
       const res = await axios.post(
-        "http://localhost:5000/auth/verify-otp",
-        { phone: form.phone, otp: form.otp, role: "farmer" }
+        "http://localhost:5000/auth/reset-password",
+        { 
+          role: "farmer",
+          phone: resetForm.phone,
+          newPassword: resetForm.newPassword
+        }
       );
+  
       alert(res.data.msg);
-
-      // Navigate first, then reset form
-      navigate("/FarmerHome");
-      setForm({ name: "", email: "", phone: "", password: "", otp: "" });
-      setErrors({});
+  
+      setShowForgotModal(false);
       setOtpSent(false);
+      navigate("/farmer");
+  
     } catch (err) {
-      setErrors({ otp: err.response?.data?.msg || "Invalid OTP" });
+      alert(err.response?.data?.msg);
+    }
+  };
+
+  // const verifyOtp = async () => {
+  //   if (!validateVerifyOtp()) return;
+  //   try {
+  //     const res = await axios.post(
+  //       "http://localhost:5000/auth/verify-otp",
+  //       { phone: form.phone, otp: form.otp, role: "farmer" }
+  //     );
+  //     alert(res.data.msg);
+
+  //     console.log(res.data.user);
+
+  //     localStorage.setItem("userId", res.data.user.id);
+  //     localStorage.setItem("role", res.data.user.role);
+
+  //     // Navigate first, then reset form
+  //     navigate("/FarmerHome");
+  //     setForm({ name: "", email: "", phone: "", password: "", otp: "" });
+  //     setErrors({});
+  //     setOtpSent(false);
+  //   } catch (err) {
+  //     setErrors({ otp: err.response?.data?.msg || "Invalid OTP" });
+  //   }
+  // };
+
+  // LOGIN 
+  const handleLogin = async () => {
+    if (!validateLogin()) return;
+
+    try {
+      console.log('inside handle login for farmer');
+      const res = await axios.post(
+        "http://localhost:5000/auth/farmerLogin",
+        {
+          role: "farmer",
+          phone: form.phone,
+          password: form.password
+        },
+        { withCredentials: true }
+      );
+
+      console.log(res.data);
+      localStorage.setItem("userId", res.data.user.id);
+      localStorage.setItem("role", res.data.user.role);
+      console.log(res.data);
+      alert(res.data.msg);
+      navigate("/FarmerHome");
+    } catch (err) {
+      alert(err.response.data.msg);
     }
   };
 
@@ -129,6 +212,9 @@ export default function FarmerAuth() {
   );
 };
 
+
+  
+
   return (
     <>
       <Navbar oppositeUser="Buyer" />
@@ -145,29 +231,102 @@ export default function FarmerAuth() {
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                disabled={otpSent}
               />
               {errors.phone && <span className="error">{errors.phone}</span>}
+              {/* <label>Phone</label>
+              <input
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                disabled={otpSent}
+              />
+              {errors.phone && <span className="error">{errors.phone}</span>} */}
+            </div>
+              
+              <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+              />
+              {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
-            {otpSent && (
-              <div className="form-group">
-                <label>OTP</label>
-                <input
-                  type="text"
-                  name="otp"
-                  value={form.otp}
-                  onChange={handleChange}
-                />
-                {errors.otp && <span className="error">{errors.otp}</span>}
-              </div>
-            )}
+            <button className="submit btn" onClick={handleLogin}>
+              Sign In
+            </button>
+            <p className="forgot-link" onClick={() => setShowForgotModal(true)}>  Forgot Password?</p>
 
-            {!otpSent ? (
-              <button className="submit btn" onClick={sendOtp}>Send OTP</button>
-            ) : (
-              <button className="submit btn" onClick={verifyOtp}>Verify OTP</button>
-            )}
+           {showForgotModal && (
+  <div className="modal-overlay">
+
+    <div className="modal-box">
+
+      <h2>Reset Password</h2>
+
+      <input
+        placeholder="Phone Number"
+        value={resetForm.phone}
+        onChange={(e) =>
+          setResetForm({ ...resetForm, phone: e.target.value })
+        }
+      />
+
+      {!otpSent ? (
+        <button onClick={sendOtp}>Send OTP</button>
+      ) : (
+        <>
+          <input
+            placeholder="OTP"
+            value={resetForm.otp}
+            onChange={(e) =>
+              setResetForm({ ...resetForm, otp: e.target.value })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="New Password"
+            value={resetForm.newPassword}
+            onChange={(e) =>
+              setResetForm({
+                ...resetForm,
+                newPassword: e.target.value
+              })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={resetForm.confirmPassword}
+            onChange={(e) =>
+              setResetForm({
+                ...resetForm,
+                confirmPassword: e.target.value
+              })
+            }
+          />
+
+          <button onClick={resetPassword}>
+            Update Password
+          </button>
+        </>
+      )}
+
+      <button
+        className="close-btn"
+        onClick={() => setShowForgotModal(false)}
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+)}
           </div>
 
           {/* ---------- SIGNUP ---------- */}
