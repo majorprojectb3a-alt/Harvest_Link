@@ -14,4 +14,28 @@ router.post('/estimate', async (req, res) => {
   }
 });
 
+router.post("/predict-price", async (req, res) => {
+
+  try {
+
+    const response = await axios.post(
+      "http://localhost:8000/predict-fresh-price",
+      req.body
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    console.error("Prediction error:", error.message);
+
+    res.status(500).json({
+      message: "Prediction service failed"
+    });
+  }
+
+});
+
 export default router;
+
+

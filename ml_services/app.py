@@ -61,6 +61,8 @@ import joblib
 import uvicorn
 import os
 import pandas as pd   # IMPORTANT
+from price_prediction.models.predict_service import predict_for
+from price_prediction.models.predict_with_explain import predict_and_explain
 
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -76,6 +78,14 @@ class PredictRequest(BaseModel):
     moisture_frac: float
     LHV_MJ_per_kg: float
     energy_per_liter: float = 36.0
+
+class FreshPriceRequest(BaseModel):
+    commodity: str
+    market: str | None = None
+    state: str | None = None
+    district: str | None = None
+    quantity: float
+
 
 
 @app.post("/predict-price")
@@ -112,6 +122,49 @@ def predict(req: PredictRequest):
         "estimated_value": estimated_value
     }
 
+@app.post("/predict-fresh-price")
+def predict_fresh_price(req: FreshPriceRequest):
+
+    try:
+
+        # Step 1: predict price
+        result = predict_for(
+            commodity=req.commodity,
+            market=req.market,
+            state=req.state,
+            district=req.district,
+            quantity=req.quantity
+        )
+
+        price_per_quintal = result["price_per_quintal"]
+        total_value = result["total"]
+
+        # Step 2: generate explanation
+        exp = predict_and_explain(
+            commodity=req.commodity,
+            market=req.market,
+            state=req.state,
+            district=req.district,
+            quantity=req.quantity
+        )
+
+        explanation = exp["explanation"]
+
+        return {
+            "success": True,
+            "commodity": req.commodity,
+            "market": req.market,
+            "district": req.district,
+            "price_per_quintal": price_per_quintal,
+            "total_price": total_value,
+            "explanation": explanation
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

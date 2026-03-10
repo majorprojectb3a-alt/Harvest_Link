@@ -25,6 +25,13 @@ function FreshForm({ onClose }) {
   const [mandiOptions, setMandiOptions] = useState([]);
   const [loadingMandis, setLoadingMandis] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [prediction, setPrediction] = useState(null);
+  const [explanation, setExplanation] = useState("");
+  const [loadingPrediction, setLoadingPrediction] = useState(false);
+  const [usePredictedPrice, setUsePredictedPrice] = useState(false);
+
+  const [manualPriceMode, setManualPriceMode] = useState(false);
+const [priceLocked, setPriceLocked] = useState(false);
 
   useEffect(() =>{
     async function loadMandis() {
@@ -107,6 +114,42 @@ function FreshForm({ onClose }) {
     }
   }, [form.district, mandisData, form.state]);
 
+  const predictPrice = async () => {
+
+  const totalWeight =
+    Number(form.kg || 0) + Number(form.grams || 0) / 1000;
+
+  if (!form.crop || !form.district) {
+    alert("Please select crop and district first");
+    return;
+  }
+
+  setLoadingPrediction(true);
+
+  try {
+
+    const res = await axios.post(
+      "http://localhost:5000/estimator/predict-price",
+      {
+        commodity: form.crop,
+        market: form.mandi,
+        state: form.state,
+        district: form.district,
+        quantity: totalWeight
+      }
+    );
+    console.log("Prediction response:", res.data);
+
+    setPrediction(res.data);
+
+  } catch (err) {
+    console.error(err);
+    alert("Prediction failed");
+  }
+
+  setLoadingPrediction(false);
+};
+
   // HANDLE INPUT CHANGE (KG + GRAMS LOGIC)
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -117,7 +160,7 @@ function FreshForm({ onClose }) {
     const totalWeight = kg + grams / 1000;   // CONVERT TO KG
 
     // AUTO CALCULATE PRICE
-    if (totalWeight > 0 && updated.price) {
+    if (totalWeight > 0 && Number(updated.price)) {
       updated.totalPrice =
         (totalWeight * Number(updated.price)).toFixed(2);
     } else {
@@ -227,7 +270,6 @@ function FreshForm({ onClose }) {
       </div>
 
       {/* PRICE PER KG */}
-      <input name="price" type="number" placeholder="Price per kg (₹)" onChange={handleChange}/>
       
       {/* STATE (READ ONLY) */}
       <input name="state" type="text" placeholder="State" value="Andhra Pradesh" readOnly onChange={handleChange}/>
@@ -262,6 +304,95 @@ function FreshForm({ onClose }) {
           <div style={{ color: "#666" }}>Choose district → mandi to auto-fill mandi coordinates (or allow browser location)</div>
         )}
       </div>
+
+      <button
+  type="button"
+  className="predict-btn"
+  onClick={predictPrice}
+>
+  🔮 Predict Price
+</button>
+
+{prediction && (
+
+  <div className="prediction-box">
+
+    <h3>🤖 AI Price Prediction</h3>
+
+    <p>
+  <b>Predicted price:</b> ₹{(prediction.price_per_quintal / 100)?.toFixed(2)} / kg
+</p>
+
+    <p>
+  <b>Your crop value:</b> ₹{
+    ((prediction.price_per_quintal / 100) *
+    (Number(form.kg || 0) + Number(form.grams || 0)/1000)
+    ).toFixed(2)
+  }
+</p>
+
+    <div className="prediction-explanation">
+      <h4>Why this price?</h4>
+      <p>{prediction.explanation}</p>
+    </div>
+
+    {/* USER CHOICE BUTTONS */}
+
+    {!priceLocked && !manualPriceMode && (
+      <div className="prediction-actions">
+
+        <button
+  className="use-predicted-btn"
+  onClick={() => {
+
+    const pricePerKg = prediction.price_per_quintal / 100;
+
+    const kg = Number(form.kg || 0);
+    const grams = Number(form.grams || 0);
+
+    const totalWeight = kg + grams / 1000;
+
+    const total = (totalWeight * pricePerKg).toFixed(2);
+
+    setForm(prev => ({
+      ...prev,
+      price: pricePerKg.toFixed(2),
+      totalPrice: total
+    }));
+
+    setPriceLocked(true);
+    setManualPriceMode(false);
+
+  }}
+>
+  ✅ Use Predicted Price
+</button>
+
+        <button
+          className="manual-price-btn"
+          onClick={() => setManualPriceMode(true)}
+        >
+          ✏️ Enter Price Manually
+        </button>
+
+      </div>
+    )}
+
+  </div>
+
+)}
+
+{manualPriceMode && (
+
+  <input
+  name="price"
+  type="number"
+  value={form.price}
+  disabled={priceLocked}
+  onChange={handleChange}
+/>
+
+)}
       
       {/* TOTAL PRICE */}
       <div className="price-box">
@@ -271,7 +402,14 @@ function FreshForm({ onClose }) {
       {/* ACTION BUTTONS */}
       <div className="form-actions">
         <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
-        <button type="button" className="add-btn" onClick={handleSubmit} disabled = {loadingSubmit}>{loadingSubmit ? "Adding..." : "➕ Add Item"}</button>
+        <button
+  type="button"
+  className="add-btn"
+  onClick={handleSubmit}
+  disabled={!form.price || loadingSubmit}
+>
+  {loadingSubmit ? "Adding..." : "➕ Add Item"}
+</button>
       </div>
     </div>
   );

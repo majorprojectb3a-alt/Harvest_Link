@@ -2,7 +2,7 @@ import requests
 import time
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3"
+MODEL_NAME = "phi3"
 
 def ask_ollama(prompt, retries=5):
     for i in range(retries):
@@ -12,11 +12,22 @@ def ask_ollama(prompt, retries=5):
                 json={
                     "model": MODEL_NAME,
                     "prompt": prompt,
-                    "stream": False
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.2,
+                        "num_predict": 200,
+                        "top_p": 0.9
+                    }
                 },
                 timeout=300
             )
-            return resp.json()['response']
+            data = resp.json()
+
+            if "response" in data:
+                return data["response"]
+
+            print("Ollama unexpected response:", data)
+            return "AI explanation unavailable."
 
         except requests.exceptions.ReadTimeout:
             print(f"Ollama timeout — retry {i+1}")

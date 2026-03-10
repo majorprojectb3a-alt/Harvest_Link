@@ -107,3 +107,57 @@ input {
 .weight-row input {
   flex: 1;
 }
+
+.predict-btn{
+  margin-top:10px;
+  padding:10px;
+  background:#2e7d32;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.prediction-box{
+  margin-top:15px;
+  padding:16px;
+  border-radius:10px;
+  background:#f1f8e9;
+  border:1px solid #c5e1a5;
+}
+
+.prediction-explanation{
+  margin-top:10px;
+  font-size:14px;
+  color:#444;
+}
+
+.prediction-actions{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+}
+
+.prediction-actions{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.use-predicted-btn{
+  background:#2e7d32;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.manual-price-btn{
+  background:#1976d2;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
