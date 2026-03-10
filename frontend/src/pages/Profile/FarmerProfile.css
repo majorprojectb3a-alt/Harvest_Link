@@ -70,9 +70,17 @@ margin-bottom:15px;
 .filter-row select{
 padding:8px 12px;
 border-radius:8px;
-border:1px solid #ddd;
-background:white;
+border:1px solid #2f6b3f;
+
+background:#2f6b3f;
+color:white;
+
 cursor:pointer;
+font-weight:500;
+}
+
+.filter-row select:hover{
+background:#245532;
 }
 
 /* MODAL */

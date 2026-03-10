@@ -134,27 +134,27 @@ export default function BuyerProfile(){
   /* FETCH BUY HISTORY */
   const fetchFreshHistory = async ()=>{
 
-    const res = await axios.get(
-    `http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
-    {withCredentials:true}
-    );
-    
-    setFreshHistory(res.data.items);
-    setFreshTotalPages(res.data.totalPages);
+const res = await axios.get(
+`http://localhost:5000/fresh/buyer/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
+{withCredentials:true}
+);
 
-  };
+setFreshHistory(res.data.items);
+setFreshTotalPages(res.data.totalPages);
+
+};
 
   const fetchWasteHistory = async()=>{
-  
-  const res = await axios.get(
-  `http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
-  {withCredentials:true}
-  );
-  
-  setWasteHistory(res.data.items);
-  setWasteTotalPages(res.data.totalPages);
-  
-  };
+
+const res = await axios.get(
+`http://localhost:5000/waste/buyer/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+{withCredentials:true}
+);
+
+setWasteHistory(res.data.items);
+setWasteTotalPages(res.data.totalPages);
+
+};
 
   /* UPDATE PROFILE */
   const updateProfile = async ()=>{
@@ -300,7 +300,7 @@ export default function BuyerProfile(){
 
 
       <HistoryTable
-      title="Sell Waste History"
+      title="Waste Products Buying History"
       data={wasteHistory}
       page={wastePage}
       totalPages={wasteTotalPages}
