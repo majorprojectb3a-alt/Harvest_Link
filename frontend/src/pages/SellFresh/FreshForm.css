@@ -95,18 +95,6 @@
   justify-content: center;
 }
 
-.predict-btn {
-  background: #facc15;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.predict-btn:hover {
-  background: #eab308;
-}
 
 input {
   color: black;
@@ -121,15 +109,6 @@ input {
   flex: 1;
 }
 
-.predict-btn{
-  margin-top:10px;
-  padding:10px;
-  background:#2e7d32;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
 
 .prediction-box{
   margin-top:15px;
@@ -173,4 +152,100 @@ input {
   padding:8px 12px;
   border-radius:6px;
   cursor:pointer;
+}
+
+.fresh-item-form input,
+.fresh-item-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #000;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.fresh-item-form input:focus,
+.fresh-item-form select:focus {
+  border-color: #00695c;
+  box-shadow: 0 0 0 2px rgba(0,105,92,0.15);
+}
+
+.fresh-item-form {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fresh-item-form h2 {
+  text-align: center;
+  color: #00695c;
+  margin-bottom: 10px;
+}
+
+.fresh-item-form select {
+  cursor: pointer;
+}
+
+.weight-row input {
+  flex: 1;
+  height: 40px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.fresh-item-form input::placeholder {
+  color: #888;
+}
+
+
+.predict-btn {
+  margin-top: 10px;
+  padding: 10px 16px;
+  background-color: #00695c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.predict-btn:hover {
+  background-color: #004d40;
+}
+
+.add-item {
+  margin-top: 10px;
+  padding: 10px 16px;
+  background-color: #00695c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }

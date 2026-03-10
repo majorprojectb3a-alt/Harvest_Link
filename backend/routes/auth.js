@@ -221,7 +221,6 @@ router.post('/reset-password', async (req, res) =>{
 router.get("/profile", async (req, res) => {
 
   try {
-    console.log('inside fetching profile', req.session.user);
     if (!req.session.user)
       return res.status(401).json({ msg: "Unauthorized" });
 

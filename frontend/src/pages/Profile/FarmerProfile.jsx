@@ -477,13 +477,17 @@ Receive notifications for nearby waste
 </label>
 
 
-<button onClick={updateProfile}>
+<div className="modal-actions">
+
+<button className="save-btn" onClick={updateProfile}>
 Save
 </button>
 
-<button onClick={()=>setShowEdit(false)}>
+<button className="cancel-btn" onClick={()=>setShowEdit(false)}>
 Cancel
 </button>
+
+</div>
 
 </div>
 

@@ -77,6 +77,18 @@ export default function FarmerAuth() {
     }
   };
 
+  const closeForgotModal = () => {
+  setShowForgotModal(false);
+  setOtpSent(false);
+
+  setResetForm({
+    phone: "",
+    otp: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+};
+
   const resetPassword = async () => {
   
     if (resetForm.newPassword !== resetForm.confirmPassword) {
@@ -317,11 +329,11 @@ export default function FarmerAuth() {
       )}
 
       <button
-        className="close-btn"
-        onClick={() => setShowForgotModal(false)}
-      >
-        Close
-      </button>
+  className="close-btn"
+  onClick={closeForgotModal}
+>
+  Close
+</button>
 
     </div>
 

@@ -1,122 +1,136 @@
+/* FORM CONTAINER */
+
 .waste-form {
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+
+  padding: 20px 24px;   /* ADD THIS */
+  box-sizing: border-box;
+}
+
+/* TITLE */
+
+.waste-form h2 {
+  text-align: center;
+  color: #00695c;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* INPUTS + SELECT */
+
+.waste-form input,
+.waste-form select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* INPUT FOCUS */
+
+.waste-form input:focus,
+.waste-form select:focus {
+  border-color: #00695c;
+  box-shadow: 0 0 0 2px rgba(0,105,92,0.15);
+}
+
+/* WEIGHT ROW */
+
+.weight-row {
+  display: flex;
   gap: 12px;
 }
 
-
-.form-title {
-  text-align: center;
-  color: #00695c;
-  margin-bottom: 5px;
+.weight-row input {
+  flex: 1;
 }
 
-.form-subtitle {
-  text-align: center;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 25px;
-}
+/* TOTAL PRICE */
 
-.input-group {
-  display: flex;
-  align-items: center;
-  background: #e0f2f1;
+.price-box {
+  background: #e6f7f5;
+  padding: 14px;
   border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 15px;
-}
-
-.input-icon {
-  color: #00695c;
-  font-size: 18px;
-  margin-right: 10px;
-}
-
-.input-group input {
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 100%;
+  text-align: center;
+  font-weight: 600;
+  color: #004d40;
   font-size: 15px;
 }
+
+/* BUTTON AREA */
 
 .form-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 25px;
+  align-items: center;
+  margin-top: 10px;
 }
 
+/* CANCEL BUTTON */
+
 .cancel-btn {
-  background: #eeeeee;
-  color: #333;
+  background: #6b8f5a;
+  color: white;
   border: none;
-  padding: 10px 22px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.cancel-btn:hover {
+  background: #5b7b4c;
+}
+
+/* DELETE BUTTON */
+
+.delete-btn {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.delete-btn{
-  background:#ff4d4f;
-  color:white;
-  border:none;
-  padding:10px 14px;
-  border-radius:6px;
-  cursor:pointer;
+.delete-btn:hover {
+  background: #d9363e;
 }
 
-.delete-btn:hover{
-  background:#d9363e;
-}
+/* ADD BUTTON */
 
 .add-btn {
   background: #00695c;
   color: white;
   border: none;
-  padding: 10px 24px;
-  border-radius: 100px;
+  padding: 10px 22px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
 }
 
 .add-btn:hover {
   background: #004d40;
 }
-.price-box {
-  background: #e6f7f5;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
+
+/* DISABLED BUTTON */
+
+.add-btn:disabled {
+  background: #cfd8dc;
+  cursor: not-allowed;
 }
 
-.predict-row {
-  display: flex;
-  justify-content: center;
-}
+/* PLACEHOLDER */
 
-.predict-btn {
-  background: #facc15;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.predict-btn:hover {
-  background: #eab308;
-}
-
-input {
-  color: black;
-}
-
-.weight-row {
-  display: flex;
-  gap: 10px;
-}
-
-.weight-row input {
-  flex: 1;
+.waste-form input::placeholder {
+  color: #9aa0a6;
 }

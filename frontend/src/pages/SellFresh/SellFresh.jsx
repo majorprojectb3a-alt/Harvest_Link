@@ -27,7 +27,7 @@ function SellFresh() {
       <Navbar />
 
       <div className="sell-fresh-page">
-        <h2 className="page-title"> My Fresh Products Listings</h2>
+        <h2 className="page-title"> Fresh Products</h2>
 
         {items && items.length > 0 ? (
           <div className="seller-list">

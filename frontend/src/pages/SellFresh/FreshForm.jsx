@@ -915,7 +915,7 @@ function FreshForm({ onClose, item }) {
         ))}
       </select>
 
-      <button onClick={predictPrice}>
+      <button className="predict-btn" onClick={predictPrice}>
         🔮 Predict Price
       </button>
 {prediction && (
@@ -1023,6 +1023,8 @@ function FreshForm({ onClose, item }) {
         }
 
         <button
+
+          className="add-item"
           onClick={handleSubmit}
           disabled={!form.price || loadingSubmit}
         >
