@@ -10,6 +10,7 @@ import Filters from "../Filters/FreshFilters";
 
 import "./FreshOptions.css";
 
+
 export default function FreshOptions() {
 
   const [items, setItems] = useState([]);
@@ -24,11 +25,14 @@ export default function FreshOptions() {
     lng: null
   });
 
+
   // modal state
   const [selectedFresh, setSelectedFresh] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
   const [buyQuantity, setBuyQuantity] = useState(1);
+
+
 
 
   // fetch fresh items
@@ -49,6 +53,7 @@ export default function FreshOptions() {
     }
 
   };
+
 
   
 
@@ -100,6 +105,10 @@ export default function FreshOptions() {
     fetchLocation();
   }, []);
 
+
+
+
+
   // open modal
   const openDetails = async(id)=>{
 
@@ -114,6 +123,8 @@ export default function FreshOptions() {
 
   };
 
+
+
   // loading state
   if(loading)
     return <p className="fresh-loading">
@@ -127,7 +138,11 @@ export default function FreshOptions() {
     </p>;
 
 
+
+
+
   return(
+
 
     <>
 
@@ -262,3 +277,6 @@ export default function FreshOptions() {
     </>
   );
 }
+
+
+

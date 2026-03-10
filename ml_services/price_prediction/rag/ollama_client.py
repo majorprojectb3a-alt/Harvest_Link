@@ -34,3 +34,5 @@ def ask_ollama(prompt, retries=5):
             time.sleep(5)
 
     return "Explanation generation timed out. Please try again."
+
+

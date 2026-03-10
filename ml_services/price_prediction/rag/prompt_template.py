@@ -6,11 +6,11 @@ def explanation_prompt(context, predicted_price, quantity):
 
     Market Context: {context}
 
-Explain in simple farmer-friendly language:
-- Why this price is predicted
-- What trends influenced it
-- Whether it it above/ below recent average
-- What it suggests for selling today
+Explain briefly:
+1. Why this price is predicted
+2. Current market trend
+3. Should the farmer sell today or wait a few days
+4. Reason for this advice
 
-Keep it practical and clear
+Use simple farmer-friendly language. Keep it practical and clear.
 """

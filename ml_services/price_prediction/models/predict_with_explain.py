@@ -18,3 +18,4 @@ def predict_and_explain(commodity, market = None, state = None, district = None,
         "prediction": pred,
         "explanation": explanation
     }
+
