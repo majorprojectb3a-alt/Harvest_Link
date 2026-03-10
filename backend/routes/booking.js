@@ -1,6 +1,7 @@
 import express from "express";
 import Booking from "../models/Booking.js";
-import Product from "../models/product.js";
+// import Product from "../models/product.js";
+import Waste from "../models/Waste.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import sendSMS from "../utils/sendSMS.js";
@@ -16,14 +17,15 @@ router.post("/book", async (req, res) => {
 
   try {
 
-    const { productId, buyerId, quantity } = req.body;
+    const { productId, buyerId, quantity, itemType } = req.body;
 
-    if(!productId || !buyerId){
+    if(!productId || !buyerId || !itemType){
       return res.status(400).json({message:"Missing productId or buyerId"});
     }
 
-    
-    const product = await Product.findById(productId).populate("userId");
+    const Model = itemType === "Waste" ? Waste : Product;
+
+    const product = await Model.findById(productId).populate("userId");
 
     if(!product){
       return res.status(404).json({message:"Product not found"});
@@ -38,6 +40,7 @@ router.post("/book", async (req, res) => {
 
     const booking = await Booking.create({
       productId,
+      productModel: itemType === "Waste" ? "Waste" : "Product",
       buyerId,
       farmerId: product.userId._id,
       quantity,
@@ -54,7 +57,7 @@ router.post("/book", async (req, res) => {
 
 New booking request received!
 
-Product: ${product.type}
+Product: ${product.crop || product.type || product.name}
 Quantity: ${quantity} kg
 
 Please open HarvestLink dashboard to Accept or Reject.`;
@@ -93,27 +96,30 @@ router.post("/accept/:id", async (req, res) => {
     booking.status = "ACCEPTED";
     await booking.save();
 
-    const product = await Product.findById(booking.productId);
+    const Model =  booking.productModel === "Waste" ? Waste : Product;
 
-    const remainingWeight = product.weight - booking.quantity;
+    const item = await Model.findById(booking.productId);
 
-    await Product.findByIdAndUpdate(
-  booking.productId,
-  {
-    weight: remainingWeight,
-    status: remainingWeight <= 0 ? "sold" : product.status
-  }
-);
+    const availableQty = item.weight || item.quantity;
+    const remaining = availableQty - booking.quantity;
+
+    const updateField = item.weight !== undefined ? "weight" : "quantity";
+
+    await Model.findByIdAndUpdate(
+      booking.productId,
+      {
+        [updateField]: remaining,
+        status: remaining <= 0 ? "sold" : item.status
+      }
+    );
 
     const buyer = await User.findById(booking.buyerId);
 
-    // Notify buyer in DB
     await Notification.create({
       buyer: booking.buyerId,
       message: "Your booking request has been accepted!"
     });
 
-    // Send SMS to buyer
     const message =
 `HarvestLink
 
@@ -121,7 +127,7 @@ Good news!
 
 Your booking request has been ACCEPTED by the farmer.
 
-Product: ${product.crop}`;
+Item: ${item.crop || item.type || item.name}`;
 
     await sendSMS(buyer.phone, message);
 
@@ -154,11 +160,13 @@ router.post("/reject/:id", async (req, res) => {
     booking.status = "REJECTED";
     await booking.save();
 
-    const product = await Product.findById(booking.productId);
+    const Model = booking.productModel === "Waste" ? Waste : Product;
+
+const product = await Model.findById(booking.productId);
     const buyer = await User.findById(booking.buyerId);
 
     await Notification.create({
-      userId: booking.buyerId,
+      buyer: booking.buyerId,
       message: "Your booking request has been rejected."
     });
 
@@ -168,7 +176,7 @@ router.post("/reject/:id", async (req, res) => {
 
 Your booking request was rejected by the farmer.
 
-Product: ${product.type}
+Product:${product.crop || product.type || product.name}
 
 You can explore other fresh items on HarvestLink.`;
 
@@ -194,24 +202,28 @@ router.get("/farmer/:farmerId", async (req,res)=>{
 
   try{
 
+    console.log("Fetching bookings for farmer:", req.params.farmerId);
+
     const bookings = await Booking.find({
       farmerId: req.params.farmerId,
       status: "PENDING"
     })
-    .populate("productId")
-    .populate("buyerId");
+    .populate("buyerId")
+    .populate("productId");
+
+    console.log("Bookings:", bookings);
 
     res.json(bookings);
 
   }
   catch(err){
 
+    console.log("Farmer booking error:", err); // 👈 important
     res.status(500).json({error:err.message});
 
   }
 
 });
-
 
 // ============================
 // Buyer view their requests
@@ -220,14 +232,17 @@ router.get("/farmer/:farmerId", async (req,res)=>{
 router.get("/buyer/:buyerId", async (req,res)=>{
 
   try{
-
+    console.log('inside buyer booking ', req.params.buyerId);
     const bookings = await Booking.find({
-      buyerId: req.params.buyerId
-    })
-    .populate("productId")
-    .populate("farmerId");
-
-    res.json(bookings);
+    buyerId: req.params.buyerId
+})
+.populate("farmerId")
+.populate({
+  path: "productId",
+  model: function(doc){
+    return doc.productModel;
+  }
+});
 
   }
   catch(err){

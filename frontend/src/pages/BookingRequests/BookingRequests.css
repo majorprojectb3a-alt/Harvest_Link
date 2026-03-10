@@ -1,0 +1,104 @@
+.booking-dashboard{
+  background:#e8e2dc;
+  min-height:100vh;
+  padding:30px;
+  font-family: "Segoe UI", sans-serif;
+  margin-top: 80px;
+}
+
+
+.booking-card{
+  background:#f3f1ef;
+  border-radius:16px;
+  padding:25px;
+  margin-bottom:35px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.05);
+}
+
+
+.booking-title{
+  color:#2f5e3b;
+  font-size:20px;
+  font-weight:600;
+  margin-bottom:20px;
+}
+
+
+.booking-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+
+.booking-table th{
+  text-align:left;
+  padding:14px 10px;
+  border-bottom:1px solid #e0e0e0;
+  color:#5a6b7a;
+}
+
+
+.booking-table td{
+  padding:16px 10px;
+  border-bottom:1px solid #e6e6e6;
+}
+
+
+.status-badge{
+  background:#d7e0d1;
+  color:#2f5e3b;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:14px;
+  font-weight:500;
+}
+
+
+.accept-btn{
+  background:#56763f;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  margin-right:6px;
+}
+
+
+.reject-btn{
+  background:#c84a4a;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:20px;
+  gap:12px;
+}
+
+
+.page-btn{
+  border:none;
+  padding:8px 18px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+
+.page-btn.prev{
+  background:#d8d6d1;
+  color:white;
+}
+
+
+.page-btn.next{
+  background:#56763f;
+  color:white;
+}

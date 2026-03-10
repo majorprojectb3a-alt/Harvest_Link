@@ -26,12 +26,11 @@ export const getWasteDetails = async (id) => {
 
 
 
+export const requestWasteBooking = async (data) => {
 
-// BUY WASTE ITEM
-export const buyWasteItem = async (id) => {
   const res = await axios.post(
-    `http://localhost:5000/waste/buy/${id}`,
-    {},
+    "http://localhost:5000/api/bookings/book",
+    data,
     { withCredentials: true }
   );
 

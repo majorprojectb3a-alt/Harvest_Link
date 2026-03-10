@@ -217,6 +217,8 @@ router.get("/details/:id", requireAuth, async (req, res) => {
         msg: "Product not found"
       });
 
+    console.log(product)
+
     res.json(product);
 
   }

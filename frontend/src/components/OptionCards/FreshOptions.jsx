@@ -229,7 +229,9 @@ export default function FreshOptions() {
                     await requestFreshBooking(
                       {productId: selectedFresh._id,
                       buyerId: localStorage.getItem("userId"),
-                    quantity: buyQuantity});
+                    quantity: buyQuantity,
+                  itemType:"Fresh"}
+);
 
                   alert("Booking request sent to farmer!");
 
