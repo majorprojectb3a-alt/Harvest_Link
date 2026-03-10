@@ -87,7 +87,7 @@ export default function CropWasteEstimator() {
             </p>
             <p>
               <strong>Quantity of Biofuel:</strong>{" "}
-              {result.biofuel_quantity}{" "}{result.units}
+              {result.biofuel_produced_liters}{" "}{result.units}
             </p>
           </div>
 
