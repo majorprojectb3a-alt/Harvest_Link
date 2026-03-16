@@ -228,7 +228,7 @@ router.get("/profile", async (req, res) => {
       await User.findById(
         req.session.user.id
       ).select("-password");
-    console.log(user);
+    // console.log(user);
 
     res.json( {user} );
 

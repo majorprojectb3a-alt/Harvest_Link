@@ -1,5 +1,5 @@
 import { CROP_WASTE_TYPES } from "../../constants/cropWasteTypes";
-import "./Filters.css";
+import "./WasteFilters.css";
 
 export default function Filters({ selectedType, setSelectedType }) {
   return (

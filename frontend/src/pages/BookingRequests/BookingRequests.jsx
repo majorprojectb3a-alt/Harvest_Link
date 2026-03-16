@@ -22,6 +22,7 @@ export default function BookingRequests(){
 
       if(role==="farmer"){
         url = `http://localhost:5000/api/bookings/farmer/${userId}`;
+        // here the farmer userId is being sent 
       }
       else{
         url = `http://localhost:5000/api/bookings/buyer/${userId}`;
@@ -202,7 +203,13 @@ export default function BookingRequests(){
           <tbody>
 
             {wasteData.map(r => (
-
+              // booking item: 
+              //   productId,
+              //   productModel: itemType === "Waste" ? "Waste" : "Product",
+              //   buyerId,
+              //   farmerId: product.userId._id,
+              //   quantity,
+              //   status: "PENDING"
               <tr key={r._id}>
 
                 <td>{r.productId?.type}</td>

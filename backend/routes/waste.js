@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 import sendSMS from "../utils/sendSMS.js";
 import pLimit from "p-limit";
-import {toE164} from '../utils/formatPhone.js';
+import Booking from "../models/Booking.js";
 
 const router = express.Router();
 
@@ -447,7 +447,8 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
     // }
 
     const buyerId = req.session.user.id;
-
+    console.log('inside buyer history', buyerId);
+    
     const items = await Waste.find({ buyerId }).sort({ soldAt: -1 });
 
     res.json({ items });
@@ -460,7 +461,7 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
 router.get("/seller/history", async (req, res) => {
 
   try {
-
+    console.log('seller history');
     const sellerId =
       req.session.user.id;
 
@@ -479,7 +480,7 @@ router.get("/seller/history", async (req, res) => {
     if (status !== "all")
       query.status = status;
 
-
+    
     const total =
       await Waste.countDocuments(query);
 
@@ -493,7 +494,7 @@ router.get("/seller/history", async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit);
 
-
+    // console.log('items', items);
     res.json({
       items,
       total,

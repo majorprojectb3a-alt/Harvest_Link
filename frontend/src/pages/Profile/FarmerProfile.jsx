@@ -24,21 +24,21 @@ const [statusFilter,setStatusFilter] = useState("all");
 
 const [editForm,setEditForm] = useState({
 
-name:"",
-phone:"",
-profileImage:"",
+    name:"",
+    phone:"",
+    profileImage:"",
 
-notifyOnNearbyProducts:true,
+    notifyOnNearbyProducts:true,
 
-dno:"",
-addressText:"",
-street:"",
-village:"",
-district:"",
-pincode:"",
+    dno:"",
+    addressText:"",
+    street:"",
+    village:"",
+    district:"",
+    pincode:"",
 
-lat:null,
-lng:null
+    lat:null,
+    lng:null
 
 });
 
@@ -47,18 +47,18 @@ lng:null
 
 const searchAddress = async(text)=>{
 
-setEditForm({...editForm,addressText:text});
+    setEditForm({...editForm,addressText:text});
 
-if(text.length < 3){
-setSuggestions([]);
-return;
-}
+    if(text.length < 3){
+    setSuggestions([]);
+    return;
+    }
 
-const res = await fetch(`https://photon.komoot.io/api/?q=${text}&limit=5`);
+    const res = await fetch(`https://photon.komoot.io/api/?q=${text}&limit=5`);
 
-const data = await res.json();
+    const data = await res.json();
 
-setSuggestions(data.features);
+    setSuggestions(data.features);
 
 };
 
@@ -67,30 +67,29 @@ setSuggestions(data.features);
 
 const selectAddress = (place)=>{
 
-const props = place.properties;
-const coords = place.geometry.coordinates;
+    const props = place.properties;
+    const coords = place.geometry.coordinates;
 
-setEditForm({
+    setEditForm({
 
-...editForm,
+        ...editForm,
 
-addressText:
-props.name +
-(props.city ? ", "+props.city : "") +
-(props.state ? ", "+props.state : ""),
+        addressText:
+        props.name +
+        (props.city ? ", "+props.city : "") +
+        (props.state ? ", "+props.state : ""),
 
-street:props.street || "",
-village:props.city || props.name || "",
-district:props.district || props.state || "",
-pincode:props.postcode || "",
+        street:props.street || "",
+        village:props.city || props.name || "",
+        district:props.district || props.state || "",
+        pincode:props.postcode || "",
 
-lat:coords[1],
-lng:coords[0]
+        lat:coords[1],
+        lng:coords[0]
 
-});
+    });
 
-setSuggestions([]);
-
+    setSuggestions([]);
 };
 
 
@@ -98,25 +97,24 @@ setSuggestions([]);
 
 const getLocation = ()=>{
 
-if(!navigator.geolocation){
-alert("Geolocation not supported");
-return;
-}
+    if(!navigator.geolocation){
+    alert("Geolocation not supported");
+    return;
+    }
 
-navigator.geolocation.getCurrentPosition((pos)=>{
+    navigator.geolocation.getCurrentPosition((pos)=>{
 
-setEditForm({
+    setEditForm({
 
-...editForm,
-lat:pos.coords.latitude,
-lng:pos.coords.longitude
+    ...editForm,
+    lat:pos.coords.latitude,
+    lng:pos.coords.longitude
 
-});
+    });
 
-alert("Location captured");
+    alert("Location captured");
 
-});
-
+    });
 };
 
 
@@ -124,62 +122,62 @@ alert("Location captured");
 
 const fetchProfile = async()=>{
 
-const res = await axios.get(
-"http://localhost:5000/auth/profile",
-{withCredentials:true}
-);
+    const res = await axios.get(
+    "http://localhost:5000/auth/profile",
+    {withCredentials:true}
+    );
 
-const u = res.data.user;
+    const u = res.data.user;
 
-setProfile(u);
+    setProfile(u);
 
-setEditForm({
+    setEditForm({
 
-name:u.name,
-phone:u.phone,
-profileImage:u.profileImage,
+    name:u.name,
+    phone:u.phone,
+    profileImage:u.profileImage,
 
-notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
+    notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
 
-dno:u.address?.dno || "",
-addressText:"",
+    dno:u.address?.dno || "",
+    addressText:"",
 
-street:u.address?.street || "",
-village:u.address?.village || "",
-district:u.address?.district || "",
-pincode:u.address?.pincode || "",
+    street:u.address?.street || "",
+    village:u.address?.village || "",
+    district:u.address?.district || "",
+    pincode:u.address?.pincode || "",
 
-lat:u.location?.coordinates?.[1] || null,
-lng:u.location?.coordinates?.[0] || null
+    lat:u.location?.coordinates?.[1] || null,
+    lng:u.location?.coordinates?.[0] || null
 
-});
+    });
 
 };
 
 
-/* HISTORY */
+    /* HISTORY */
 
 const fetchFreshHistory = async()=>{
 
-const res = await axios.get(
-`http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
-{withCredentials:true}
-);
+    const res = await axios.get(
+    `http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
+    {withCredentials:true}
+    );
 
-setFreshHistory(res.data.items);
-setFreshTotalPages(res.data.totalPages);
+    setFreshHistory(res.data.items);
+    setFreshTotalPages(res.data.totalPages);
 
 };
 
 const fetchWasteHistory = async()=>{
 
-const res = await axios.get(
-`http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
-{withCredentials:true}
-);
+    const res = await axios.get(
+    `http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+    {withCredentials:true}
+    );
 
-setWasteHistory(res.data.items);
-setWasteTotalPages(res.data.totalPages);
+    setWasteHistory(res.data.items);
+    setWasteTotalPages(res.data.totalPages);
 
 };
 
@@ -188,14 +186,14 @@ setWasteTotalPages(res.data.totalPages);
 
 const updateProfile = async()=>{
 
-await axios.put(
-"http://localhost:5000/auth/update-profile",
-editForm,
-{withCredentials:true}
-);
+    await axios.put(
+    "http://localhost:5000/auth/update-profile",
+    editForm,
+    {withCredentials:true}
+    );
 
-setShowEdit(false);
-fetchProfile();
+    setShowEdit(false);
+    fetchProfile();
 
 };
 

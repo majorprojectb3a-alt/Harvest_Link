@@ -10,7 +10,6 @@ export default function BuyerProfile(){
   const [showEdit, setShowEdit] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
 
-  const [buyHistory, setBuyHistory] = useState([]);
   const [freshHistory,setFreshHistory] = useState([]);
   const [wasteHistory,setWasteHistory] = useState([]);
 
@@ -135,7 +134,7 @@ export default function BuyerProfile(){
   const fetchFreshHistory = async ()=>{
 
     const res = await axios.get(
-    `http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
+    `http://localhost:5000/fresh/buyer/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
     {withCredentials:true}
     );
     
@@ -147,7 +146,7 @@ export default function BuyerProfile(){
   const fetchWasteHistory = async()=>{
   
   const res = await axios.get(
-  `http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+  `http://localhost:5000/waste/buyer/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
   {withCredentials:true}
   );
   

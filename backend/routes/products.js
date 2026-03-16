@@ -471,7 +471,7 @@ router.post("/buy/:id", requireRole("buyer"), async (req, res) => {
 router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
 
   try {
-
+    console.log('inside buyer history');
     const buyerId =
       req.session.user.id;
 
@@ -479,6 +479,7 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
       await Product.find({ buyerId })
       .sort({ soldAt: -1 });
 
+    console.log('items', items);
     res.json({ items });
 
   }

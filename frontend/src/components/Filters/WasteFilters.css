@@ -1,0 +1,45 @@
+/* Filters Container */
+.filters {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+/* Dropdown Style */
+.filters select {
+  width: 220px;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* Hover Effect */
+.filters select:hover {
+  border-color: #4caf50;
+}
+
+/* Focus Effect */
+.filters select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .filters {
+    margin: 10px 0;
+  }
+
+  .filters select {
+    width: 100%;
+    max-width: 250px;
+  }
+}

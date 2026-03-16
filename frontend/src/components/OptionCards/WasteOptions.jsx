@@ -147,10 +147,10 @@ export default function WasteOptions() {
               onClick={async () => {
                 try {
                   await requestWasteBooking({
-                    productId: selectedWaste._id,
-                      buyerId: localStorage.getItem("userId"),
-                    quantity: buyQuantity,
-                  itemType:"Waste"
+                    productId: selectedWaste._id, // unique id for each waste item
+                    buyerId: localStorage.getItem("userId"), // the current buyer _id
+                    quantity: buyQuantity, // required quantity
+                    itemType:"Waste" // type of product
                   });
                   alert("✅ Waste booked successfully");
                   setShowDetails(false);
