@@ -48,13 +48,20 @@
   margin-top: 25px;
 }
 
-.cancel-btn {
-  background: #eeeeee;
-  color: #333;
+.modal-content .fresh-item-form .form-actions button.cancel-btn {
+  background: #004d40;
+  color: white;
   border: none;
   padding: 10px 22px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.modal-content .fresh-item-form .form-actions button.cancel-btn:hover {
+  background: white;
+  color: #004d40;
+  border: 3px solid #004d40;
 }
 
 .delete-btn{
@@ -70,18 +77,27 @@
   background:#d9363e;
 }
 
-.add-btn {
-  background: #00695c;
+.modal-content .fresh-item-form .form-actions button.add-item {
+  background: #004d40;
   color: white;
   border: none;
   padding: 10px 24px;
-  border-radius: 100px;
+  border-radius: 999px;
   cursor: pointer;
 }
 
-.add-btn:hover {
-  background: #004d40;
+.modal-content .fresh-item-form .form-actions button.add-item:hover {
+  background: white;
+  color: #004d40;
+  border: 3px solid #004d40;
 }
+
+.modal-content .fresh-item-form .form-actions button.add-item:disabled {
+  background: #cfd8dc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .price-box {
   background: #e6f7f5;
   padding: 10px;
@@ -90,11 +106,35 @@
   font-weight: bold;
 }
 
+.modal-content .fresh-item-form button.predict-btn {
+  margin-top: 10px;
+  padding: 10px 16px;
+  background-color: #004d40;
+  color: 004d40;
+  border: 2px solid #004d40;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  opacity: 1;
+}
+
+.modal-content .fresh-item-form button.predict-btn:hover {
+  background-color: white;
+  color: #00695c;
+  border: 2px solid #00695c;
+}
+
+.modal-content .fresh-item-form button.predict-btn:disabled {
+  background: #cfd8dc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .predict-row {
   display: flex;
   justify-content: center;
 }
-
 
 input {
   color: black;
@@ -109,19 +149,27 @@ input {
   flex: 1;
 }
 
-
 .prediction-box{
   margin-top:15px;
   padding:16px;
   border-radius:10px;
   background:#f1f8e9;
   border:1px solid #c5e1a5;
+
+  max-height: 220px;       /* prevents it from stretching too much */
+  overflow-y: auto;  
 }
 
 .prediction-explanation{
-  margin-top:10px;
-  font-size:14px;
-  color:#444;
+   margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+
+  /* IMPORTANT FIXES */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.5;
 }
 
 .prediction-actions{
@@ -137,7 +185,7 @@ input {
 }
 
 .use-predicted-btn{
-  background:#2e7d32;
+  background:#004d40;
   color:white;
   border:none;
   padding:8px 12px;
@@ -204,48 +252,24 @@ input {
   margin-top: 20px;
 }
 
-.cancel-btn {
-  background: #f5f5f5;
-  color: #333;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.cancel-btn:hover {
-  background: #e0e0e0;
-}
-
 .fresh-item-form input::placeholder {
   color: #888;
 }
 
-
-.predict-btn {
-  margin-top: 10px;
-  padding: 10px 16px;
-  background-color: #00695c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
+/* DISABLED STATE */
+.predict-btn:disabled,
+.add-item:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  border: 2px solid #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-.predict-btn:hover {
-  background-color: #004d40;
-}
-
-.add-item {
-  margin-top: 10px;
-  padding: 10px 16px;
-  background-color: #00695c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease;
+.predict-btn:not(:disabled):hover,
+.add-item:not(:disabled):hover {
+  background-color: #ffffff;
+  color: #00695c;
+  border: 2px solid #00695c;
+  transform: translateY(-1px);
 }

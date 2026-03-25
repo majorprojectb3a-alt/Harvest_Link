@@ -41,13 +41,16 @@ export default function Profile() {
     return <div>Unauthorized</div>;
 
 
-  if (role === "farmer")
+  if (role === "farmer"){
+    console.log('logging in as farmer role');
     return <FarmerProfile />;
+  }
 
 
-  if (role === "buyer")
+  if (role === "buyer"){
+    console.log('logging in as buyer role');
     return <BuyerProfile />;
-
+  }
 
   return <div>Invalid role</div>;
 

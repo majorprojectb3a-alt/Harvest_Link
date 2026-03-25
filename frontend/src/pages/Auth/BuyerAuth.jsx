@@ -3,6 +3,7 @@ import axios from "axios";
 import Navbar from "./AuthNavbar";
 import "../../App.css";
 import "./Auth.css";   
+import {toast} from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 export default function BuyerAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -76,11 +77,11 @@ export default function BuyerAuth() {
         { withCredentials: true }
       );
 
-      console.log(res.data);
+      // console.log(res.data);
       localStorage.setItem("userId", res.data.user.id);
       localStorage.setItem("role", res.data.user.role);
       console.log(res.data);
-      alert(res.data.msg);
+      toast.success(res.data.msg);
       navigate("/BuyerHome");
     } catch (err) {
       alert(err.response.data.msg);
@@ -91,7 +92,7 @@ export default function BuyerAuth() {
     if (!validateSignup()) return;
 
     if(!navigator.geolocation){
-          alert("geolocation not supported by browser");
+          toast.info("geolocation not supported by browser");
           return ;
         }
     
@@ -113,7 +114,7 @@ export default function BuyerAuth() {
                 lng
               }
             );
-            alert(res.data.msg);
+            toast.success(res.data.msg);
             setIsSignUp(false);
             setOtpSent(false);
             setForm({ name: "", email: "", phone: "", password: "", otp: "" });
@@ -131,7 +132,7 @@ export default function BuyerAuth() {
         { phone: resetForm.phone, role: "buyer" }
       );
 
-      alert(res.data.msg);
+      toast.info(res.data.msg);
       setOtpSent(true);
     } catch (err) {
       alert(err.response?.data?.msg);
@@ -153,7 +154,7 @@ export default function BuyerAuth() {
   const resetPassword = async () => {
 
   if (resetForm.newPassword !== resetForm.confirmPassword) {
-    alert("Passwords do not match");
+    toast.info("Passwords do not match");
     return;
   }
 
@@ -175,7 +176,7 @@ export default function BuyerAuth() {
       }
     );
 
-    alert(res.data.msg);
+    toast.info(res.data.msg);
 
     setShowForgotModal(false);
     setOtpSent(false);

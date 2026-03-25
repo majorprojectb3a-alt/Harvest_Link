@@ -141,7 +141,7 @@ def predict_biofuel(req: CropWasteRequest):
     
 @app.post("/predict-fresh-price")
 def predict_fresh_price(req: FreshPriceRequest):
-    print('inside predict fresh')
+    print('inside predict fresh now')
     try:
 
         # Step 1: predict price
@@ -156,6 +156,8 @@ def predict_fresh_price(req: FreshPriceRequest):
         price_per_quintal = result["price_per_quintal"]
         total_value = result["total"]
 
+        print(price_per_quintal, total_value)
+
         # Step 2: generate explanation
         exp = predict_and_explain(
             commodity=req.commodity,
@@ -166,6 +168,8 @@ def predict_fresh_price(req: FreshPriceRequest):
         )
 
         explanation = exp["explanation"]
+        
+        # print(explanation)
 
         return {
             "success": True,
@@ -178,6 +182,7 @@ def predict_fresh_price(req: FreshPriceRequest):
         }
 
     except Exception as e:
+        print('inside exception', e)
         return {
             "success": False,
             "error": str(e)

@@ -33,10 +33,14 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ msg: "Weak password" });
 
     const existingEmail = await User.findOne({ email, role });
+
+    // console.log(existingEmail);
+
     if (existingEmail)
       return res.status(400).json({ msg: "Email already registered" });
 
     const existingPhoneRole = await User.findOne({ phone, role });
+
     if (existingPhoneRole)
       return res.status(400).json({
         msg: `This phone is already registered as a ${role}`
@@ -44,21 +48,37 @@ router.post("/signup", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({
+    const user = {
       role,
       name,
       email,
       phone,
       password: hashedPassword,
-      location: {
-        type: "Point",
-        coordinates: [Number(lng), Number(lat)] // IMPORTANT: lng first
-      }
-      
-    });
-    console.log('user: ', user);
-    await user.save();
+      profileImage: "",
+
+      address:{
+        dno: "",
+        street: "",
+        village: "",
+        district: "",
+        state: "Andhra Pradesh",
+        country: "India",
+        pincode: ""
+      },
+
+      location: null
+    };
+
+    if(role === "buyer"){
+      user.notifyOnNearbyProducts = true;
+    }
+
+    // console.log('user: ', user);
+    const obj = new User(user);
+    await obj.save();
+
     console.log('saved successfully');
+    
     res.status(201).json({ msg: "Signup successful" });
   } catch (err) {
     console.error(err);
@@ -76,7 +96,7 @@ router.post("/login", async (req, res) => {
     console.log('inside login');
 
     const { role, email, password } = req.body;
-
+    console.log(email+" "+password);
     if (!email || !password)
       return res.status(400).json({ msg: "Email & password required" });
 
@@ -109,13 +129,16 @@ router.post("/farmerLogin", async (req, res) => {
     console.log('inside farmer login');
 
     const { role, phone, password } = req.body;
-
+    console.log(phone+" "+password);
+    
     if (!phone || !password)
       return res.status(400).json({ msg: "phone number & password required" });
 
     const user = await User.findOne({ phone, role });
     if (!user)
       return res.status(400).json({ msg: "User not found" });
+
+    console.log(user);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -189,7 +212,7 @@ router.post("/farmerLogin", async (req, res) => {
 router.post('/reset-password', async (req, res) =>{
   try{
     const {role, phone, newPassword} = req.body;
-
+    
     if (newPassword.length < 8)
       return res.status(400).json({ msg: "Weak password" });
 
@@ -224,19 +247,19 @@ router.get("/profile", async (req, res) => {
     if (!req.session.user)
       return res.status(401).json({ msg: "Unauthorized" });
 
+    console.log("inside profile page router");
+
     const user =
       await User.findById(
         req.session.user.id
       ).select("-password");
-    // console.log(user);
-
+    // console.log("user's profile: ", user);
     res.json( {user} );
 
   }
   catch(err){
 
     res.status(500).json({ msg: "Error" });
-
   }
 
 });
@@ -265,24 +288,41 @@ router.put("/update-profile", async (req, res) => {
       lat,
       lng } = req.body;
     
-    const updateData = { name, phone, profileImage, notifyOnNearbyProducts };
+    let updateData = {};
 
-    updateData.address = {
-      dno,
-      street,
-      village,
-      district,
-      pincode,
-      state: "Andhra Pradesh",
-      country: "India"
-    };
-console.log( updateData);
+    if(name !== undefined)
+      updateData.name = name;
+
+    if(phone !== undefined)
+      updateData.phone = phone;
+
+    if(profileImage !== undefined)
+      updateData.profileImage = profileImage;
+
+    if(notifyOnNearbyProducts !== undefined)
+      updateData.notifyOnNearbyProducts = notifyOnNearbyProducts;
+
+    if (dno || street || village || district || pincode) {
+      updateData.address = {
+        dno: dno || "",
+        street: street || "",
+        village: village || "",
+        district: district || "",
+        pincode: pincode || "",
+        state: "Andhra Pradesh",
+        country: "India"
+      };
+    }
+
+    // console.log( updateData);
+
     if(lat && lng){
       updateData.location = {
         type: "Point",
         coordinates: [Number(lng), Number(lat)]
       };
     }
+    
     const user =
       await User.findByIdAndUpdate(
         userId,
@@ -290,7 +330,7 @@ console.log( updateData);
         { new: true }
       );
     
-      console.log(user, updateData);
+    // console.log(user, updateData);
     res.json({ user });
 
   }
@@ -354,7 +394,9 @@ router.post("/send-otp", async (req, res) => {
 /* ================= VERIFY OTP ================= */
 router.post("/verify-otp", async (req, res) => {
   const { phone, otp, role } = req.body;
+
   console.log(req.body+" "+"inside verify otp");
+  
   if (!phone || !otp || !role)
     return res.status(400).json({ msg: "Phone, OTP & role required" });
 

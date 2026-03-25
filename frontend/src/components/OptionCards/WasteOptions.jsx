@@ -2,34 +2,41 @@ import { useEffect, useState } from "react";
 import { getWasteItems, getWasteDetails, requestWasteBooking } from "../../api/wasteApi";
 import WasteCard from "../Card/WasteCard";
 import Filters from "../Filters/Filters";
-import "./WasteOptions.css"
+import "./WasteOptions.css";
 
 export default function WasteOptions() {
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [selectedType, setSelectedType] = useState("All");
   const [location, setLocation] = useState({ lat: null, lng: null });
 
-  // 🔥 DETAILS MODAL STATE
   const [selectedWaste, setSelectedWaste] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [buyQuantity, setBuyQuantity] = useState(1);
 
-  // 🔥 FETCH MARKETPLACE DATA WITH FILTER
+  /* ========================= */
+  /* FETCH WASTE ITEMS */
+  /* ========================= */
+
   const fetchWaste = async (lat, lng, type) => {
     try {
       const data = await getWasteItems(lat, lng, type);
       setItems(data);
       setLoading(false);
     } catch (err) {
-      console.log("🔥 Fetch marketplace error:", err);
+      console.log(err);
       setError("Failed to load waste items");
       setLoading(false);
     }
   };
 
-  // 🔥 REFETCH WHEN FILTER CHANGES
+  /* ========================= */
+  /* REFRESH WHEN FILTER CHANGES */
+  /* ========================= */
+
   useEffect(() => {
     if (location.lat && location.lng) {
       setLoading(true);
@@ -37,145 +44,185 @@ export default function WasteOptions() {
     }
   }, [selectedType]);
 
-  // 🔥 INITIAL LOCATION FETCH
+  /* ========================= */
+  /* GET USER LOCATION */
+  /* ========================= */
+
   useEffect(() => {
+
     if (!navigator.geolocation) {
-      setError("Geolocation not supported by browser");
+      setError("Geolocation not supported");
       setLoading(false);
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+
         const buyerLat = position.coords.latitude;
         const buyerLng = position.coords.longitude;
 
-        console.log("Buyer location:", buyerLat, buyerLng);
-
         setLocation({ lat: buyerLat, lng: buyerLng });
+
         fetchWaste(buyerLat, buyerLng, selectedType);
       },
-      (err) => {
-        console.log("Location error:", err);
+      () => {
         setError("Please allow location to see nearby waste");
         setLoading(false);
       }
     );
+
   }, []);
 
-  // 🔥 OPEN DETAILS MODAL
+  /* ========================= */
+  /* OPEN DETAILS MODAL */
+  /* ========================= */
+
   const openDetails = async (id) => {
     try {
       const data = await getWasteDetails(id);
       setSelectedWaste(data);
       setShowDetails(true);
-    } catch (err) {
-      alert("❌ Failed to load waste details");
+    } catch {
+      alert("Failed to load waste details");
     }
   };
 
-  if (loading) {
-    return <p style={{ textAlign: "center" }}>Loading waste items...</p>;
-  }
+  /* ========================= */
+  /* STATES */
+  /* ========================= */
 
-  if (error) {
+  if (loading)
+    return <p style={{ textAlign: "center" }}>Loading waste items...</p>;
+
+  if (error)
     return <p style={{ textAlign: "center", color: "red" }}>{error}</p>;
-  }
+
+  /* ========================= */
+  /* UI */
+  /* ========================= */
 
   return (
     <>
-      {/* 🔥 FILTER BAR */}
+      {/* FILTER BAR */}
+
       <Filters
         selectedType={selectedType}
         setSelectedType={setSelectedType}
       />
 
-      {/* 🔥 ITEMS GRID */}
+      {/* ITEMS GRID */}
+
       {items.length === 0 ? (
         <p style={{ textAlign: "center", color: "#777" }}>
-          No waste items found for selected type
+          No waste items found
         </p>
       ) : (
-        <div className="items-grid">
+
+        <div className="fresh-items-grid">
+
           {items.map(item => (
+
             <WasteCard
               key={item._id}
               item={item}
-              onSelect={openDetails}   // 🔥 CLICK OPENS DETAILS MODAL
+              onSelect={openDetails}
             />
+
           ))}
+
         </div>
+
       )}
 
-      {/* 🔥 DETAILS MODAL */}
+      {/* MODAL */}
+
       {showDetails && selectedWaste && (
-        <div className="modal-overlay" onClick={() => setShowDetails(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
+        <div
+          className="fresh-modal-overlay"
+          onClick={() => setShowDetails(false)}
+        >
+
+          <div
+            className="fresh-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             <h2>{selectedWaste.type}</h2>
 
-            <p><strong>Quantity:</strong> {selectedWaste.weight} kg</p>
-            <p><strong>Total Price:</strong> ₹{selectedWaste.predictedPrice}</p>
-            <p><strong>Price per kg:</strong> ₹{selectedWaste.pricePerKg}</p>
-
-
-            <hr />
-
-            {/* 🔥 SELLER DETAILS */}
-            <h2>Seller Contact Details</h2>
-            <p><strong>Name:</strong> {selectedWaste.userId.name}</p>
-            <p><strong>Email:</strong> {selectedWaste.userId.email}</p>
-            <p><strong>Phone:</strong> {selectedWaste.userId.phone}</p>
+            <p>Quantity: {Number(selectedWaste.weight).toFixed(2)} kg</p>
+            <p>Total Price: ₹{selectedWaste.totalPrice}</p>
+            <p>Price per kg: ₹{selectedWaste.pricePerKg}</p>
 
             <hr />
-            <br />
+
+            <h3>Seller Details</h3>
+
+            <p>Name: {selectedWaste.userId.name}</p>
+            <p>Email: {selectedWaste.userId.email}</p>
+            <p>Phone: {selectedWaste.userId.phone}</p>
 
             <label>Enter Quantity (kg)</label>
 
-<input
-  type="number"
-  min="1"
-  max={selectedWaste.weight}
-  value={buyQuantity}
-  onChange={(e)=>setBuyQuantity(e.target.value)}
-/>
-            <div className="btns">
-              
-            {/* 🔥 BOOK BUTTON */}
-            <button
-              className="book-btn"
-              onClick={async () => {
-                try {
-                  await requestWasteBooking({
-                    productId: selectedWaste._id, // unique id for each waste item
-                    buyerId: localStorage.getItem("userId"), // the current buyer _id
-                    quantity: buyQuantity, // required quantity
-                    itemType:"Waste" // type of product
-                  });
-                  alert("✅ Waste booked successfully");
-                  setShowDetails(false);
-                  fetchWaste(location.lat, location.lng, selectedType);
-                } catch (err) {
-                  console.log(err)
-                  alert("❌ Failed to book waste");
-                }
-              }}
-            >
-              📦 Book Waste
-            </button>
+            <input
+              type="number"
+              min="1"
+              max={selectedWaste.weight}
+              value={buyQuantity}
+              onChange={(e)=>setBuyQuantity(e.target.value)}
+            />
 
+            <div className="fresh-btns">
 
-            <button
-              className="cancel-btn"
-              onClick={() => setShowDetails(false)}
-            >
-              Close
-            </button>
+              <button
+                className="fresh-buy-btn"
+                onClick={async () => {
+                  try {
+
+                    await requestWasteBooking({
+                      productId: selectedWaste._id,
+                      buyerId: localStorage.getItem("userId"),
+                      quantity: Number(buyQuantity),
+                      itemType:"Waste"
+                    });
+
+                    alert("✅ Waste booked successfully");
+
+                    setShowDetails(false);
+
+                    fetchWaste(
+                      location.lat,
+                      location.lng,
+                      selectedType
+                    );
+
+                  } catch (err) {
+
+                    console.log(err);
+                    alert("❌ Failed to book waste");
+
+                  }
+                }}
+              >
+                📦 Book Waste
+              </button>
+
+              <button
+                className="fresh-close-btn"
+                onClick={() => setShowDetails(false)}
+              >
+                Close
+              </button>
+
             </div>
 
           </div>
+
         </div>
+
       )}
+
     </>
   );
 }

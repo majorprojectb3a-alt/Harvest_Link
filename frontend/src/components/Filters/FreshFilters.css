@@ -1,27 +1,62 @@
-.filters-container {
+/* FILTER BAR */
+
+.filters {
   display: flex;
-  gap: 25px;
   justify-content: center;
+  align-items: center;
 
-  background: #f8f8f8;
+  gap: 20px;
+
+  background: #ffffff;
   padding: 14px 22px;
+
   border-radius: 12px;
-  border: 1px solid #eee;
+  border: 1px solid #e5e7eb;
 
-  max-width: 600px;
-  margin: 0 auto 20px auto;   /* 🔥 REDUCED BOTTOM GAP */
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  width: fit-content;
+  margin: 20px auto;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
 }
 
-option, select {
-  color: black;
-}
+/* SELECT INPUT */
 
-.filters-container select {
-  padding: 10px 16px;
+.filters select {
+
+  padding: 10px 14px;
+
   border-radius: 8px;
-  border: 1px solid #bbb;
-  font-size: 15px;
+  border: 1px solid #d1d5db;
+
+  font-size: 14px;
+
+  background: #ffffff;
+  color: #333;
+
   cursor: pointer;
-  background: #f9f9f9;
+
+  transition: all 0.2s ease;
+}
+
+
+/* HOVER */
+
+.filters select:hover {
+  border-color: #2f6b3f;
+}
+
+
+/* FOCUS */
+
+.filters select:focus {
+  outline: none;
+  border-color: #2f6b3f;
+  box-shadow: 0 0 0 2px rgba(47,107,63,0.15);
+}
+
+
+/* OPTION TEXT */
+
+.filters option {
+  color: #333;
 }

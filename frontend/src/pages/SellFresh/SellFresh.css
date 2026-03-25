@@ -9,7 +9,7 @@
   text-align: center;
   margin-bottom: 25px;
   font-size: 28px;
-  color: #2e7d32;
+  color: #004d40;
 }
 
 /* LIST CONTAINER */
@@ -38,7 +38,7 @@
 /* LEFT INFO */
 .seller-info h3 {
   margin-bottom: 6px;
-  color: #1b5e20;
+  color: #004d40;
 }
 
 .seller-info p {
@@ -50,7 +50,7 @@
 .seller-price {
   font-size: 20px;
   font-weight: bold;
-  color: #2e7d32;
+  color: #004d40;
 }
 
 /* STATUS RIGHT */
@@ -70,7 +70,7 @@
 
 .status-badge.available {
   background-color: #e8f5e9;
-  color: #2e7d32;
+  color: #25b90e;
 }
 
 .status-badge.sold {
@@ -100,7 +100,7 @@
   justify-content: center;
   font-size: 32px;
   border: none;
-  background-color: #2e7d32;
+  background-color: #004d40;
   color: white;
   cursor: pointer;
   z-index: 1000;
@@ -108,7 +108,7 @@
 }
 
 .fab:hover {
-  background-color: #1b5e20;
+  background-color: #004d40;
 }
 
 /* 🔥 MODAL OVERLAY */
@@ -127,7 +127,6 @@
 
 /* 🔥 MODAL CONTENT BOX */
 .modal-content {
-  background-color: #ffffff;
   padding: 30px 35px;
   border-radius: 14px;
   width: 380px;
@@ -135,6 +134,16 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: popup 0.3s ease;
 }
+
+/* .modal-content .fresh-item-form .form-actions button.cancel-btn {
+  background: #004d40;
+  color: white;
+  border: 2px solid #004d40;
+  padding: 10px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+} */
 
 /* Small animation */
 @keyframes popup {

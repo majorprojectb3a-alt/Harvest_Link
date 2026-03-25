@@ -93,7 +93,7 @@ export default function BookingRequests(){
             <tr>
               <th>Product</th>
               <th>Quantity</th>
-              <th>Buyer</th>
+              {role === "farmer" && <th>Buyer</th>}
               <th>Status</th>
               <th>Date</th>
               {role==="farmer" && <th>Action</th>}
@@ -110,7 +110,7 @@ export default function BookingRequests(){
 
                 <td>{r.quantity} kg</td>
 
-                <td>{r.buyerId?.name}</td>
+                {role==="farmer" && <td>{r.buyerId?.name}</td>}
 
                 <td>
                   <span className="status-badge">
@@ -168,7 +168,7 @@ export default function BookingRequests(){
           </span>
 
           <button
-            disabled={freshPage===freshTotalPages}
+            disabled={freshPage>=freshTotalPages}
             onClick={()=>setFreshPage(freshPage+1)}
             className="page-btn next"
           >
@@ -193,7 +193,7 @@ export default function BookingRequests(){
             <tr>
               <th>Type</th>
               <th>Quantity</th>
-              <th>Buyer</th>
+              {role==="farmer" && <th>Buyer</th>}
               <th>Status</th>
               <th>Date</th>
               {role==="farmer" && <th>Action</th>}
@@ -216,7 +216,7 @@ export default function BookingRequests(){
 
                 <td>{r.quantity} kg</td>
 
-                <td>{r.buyerId?.name}</td>
+                {role==="farmer" && <td>{r.buyerId?.name}</td>}
 
                 <td>
                   <span className="status-badge">
@@ -262,7 +262,7 @@ export default function BookingRequests(){
         <div className="pagination">
 
           <button
-            disabled={wastePage===1}
+            disabled={wastePage==1}
             onClick={()=>setWastePage(wastePage-1)}
             className="page-btn prev"
           >
@@ -274,7 +274,7 @@ export default function BookingRequests(){
           </span>
 
           <button
-            disabled={wastePage===wasteTotalPages}
+            disabled={wastePage>=wasteTotalPages}
             onClick={()=>setWastePage(wastePage+1)}
             className="page-btn next"
           >

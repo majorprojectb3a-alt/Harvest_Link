@@ -17,7 +17,7 @@
 
 
 .booking-title{
-  color:#2f5e3b;
+  color:#004d40;
   font-size:20px;
   font-weight:600;
   margin-bottom:20px;
@@ -43,19 +43,17 @@
   border-bottom:1px solid #e6e6e6;
 }
 
-
-.status-badge{
+.booking-table .status-badge{
   background:#d7e0d1;
-  color:#2f5e3b;
+  color:#25b90e;
   padding:6px 14px;
   border-radius:20px;
   font-size:14px;
   font-weight:500;
 }
 
-
 .accept-btn{
-  background:#56763f;
+  background:#004d40;
   color:white;
   border:none;
   padding:6px 12px;
@@ -99,6 +97,6 @@
 
 
 .page-btn.next{
-  background:#56763f;
+  background:#004d40;
   color:white;
 }

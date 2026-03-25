@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {toast} from "react-toastify";
 import Navbar from "./AuthNavbar";
 import "../../App.css";
 import "./Auth.css"; 
@@ -69,7 +70,7 @@ export default function FarmerAuth() {
         "http://localhost:5000/auth/send-otp",
         { phone: resetForm.phone, role: "farmer" }
       );
-      alert(res.data.msg);
+      toast.info(res.data.msg);
       setOtpSent(true);
     } catch (err) {
       alert(err.response?.data?.msg);
@@ -92,7 +93,7 @@ export default function FarmerAuth() {
   const resetPassword = async () => {
   
     if (resetForm.newPassword !== resetForm.confirmPassword) {
-      alert("Passwords do not match");
+      toast.info("Passwords do not match");
       return;
     }
   
@@ -114,7 +115,7 @@ export default function FarmerAuth() {
         }
       );
   
-      alert(res.data.msg);
+      toast.info(res.data.msg);
   
       setShowForgotModal(false);
       setOtpSent(false);
@@ -124,30 +125,6 @@ export default function FarmerAuth() {
       alert(err.response?.data?.msg);
     }
   };
-
-  // const verifyOtp = async () => {
-  //   if (!validateVerifyOtp()) return;
-  //   try {
-  //     const res = await axios.post(
-  //       "http://localhost:5000/auth/verify-otp",
-  //       { phone: form.phone, otp: form.otp, role: "farmer" }
-  //     );
-  //     alert(res.data.msg);
-
-  //     console.log(res.data.user);
-
-  //     localStorage.setItem("userId", res.data.user.id);
-  //     localStorage.setItem("role", res.data.user.role);
-
-  //     // Navigate first, then reset form
-  //     navigate("/FarmerHome");
-  //     setForm({ name: "", email: "", phone: "", password: "", otp: "" });
-  //     setErrors({});
-  //     setOtpSent(false);
-  //   } catch (err) {
-  //     setErrors({ otp: err.response?.data?.msg || "Invalid OTP" });
-  //   }
-  // };
 
   // LOGIN 
   const handleLogin = async () => {
@@ -165,11 +142,11 @@ export default function FarmerAuth() {
         { withCredentials: true }
       );
 
-      console.log(res.data);
+      // console.log(res.data);
       localStorage.setItem("userId", res.data.user.id);
       localStorage.setItem("role", res.data.user.role);
       console.log(res.data);
-      alert(res.data.msg);
+      toast.success(res.data.msg);
       navigate("/FarmerHome");
     } catch (err) {
       alert(err.response.data.msg);
@@ -213,7 +190,7 @@ export default function FarmerAuth() {
             lng
           }
         );
-        alert(res.data.msg);
+        toast.success(res.data.msg);
         setIsSignUp(false);
         setOtpSent(false);
         setForm({ name: "", email: "", phone: "", password: "", otp: "" });

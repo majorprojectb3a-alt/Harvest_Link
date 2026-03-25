@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
 import "./FarmerProfile.css";
 import HistoryTable from "../../components/History/HistoryTable";
@@ -35,6 +36,8 @@ const [editForm,setEditForm] = useState({
     street:"",
     village:"",
     district:"",
+    state: "",
+    country: "",
     pincode:"",
 
     lat:null,
@@ -68,6 +71,7 @@ const searchAddress = async(text)=>{
 const selectAddress = (place)=>{
 
     const props = place.properties;
+    console.log(props);
     const coords = place.geometry.coordinates;
 
     setEditForm({
@@ -81,7 +85,9 @@ const selectAddress = (place)=>{
 
         street:props.street || "",
         village:props.city || props.name || "",
-        district:props.district || props.state || "",
+        district:props.district || "",
+        state: props.state || "",
+        country: props.country || "",
         pincode:props.postcode || "",
 
         lat:coords[1],
@@ -137,14 +143,14 @@ const fetchProfile = async()=>{
     phone:u.phone,
     profileImage:u.profileImage,
 
-    notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
-
     dno:u.address?.dno || "",
     addressText:"",
 
     street:u.address?.street || "",
     village:u.address?.village || "",
     district:u.address?.district || "",
+    state: u.address?.state || "",
+    country: u.address?.country || "",
     pincode:u.address?.pincode || "",
 
     lat:u.location?.coordinates?.[1] || null,
@@ -222,7 +228,40 @@ reader.readAsDataURL(file);
 /* EFFECTS */
 
 useEffect(()=>{
-fetchProfile();
+// fetchProfile();
+    const loadProfile = async () =>{
+        const res = await axios.get("http://localhost:5000/auth/profile", {withCredentials: true});
+
+        const u = res.data.user;
+        setProfile(u);
+
+        setEditForm({
+            name: u.name,
+            phone: u.phone,
+            profileImage:u.profileImage,
+
+            dno:u.address?.dno || "",
+            addressText:"",
+
+            street:u.address?.street || "",
+            village:u.address?.village || "",
+            district:u.address?.district || "",
+            state: u.address?.state || "",
+            country: u.address?.country || "",
+            pincode:u.address?.pincode || "",
+
+            lat:u.location?.coordinates?.[1] || null,
+            lng:u.location?.coordinates?.[0] || null
+        });
+
+        const missingLocation = !u.location?.coordinates;
+        const missingAddress = !u.address?.street && !u.address?.village && !u.address?.district;
+
+        if(missingAddress || missingLocation)
+            setShowEdit(true);
+    }
+
+    loadProfile();
 },[]);
 
 useEffect(()=>{
@@ -247,27 +286,73 @@ return(
 
 <div className="profile-card">
 
-<div className="profile-left">
+  <div className="profile-left">
 
-<img
-src={profile.profileImage || "/default_profile_image.png"}
-className="profile-image"
-/>
+    <img
+      src={profile.profileImage || "/default_profile_image.png"}
+      className="profile-image"
+    />
 
-<div>
-<h2>{profile.name}</h2>
-<p>{profile.email}</p>
-<p>{profile.phone}</p>
-</div>
+    <div className="profile-details">
 
-</div>
+      <h2 className="profile-name">{profile.name}</h2>
 
-<button
-className="edit-btn"
-onClick={()=>setShowEdit(true)}
->
-Edit Profile
-</button>
+      <div className="profile-info">
+
+        <div className="info-row">
+          <FaUser className="info-icon" />
+          <div>
+            <span>Role</span>
+            <p>{profile.role}</p>
+          </div>
+        </div>
+
+        <div className="info-row">
+          <FaEnvelope className="info-icon" />
+          <div>
+            <span>Email</span>
+            <p>{profile.email}</p>
+          </div>
+        </div>
+
+        <div className="info-row">
+          <FaPhone className="info-icon" />
+          <div>
+            <span>Phone</span>
+            <p>{profile.phone}</p>
+          </div>
+        </div>
+
+      </div>
+
+      {profile.address && (
+        <div className="address-section">
+          <h4><FaMapMarkerAlt /> Address</h4>
+
+          <p className="address-line">
+            {profile.address?.dno}, {profile.address?.street}
+          </p>
+
+          <p className="address-line">
+            {profile.address?.village}, {profile.address?.district}
+          </p>
+
+          <p className="address-line">
+            {profile.address?.state}, {profile.address?.country} - {profile.address?.pincode}
+          </p>
+        </div>
+      )}
+
+    </div>
+
+  </div>
+
+  <button
+    className="edit-btn"
+    onClick={()=>setShowEdit(true)}
+  >
+    Edit Profile
+  </button>
 
 </div>
 
@@ -335,6 +420,12 @@ setPage={setWastePage}
 <div className="modal-content">
 
 <h3>Edit Profile</h3>
+
+{(!editForm.lat || !editForm.street) && (
+  <div className="profile-warning">
+    ⚠ Please complete your address and location to get better matches nearby.
+  </div>
+)}
 
 <div className="image-upload-container">
 
@@ -419,24 +510,40 @@ onChange={(e)=>setEditForm({...editForm,dno:e.target.value})}
 />
 
 <input
+className={!editForm.street ? "input-error" : ""}
 placeholder="Street"
 value={editForm.street}
 onChange={(e)=>setEditForm({...editForm,street:e.target.value})}
 />
 
 <input
+className={!editForm.street ? "input-error" : ""}
 placeholder="Village"
 value={editForm.village}
 onChange={(e)=>setEditForm({...editForm,village:e.target.value})}
 />
 
 <input
+className={!editForm.street ? "input-error" : ""}
 placeholder="District"
 value={editForm.district}
 onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
 />
 
 <input
+placeholder="State"
+value={editForm.state}
+onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
+/>
+
+<input
+placeholder="Country"
+value={editForm.country}
+onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
+/>
+
+<input
+className={!editForm.street ? "input-error" : ""}
 placeholder="Pincode"
 value={editForm.pincode}
 onChange={(e)=>setEditForm({...editForm,pincode:e.target.value})}
@@ -455,25 +562,6 @@ Use Current Location
 <p className="coords">
 Coordinates: {editForm.lat || "-"} , {editForm.lng || "-"}
 </p>
-
-
-<label className="notify-toggle">
-
-<input
-type="checkbox"
-checked={editForm.notifyOnNearbyProducts}
-onChange={(e)=>
-setEditForm({
-...editForm,
-notifyOnNearbyProducts:e.target.checked
-})
-}
-/>
-
-Receive notifications for nearby waste
-
-</label>
-
 
 <div className="modal-actions">
 
