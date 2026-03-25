@@ -15,12 +15,17 @@ import BookingRequests from "./pages/BookingRequests/BookingRequests";
 import axios from "axios";
 import RoleProtectedRoute from "./pages/Auth/RoleProtectedRoute";
 import Profile from "./pages/Profile/profile";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 
 function App() {
   axios.defaults.withCredentials = true;
 
   return (
+      <>
+      <ToastContainer position="top-right" />
       <Routes>
         <Route path = "/unauthorized" element = {<Unauthorized/>} />
         <Route path="/" element={<LandingPage />} />
@@ -61,6 +66,7 @@ function App() {
 
         <Route path="/booking-requests" element={<BookingRequests />} />
       </Routes>
+      </>
   );
 }
 

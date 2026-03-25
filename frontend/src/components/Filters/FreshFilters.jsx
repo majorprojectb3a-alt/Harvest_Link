@@ -1,4 +1,4 @@
-import "./Filters.css";
+import "./FreshFilters.css";
 import { CROP_FRESH_TYPES } from "../../constants/cropFreshTypes";
 export default function Filters({
   selectedType,

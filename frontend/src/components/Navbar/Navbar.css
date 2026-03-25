@@ -1,83 +1,48 @@
 .nav {
-    background: #00695C;
-    height: 80px;
-    padding: 0 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Logo left, rest right */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    box-sizing: border-box;
+  background: #00695C;
+  height: 80px;
+
+  position: fixed;
+  top: 0;
+  left: 0;   /* already there */
+  right: 0;  /* ADD THIS */
+
+  width: 100%;
+  
+  padding: 0 40px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  z-index: 1000;
 }
 
-/* Logo styling */
-.logo {
+/* LOGO */
+.logo a{
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: 1px;
   color: white;
+  font-family:cursive;
 }
 
-/* Middle links (Home, Contact) */
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 24px;
-  margin: 0;
-  padding: 0;
+.logo a:hover{
+  color: #b8b8b9;
 }
 
-.nav-links li a {
-  text-decoration: none;
-  color: #e5e7eb;
-  font-size: 16px;
-  transition: color 0.2s ease;
-}
 
-.nav-links li a:hover {
-  color: #38bdf8;
-}
-
-/* Right section: username, profile, logout */
+/* RIGHT SECTION */
 .right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    color: white;
-    border-radius: 15px;
-    height: 50px;
-    padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
-.logout p {
-  color: white;
-}
-
-.logout-logo {
-    font-size: 25px;
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.logout:hover {
-  transform: scale(1.1);
-  cursor: pointer;
-}
-
-/* Username text */
-.username {
-  font-weight: 600;
-  color: #ecf4ec;
-  font-size: 16px;
-}
-
-/* Profile image */
+/* PROFILE IMAGE */
 .profile-img {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid white;
@@ -89,30 +54,115 @@
   transform: scale(1.1);
 }
 
-/* Logout button */
-.logout {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background-color: crimson;
-    color: white;
-    border-radius: 15px;
-    height: 50px;
-    padding: 0 10px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+/* PROFILE WRAPPER */
+.profile-wrapper {
+  position: relative;
 }
 
-.logout p {
+/* DROPDOWN */
+.dropdown-menu {
+  position: absolute;
+  top: 55px;
+  right: 0;
+
+  width: 220px;
+  background: white;
+  border-radius: 12px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+/* HEADER */
+.dropdown-header {
+  padding: 12px 16px;
+  background: #f3f4f6;
+}
+
+.dropdown-name {
   margin: 0;
-  color: white;
   font-weight: 600;
+  font-size: 18px;
 }
 
-.logout-logo {
-    font-size: 25px;
+.dropdown-role {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6b7280;
 }
 
-.logout:hover {
+/* DIVIDER */
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+}
+
+/* ITEMS */
+.dropdown-item {
+  display: block;
+  padding: 12px 16px;
+  font-size: 17px;
+  color: #111827;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+  background: #f9fafb;
+}
+
+/* LOGOUT */
+.logout-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: crimson;
+}
+
+/* NOTIFICATION BUTTON */
+.notification-toggle {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.notification-toggle:hover {
+  background: white;
   transform: scale(1.1);
+}
+
+.bell-icon {
+  font-size: 20px;
+}
+
+.bell-icon.active {
+  color: gold;
+}
+
+.bell-icon.inactive {
+  color: #e5e7eb;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

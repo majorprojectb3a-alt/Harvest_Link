@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import Notification from "../models/Notification.js";
 import sendSMS from "../utils/sendSMS.js";
 import pLimit from "p-limit";
-import {toE164} from '../utils/formatPhone.js';
+import Booking from "../models/Booking.js";
 
 const router = express.Router();
 
@@ -212,17 +212,13 @@ router.get("/details/:id", requireAuth, async (req, res) => {
 
 router.post("/add", requireRole("farmer"), async (req, res) => {
   try {
-    // if (!req.session.user) {
-    //   return res.status(401).json({ msg: "Not logged in" });
-    // }
-    console.log('inside add waste item');
     const userId = req.session.user.id;
     const userName = req.session.user.name;
 
     let { type, weight, pricePerKg, totalPrice } = req.body;
 
     const user = await User.findById(userId);
-    console.log(user.location.coordinates[0]);
+
     let lat = Number(user.location.coordinates[1]);
     let lng = Number(user.location.coordinates[0]);
 
@@ -230,6 +226,32 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
       return res.status(400).json({ msg: "Location is required" });
     }
 
+    /* 🔍 CHECK EXISTING WASTE */
+    let existing = await Waste.findOne({
+      userId,
+      type,
+      pricePerKg,
+      status: "available"
+    });
+
+    if (existing) {
+      /* ✅ UPDATE EXISTING */
+      existing.weight += Number(weight);
+      existing.totalPrice += Number(totalPrice);
+
+      // Optional: update price
+      // existing.pricePerKg = pricePerKg;
+
+      await existing.save();
+
+      return res.json({
+        msg: "Existing waste updated",
+        merged: true,
+        waste: existing
+      });
+    }
+
+    /* 🆕 CREATE NEW */
     const waste = await Waste.create({
       userId,
       userName,
@@ -237,16 +259,17 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
       weight,
       pricePerKg,
       totalPrice,
-      location: {
-        lat,
-        lng
+      location: { lat, lng },
+      locationGeo: {
+        type: "Point",
+        coordinates: [lng, lat]
       },
-      locationGeo: { type: "Point", coordinates: [lng, lat] },
-      status: "available"   // VERY IMPORTANT
+      status: "available"
     });
-    
+
+    /* 🔔 NOTIFY BUYERS */
     const buyers = await User.find({
-       role: "buyer",
+      role: "buyer",
       location: {
         $near: {
           $geometry: {
@@ -257,84 +280,21 @@ router.post("/add", requireRole("farmer"), async (req, res) => {
         }
       }
     });
-    console.log(buyers);
-    // ⭐ SEND SMS TO ALL BUYERS
+
     for (let buyer of buyers) {
-      const resp = await sendSMS(
+      if (!buyer.notifyOnNearbyProducts) continue;
+
+      await sendSMS(
         buyer.phone,
         `New waste available: ${type} (${weight}kg) near your location`
       );
-      console.log(resp);
     }
-
 
     res.status(201).json({
       message: `${buyers.length} buyers notified`,
       waste
     });
 
-
-
-    // const message = new waste available ${type} (${weight} kg) at ${userName}. Expected price: ${predictedPrice};
-
-    // const maxDistanceMeters = 50_000;
-
-    // const buyers = await User.find({ 
-    //   role: "buyer",
-    //   location: {
-    //   $near:{
-    //     $geometry: {type: "Point", coordinates: [lat, lng]},
-    //     $maxDistance: maxDistanceMeters
-    //   }
-    // }}).lean();
-    
-    // const limit = plimit(5);
-    // const sendTasks = [];
-
-    // for (let buyer of buyers) {
-    //   const phoneE164 = toE164(buyer.phone, "IN");
-    //   const notify = await Notification.create({
-    //     buyer: buyer._id,
-    //     phone: phoneE164,
-    //     waste: waste._id,
-    //     message, 
-    //     status: 'pending'
-    //   });
-      
-    //   if (!phoneE164) {
-    //     // update notification as failed due to invalid number
-    //     await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: "invalid phone" });
-    //     continue;
-    //   }
-
-    //   const task = limit(async () => {
-    //     try {
-    //       const tw = await sendSMS(phoneE164, message, { wasteId: waste._id });
-    //       // update notification with messageSid and status (queued or sent)
-    //       await Notification.findByIdAndUpdate(notif._id, {
-    //         messageSid: tw.sid,
-    //         status: tw.status || "queued"
-    //       });
-    //       return { ok: true, buyer: buyer._id, sid: tw.sid };
-    //     } catch (err) {
-    //       await Notification.findByIdAndUpdate(notify._id, { status: "failed", error: err.message });
-    //       return { ok: false, buyer: buyer._id, error: err.message };
-    //     }
-    //   });
-
-    //   sendTasks.push(task);
-
-    //   const results = await Promise.allSettled(sendTasks);
-
-    // res.status(201).json({
-    //   message: "Waste added; notifications persisted; SMS sends attempted",
-    //   waste,
-    //   buyerCount: buyers.length,
-    //   smsResults: results.map(r => (r.status === "fulfilled" ? r.value : { ok: false, error: r.reason }))
-    // });
-
-    // }
-     
   } catch (err) {
     console.log("🔥 Add waste error:", err);
     res.status(500).json({ msg: "Failed to add item" });
@@ -442,15 +402,32 @@ router.post("/buy/:id", requireRole("buyer"), async (req, res) => {
 
 router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
   try {
-    // if (!req.session.user) {
-    //   return res.status(401).json({ msg: "Not logged in" });
-    // }
-
     const buyerId = req.session.user.id;
+    console.log('inside waste  buyer history', buyerId);
+    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const status = req.query.status || 'all';
+    
+    let query = { buyerId: buyerId};
+    
+    if (status !== "all")
+      query.status = status;
+        
+    const total = await Waste.countDocuments(query);
+    const totalPages = Math.max(1, Math.ceil(total/ limit));
+    
+    const items =
+      await Waste.find(query)
+      .sort({ soldAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    
+    // console.log('items', items);
+    res.json({ items, total, page, totalPages });
 
-    const items = await Waste.find({ buyerId }).sort({ soldAt: -1 });
-
-    res.json({ items });
+    // const items = await Waste.find({ buyerId }).sort({ soldAt: -1 });
+    // res.json({ items });
 
   } catch (err) {
     res.status(500).json({ msg: "Failed to fetch purchase history" });
@@ -460,7 +437,7 @@ router.get("/buyer/history", requireRole("buyer"), async (req, res) => {
 router.get("/seller/history", async (req, res) => {
 
   try {
-
+    console.log('seller history');
     const sellerId =
       req.session.user.id;
 
@@ -479,7 +456,7 @@ router.get("/seller/history", async (req, res) => {
     if (status !== "all")
       query.status = status;
 
-
+    
     const total =
       await Waste.countDocuments(query);
 
@@ -493,7 +470,7 @@ router.get("/seller/history", async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit);
 
-
+    // console.log('items', items);
     res.json({
       items,
       total,

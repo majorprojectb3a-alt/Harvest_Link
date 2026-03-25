@@ -104,7 +104,6 @@ export default function WasteOptions() {
 
   return (
     <>
-
       {/* FILTER BAR */}
 
       <Filters
@@ -153,7 +152,7 @@ export default function WasteOptions() {
             <h2>{selectedWaste.type}</h2>
 
             <p>Quantity: {Number(selectedWaste.weight).toFixed(2)} kg</p>
-            <p>Total Price: ₹{selectedWaste.predictedPrice}</p>
+            <p>Total Price: ₹{selectedWaste.totalPrice}</p>
             <p>Price per kg: ₹{selectedWaste.pricePerKg}</p>
 
             <hr />
@@ -171,7 +170,7 @@ export default function WasteOptions() {
               min="1"
               max={selectedWaste.weight}
               value={buyQuantity}
-              onChange={(e) => setBuyQuantity(e.target.value)}
+              onChange={(e)=>setBuyQuantity(e.target.value)}
             />
 
             <div className="fresh-btns">
@@ -179,17 +178,16 @@ export default function WasteOptions() {
               <button
                 className="fresh-buy-btn"
                 onClick={async () => {
-
                   try {
 
                     await requestWasteBooking({
                       productId: selectedWaste._id,
                       buyerId: localStorage.getItem("userId"),
-                      quantity: buyQuantity,
-                      itemType: "Waste"
+                      quantity: Number(buyQuantity),
+                      itemType:"Waste"
                     });
 
-                    alert("Waste booking request sent!");
+                    alert("✅ Waste booked successfully");
 
                     setShowDetails(false);
 
@@ -199,12 +197,12 @@ export default function WasteOptions() {
                       selectedType
                     );
 
-                  } catch {
+                  } catch (err) {
 
-                    alert("Failed to book waste");
+                    console.log(err);
+                    alert("❌ Failed to book waste");
 
                   }
-
                 }}
               >
                 📦 Book Waste

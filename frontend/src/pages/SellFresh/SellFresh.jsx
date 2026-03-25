@@ -40,14 +40,15 @@ function SellFresh() {
                 {/* LEFT SIDE */}
                 <div className="seller-info">
                   <h3>{item.crop}</h3>
-                  <p>Quantity: {item.weight} kg</p>
-                  <strong>Location:</strong> {item.state}, {item.district}, {item.mandi}
+                  {item.status === "available" && 
+                  <p>Quantity: {item.weight} kg</p>}
+                  <strong>Location:</strong> {item.mandi}, {item.district}, {item.state}
                 </div>
 
                 {/* MIDDLE */}
                 <div className="seller-price">
-                  ₹{item.price}/ unit
-                  total: ₹{item.totalPrice}
+                  ₹{item.price}/ unit <br/>
+                  Total: ₹{item.totalPrice}
                 </div>
 
                 {/* RIGHT SIDE */}

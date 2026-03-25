@@ -12,20 +12,22 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.13.2",
+    "axios": "^1.13.6",
     "bcryptjs": "^2.4.3",
     "connect-mongo": "^6.0.0",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "csvtojson": "^2.0.14",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.3.1",
     "express": "^4.22.1",
-    "express-session": "^1.18.2",
+    "express-session": "^1.19.0",
     "libphonenumber-js": "^1.12.37",
     "mongod": "^2.0.0",
-    "mongoose": "^8.21.0",
-    "nodemon": "^3.1.11",
+    "mongoose": "^8.23.0",
     "p-limit": "^7.3.0",
     "path": "^0.12.7",
-    "twilio": "^5.11.2"
+    "twilio": "^5.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

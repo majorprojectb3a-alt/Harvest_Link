@@ -15,7 +15,7 @@ def ask_ollama(prompt, retries=5):
                     "stream": False,
                     "options": {
                         "temperature": 0.2,
-                        "num_predict": 200,
+                        "num_predict": 1000,
                         "top_p": 0.9
                     }
                 },

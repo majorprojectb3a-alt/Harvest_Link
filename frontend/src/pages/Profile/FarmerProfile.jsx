@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
 import "./FarmerProfile.css";
 import HistoryTable from "../../components/History/HistoryTable";
@@ -24,21 +25,23 @@ const [statusFilter,setStatusFilter] = useState("all");
 
 const [editForm,setEditForm] = useState({
 
-name:"",
-phone:"",
-profileImage:"",
+    name:"",
+    phone:"",
+    profileImage:"",
 
-notifyOnNearbyProducts:true,
+    notifyOnNearbyProducts:true,
 
-dno:"",
-addressText:"",
-street:"",
-village:"",
-district:"",
-pincode:"",
+    dno:"",
+    addressText:"",
+    street:"",
+    village:"",
+    district:"",
+    state: "",
+    country: "",
+    pincode:"",
 
-lat:null,
-lng:null
+    lat:null,
+    lng:null
 
 });
 
@@ -47,18 +50,18 @@ lng:null
 
 const searchAddress = async(text)=>{
 
-setEditForm({...editForm,addressText:text});
+    setEditForm({...editForm,addressText:text});
 
-if(text.length < 3){
-setSuggestions([]);
-return;
-}
+    if(text.length < 3){
+    setSuggestions([]);
+    return;
+    }
 
-const res = await fetch(`https://photon.komoot.io/api/?q=${text}&limit=5`);
+    const res = await fetch(`https://photon.komoot.io/api/?q=${text}&limit=5`);
 
-const data = await res.json();
+    const data = await res.json();
 
-setSuggestions(data.features);
+    setSuggestions(data.features);
 
 };
 
@@ -67,30 +70,32 @@ setSuggestions(data.features);
 
 const selectAddress = (place)=>{
 
-const props = place.properties;
-const coords = place.geometry.coordinates;
+    const props = place.properties;
+    console.log(props);
+    const coords = place.geometry.coordinates;
 
-setEditForm({
+    setEditForm({
 
-...editForm,
+        ...editForm,
 
-addressText:
-props.name +
-(props.city ? ", "+props.city : "") +
-(props.state ? ", "+props.state : ""),
+        addressText:
+        props.name +
+        (props.city ? ", "+props.city : "") +
+        (props.state ? ", "+props.state : ""),
 
-street:props.street || "",
-village:props.city || props.name || "",
-district:props.district || props.state || "",
-pincode:props.postcode || "",
+        street:props.street || "",
+        village:props.city || props.name || "",
+        district:props.district || "",
+        state: props.state || "",
+        country: props.country || "",
+        pincode:props.postcode || "",
 
-lat:coords[1],
-lng:coords[0]
+        lat:coords[1],
+        lng:coords[0]
 
-});
+    });
 
-setSuggestions([]);
-
+    setSuggestions([]);
 };
 
 
@@ -98,25 +103,24 @@ setSuggestions([]);
 
 const getLocation = ()=>{
 
-if(!navigator.geolocation){
-alert("Geolocation not supported");
-return;
-}
+    if(!navigator.geolocation){
+    alert("Geolocation not supported");
+    return;
+    }
 
-navigator.geolocation.getCurrentPosition((pos)=>{
+    navigator.geolocation.getCurrentPosition((pos)=>{
 
-setEditForm({
+    setEditForm({
 
-...editForm,
-lat:pos.coords.latitude,
-lng:pos.coords.longitude
+    ...editForm,
+    lat:pos.coords.latitude,
+    lng:pos.coords.longitude
 
-});
+    });
 
-alert("Location captured");
+    alert("Location captured");
 
-});
-
+    });
 };
 
 
@@ -124,62 +128,62 @@ alert("Location captured");
 
 const fetchProfile = async()=>{
 
-const res = await axios.get(
-"http://localhost:5000/auth/profile",
-{withCredentials:true}
-);
+    const res = await axios.get(
+    "http://localhost:5000/auth/profile",
+    {withCredentials:true}
+    );
 
-const u = res.data.user;
+    const u = res.data.user;
 
-setProfile(u);
+    setProfile(u);
 
-setEditForm({
+    setEditForm({
 
-name:u.name,
-phone:u.phone,
-profileImage:u.profileImage,
+    name:u.name,
+    phone:u.phone,
+    profileImage:u.profileImage,
 
-notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
+    dno:u.address?.dno || "",
+    addressText:"",
 
-dno:u.address?.dno || "",
-addressText:"",
+    street:u.address?.street || "",
+    village:u.address?.village || "",
+    district:u.address?.district || "",
+    state: u.address?.state || "",
+    country: u.address?.country || "",
+    pincode:u.address?.pincode || "",
 
-street:u.address?.street || "",
-village:u.address?.village || "",
-district:u.address?.district || "",
-pincode:u.address?.pincode || "",
+    lat:u.location?.coordinates?.[1] || null,
+    lng:u.location?.coordinates?.[0] || null
 
-lat:u.location?.coordinates?.[1] || null,
-lng:u.location?.coordinates?.[0] || null
-
-});
+    });
 
 };
 
 
-/* HISTORY */
+    /* HISTORY */
 
 const fetchFreshHistory = async()=>{
 
-const res = await axios.get(
-`http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
-{withCredentials:true}
-);
+    const res = await axios.get(
+    `http://localhost:5000/fresh/seller/history?page=${freshPage}&limit=${limit}&status=${statusFilter}`,
+    {withCredentials:true}
+    );
 
-setFreshHistory(res.data.items);
-setFreshTotalPages(res.data.totalPages);
+    setFreshHistory(res.data.items);
+    setFreshTotalPages(res.data.totalPages);
 
 };
 
 const fetchWasteHistory = async()=>{
 
-const res = await axios.get(
-`http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
-{withCredentials:true}
-);
+    const res = await axios.get(
+    `http://localhost:5000/waste/seller/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+    {withCredentials:true}
+    );
 
-setWasteHistory(res.data.items);
-setWasteTotalPages(res.data.totalPages);
+    setWasteHistory(res.data.items);
+    setWasteTotalPages(res.data.totalPages);
 
 };
 
@@ -188,14 +192,14 @@ setWasteTotalPages(res.data.totalPages);
 
 const updateProfile = async()=>{
 
-await axios.put(
-"http://localhost:5000/auth/update-profile",
-editForm,
-{withCredentials:true}
-);
+    await axios.put(
+    "http://localhost:5000/auth/update-profile",
+    editForm,
+    {withCredentials:true}
+    );
 
-setShowEdit(false);
-fetchProfile();
+    setShowEdit(false);
+    fetchProfile();
 
 };
 
@@ -224,7 +228,40 @@ reader.readAsDataURL(file);
 /* EFFECTS */
 
 useEffect(()=>{
-fetchProfile();
+// fetchProfile();
+    const loadProfile = async () =>{
+        const res = await axios.get("http://localhost:5000/auth/profile", {withCredentials: true});
+
+        const u = res.data.user;
+        setProfile(u);
+
+        setEditForm({
+            name: u.name,
+            phone: u.phone,
+            profileImage:u.profileImage,
+
+            dno:u.address?.dno || "",
+            addressText:"",
+
+            street:u.address?.street || "",
+            village:u.address?.village || "",
+            district:u.address?.district || "",
+            state: u.address?.state || "",
+            country: u.address?.country || "",
+            pincode:u.address?.pincode || "",
+
+            lat:u.location?.coordinates?.[1] || null,
+            lng:u.location?.coordinates?.[0] || null
+        });
+
+        const missingLocation = !u.location?.coordinates;
+        const missingAddress = !u.address?.street && !u.address?.village && !u.address?.district;
+
+        if(missingAddress || missingLocation)
+            setShowEdit(true);
+    }
+
+    loadProfile();
 },[]);
 
 useEffect(()=>{
@@ -249,27 +286,73 @@ return(
 
 <div className="profile-card">
 
-<div className="profile-left">
+  <div className="profile-left">
 
-<img
-src={profile.profileImage || "/default_profile_image.png"}
-className="profile-image"
-/>
+    <img
+      src={profile.profileImage || "/default_profile_image.png"}
+      className="profile-image"
+    />
 
-<div>
-<h2>{profile.name}</h2>
-<p>{profile.email}</p>
-<p>{profile.phone}</p>
-</div>
+    <div className="profile-details">
 
-</div>
+      <h2 className="profile-name">{profile.name}</h2>
 
-<button
-className="edit-btn"
-onClick={()=>setShowEdit(true)}
->
-Edit Profile
-</button>
+      <div className="profile-info">
+
+        <div className="info-row">
+          <FaUser className="info-icon" />
+          <div>
+            <span>Role</span>
+            <p>{profile.role}</p>
+          </div>
+        </div>
+
+        <div className="info-row">
+          <FaEnvelope className="info-icon" />
+          <div>
+            <span>Email</span>
+            <p>{profile.email}</p>
+          </div>
+        </div>
+
+        <div className="info-row">
+          <FaPhone className="info-icon" />
+          <div>
+            <span>Phone</span>
+            <p>{profile.phone}</p>
+          </div>
+        </div>
+
+      </div>
+
+      {profile.address && (
+        <div className="address-section">
+          <h4><FaMapMarkerAlt /> Address</h4>
+
+          <p className="address-line">
+            {profile.address?.dno}, {profile.address?.street}
+          </p>
+
+          <p className="address-line">
+            {profile.address?.village}, {profile.address?.district}
+          </p>
+
+          <p className="address-line">
+            {profile.address?.state}, {profile.address?.country} - {profile.address?.pincode}
+          </p>
+        </div>
+      )}
+
+    </div>
+
+  </div>
+
+  <button
+    className="edit-btn"
+    onClick={()=>setShowEdit(true)}
+  >
+    Edit Profile
+  </button>
 
 </div>
 
@@ -337,6 +420,12 @@ setPage={setWastePage}
 <div className="modal-content">
 
 <h3>Edit Profile</h3>
+
+{(!editForm.lat || !editForm.street) && (
+  <div className="profile-warning">
+    ⚠ Please complete your address and location to get better matches nearby.
+  </div>
+)}
 
 <div className="image-upload-container">
 
@@ -421,24 +510,40 @@ onChange={(e)=>setEditForm({...editForm,dno:e.target.value})}
 />
 
 <input
+className={!editForm.street ? "input-error" : ""}
 placeholder="Street"
 value={editForm.street}
 onChange={(e)=>setEditForm({...editForm,street:e.target.value})}
 />
 
 <input
+className={!editForm.street ? "input-error" : ""}
 placeholder="Village"
 value={editForm.village}
 onChange={(e)=>setEditForm({...editForm,village:e.target.value})}
 />
 
 <input
+className={!editForm.street ? "input-error" : ""}
 placeholder="District"
 value={editForm.district}
 onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
 />
 
 <input
+placeholder="State"
+value={editForm.state}
+onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
+/>
+
+<input
+placeholder="Country"
+value={editForm.country}
+onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
+/>
+
+<input
+className={!editForm.street ? "input-error" : ""}
 placeholder="Pincode"
 value={editForm.pincode}
 onChange={(e)=>setEditForm({...editForm,pincode:e.target.value})}
@@ -457,25 +562,6 @@ Use Current Location
 <p className="coords">
 Coordinates: {editForm.lat || "-"} , {editForm.lng || "-"}
 </p>
-
-
-<label className="notify-toggle">
-
-<input
-type="checkbox"
-checked={editForm.notifyOnNearbyProducts}
-onChange={(e)=>
-setEditForm({
-...editForm,
-notifyOnNearbyProducts:e.target.checked
-})
-}
-/>
-
-Receive notifications for nearby waste
-
-</label>
-
 
 <div className="modal-actions">
 

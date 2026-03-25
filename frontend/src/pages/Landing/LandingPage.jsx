@@ -91,13 +91,13 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="feature-card">
+          {/* <div className="feature-card">
             <h3>🌱 Carbon Credits</h3>
             <p>
               Farmers earn sustainability credits for contributing
               crop waste to renewable energy production.
             </p>
-          </div>
+          </div> */}
 
           {/* <div className="feature-card">
             <h3>🤖 AI Waste Estimation</h3>
@@ -106,14 +106,15 @@ export default function LandingPage() {
               residue using intelligent prediction models.
             </p>
           </div>
-
+          */
+          }
           <div className="feature-card">
             <h3>📍 Location Based Marketplace</h3>
             <p>
               Buyers can discover nearby farmers using smart
               distance-based filtering.
             </p>
-          </div> */}
+          </div> 
 
         </div>
 

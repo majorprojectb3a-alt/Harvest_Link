@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
 import "./BuyerProfile.css";
 import Navbar from "../../components/Navbar/Navbar";
@@ -10,7 +11,6 @@ export default function BuyerProfile(){
   const [showEdit, setShowEdit] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
 
-  const [buyHistory, setBuyHistory] = useState([]);
   const [freshHistory,setFreshHistory] = useState([]);
   const [wasteHistory,setWasteHistory] = useState([]);
 
@@ -29,13 +29,13 @@ export default function BuyerProfile(){
     phone:"",
     profileImage:"",
 
-    notifyOnNearbyProducts:true,
-
     dno:"",
     addressText:"",
     street:"",
     village:"",
     district:"",
+    state: "",
+    country: "",
     pincode:"",
 
     lat:null,
@@ -71,7 +71,9 @@ export default function BuyerProfile(){
 
       street:props.street || "",
       village:props.city || props.name || "",
-      district:props.district || props.state || "",
+      district:props.district || "",
+      state: props.state || "",
+      country: props.country || "",
       pincode:props.postcode || "",
 
       lat:coords[1],
@@ -114,14 +116,14 @@ export default function BuyerProfile(){
       phone:u.phone,
       profileImage:u.profileImage,
 
-      notifyOnNearbyProducts:u.notifyOnNearbyProducts ?? true,
-
       dno:u.address?.dno || "",
       addressText:"",
 
       street:u.address?.street || "",
       village:u.address?.village || "",
       district:u.address?.district || "",
+      state: u.address?.state || "",
+      country: u.address?.country || "",
       pincode:u.address?.pincode || "",
 
       lat:u.location?.coordinates?.[1] || null,
@@ -144,15 +146,15 @@ setFreshTotalPages(res.data.totalPages);
 
 };
 
-  const fetchWasteHistory = async()=>{
+const fetchWasteHistory = async()=>{
+  console.log('making a call to waste/buyer/history');
+  const res = await axios.get(
+    `http://localhost:5000/waste/buyer/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
+  {withCredentials:true}
+  );
 
-const res = await axios.get(
-`http://localhost:5000/waste/buyer/history?page=${wastePage}&limit=${limit}&status=${statusFilter}`,
-{withCredentials:true}
-);
-
-setWasteHistory(res.data.items);
-setWasteTotalPages(res.data.totalPages);
+  setWasteHistory(res.data.items);
+  setWasteTotalPages(res.data.totalPages);
 
 };
 
@@ -221,37 +223,75 @@ setWasteTotalPages(res.data.totalPages);
       {/* PROFILE CARD */}
       <div className="buyer-profile-card">
 
-        <div className="buyer-profile-left">
+  <div className="buyer-profile-left">
 
-          <img
-            src={
-              profile.profileImage ||
-              "/default_profile_image.png"
-            }
-            className="buyer-profile-image"
-          />
+    <img
+      src={profile.profileImage || "/default_profile_image.png"}
+      className="buyer-profile-image"
+    />
 
+    <div className="buyer-profile-details">
+
+      <h2 className="buyer-profile-name">{profile.name}</h2>
+
+      <div className="buyer-profile-info">
+
+        <div className="buyer-info-row">
+          <FaUser className="buyer-info-icon"/>
           <div>
-
-            <h2>{profile.name}</h2>
-
-            <p>{profile.email}</p>
-
-            <p>{profile.phone}</p>
-
+            <span>Role</span>
+            <p>{profile.role}</p>
           </div>
-
         </div>
 
+        <div className="buyer-info-row">
+          <FaEnvelope className="buyer-info-icon"/>
+          <div>
+            <span>Email</span>
+            <p>{profile.email}</p>
+          </div>
+        </div>
 
-        <button
-          className="buyer-edit-btn"
-          onClick={()=>setShowEdit(true)}
-        >
-          Edit Profile
-        </button>
+        <div className="buyer-info-row">
+          <FaPhone className="buyer-info-icon"/>
+          <div>
+            <span>Phone</span>
+            <p>{profile.phone}</p>
+          </div>
+        </div>
 
       </div>
+
+      {profile.address && (
+        <div className="buyer-address-section">
+          <h4><FaMapMarkerAlt/> Address</h4>
+
+          <p className="buyer-address-line">
+            {profile.address?.dno}, {profile.address?.street}
+          </p>
+
+          <p className="buyer-address-line">
+            {profile.address?.village}, {profile.address?.district}
+          </p>
+
+          <p className="buyer-address-line">
+            {profile.address?.state}, {profile.address?.country} - {profile.address?.pincode}
+          </p>
+        </div>
+      )}
+
+    </div>
+
+  </div>
+
+  <button
+    className="buyer-edit-btn"
+    onClick={()=>setShowEdit(true)}
+  >
+    Edit Profile
+  </button>
+
+</div>
 
 
 
@@ -314,8 +354,13 @@ setWasteTotalPages(res.data.totalPages);
 
           <div className="buyer-modal-content">
 
-            <h3>Edit Profile</h3>
+            {(!editForm.lat || !editForm.street) && (
+              <div className="profile-warning">
+                ⚠ Please complete your address and location to get better matches nearby.
+              </div>
+            )}
 
+            <h3>Edit Profile</h3>
 
             <div className="buyer-image-upload">
 
@@ -405,24 +450,28 @@ setWasteTotalPages(res.data.totalPages);
           />
 
           <input
+          className={!editForm.street ? "input-error" : ""}
           placeholder="Street"
           value={editForm.street}
           onChange={(e)=>setEditForm({...editForm,street:e.target.value})}
           />
 
           <input
+          className={!editForm.street ? "input-error" : ""}
           placeholder="Village"
           value={editForm.village}
           onChange={(e)=>setEditForm({...editForm,village:e.target.value})}
           />
 
           <input
+          className={!editForm.street ? "input-error" : ""}
           placeholder="District"
           value={editForm.district}
           onChange={(e)=>setEditForm({...editForm,district:e.target.value})}
           />
 
           <input
+          className={!editForm.street ? "input-error" : ""}
           placeholder="Pincode"
           value={editForm.pincode}
           onChange={(e)=>setEditForm({...editForm,pincode:e.target.value})}
@@ -442,29 +491,12 @@ setWasteTotalPages(res.data.totalPages);
           Coordinates: {editForm.lat || "-"} , {editForm.lng || "-"}
           </p>
 
-
-          <label className="notify-toggle">
-
-          <input
-          type="checkbox"
-          checked={editForm.notifyOnNearbyProducts}
-          onChange={(e)=>
-          setEditForm({
-          ...editForm,
-          notifyOnNearbyProducts:e.target.checked
-          })
-          }
-          />
-
-          Receive notifications for nearby waste
-
-          </label>
-            <button onClick={updateProfile}>
+            <button className = "save-btn" onClick={updateProfile}>
               Save
             </button>
 
 
-            <button onClick={()=>setShowEdit(false)}>
+            <button className = "close-btn" onClick={()=>setShowEdit(false)}>
               Cancel
             </button>
 

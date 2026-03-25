@@ -16,7 +16,7 @@ export default function WasteCard({ item, onSelect }) {
 
       {/* RIGHT SIDE */}
       <div className="waste-meta">
-        <div className="price">₹{item.predictedPrice}</div>
+        <div className="price">₹{item.totalPrice || item.predictedPrice}</div>
         <div className="distance">
           {item.distance !== null
             ? `${item.distance} km away`

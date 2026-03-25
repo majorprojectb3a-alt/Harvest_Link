@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import "./WasteForm.css";
 import { CROP_WASTE_TYPES } from "../../constants/cropWasteTypes";
 
@@ -55,11 +56,15 @@ function WasteForm({ onClose, item }) {
 
       if(item){
         await axios.put(`http://localhost:5000/waste/update/${item._id}`,payLoad, { withCredentials: true });
-        alert("Waste Item Updated Successfully");
+        toast.success("Waste Item Updated Successfully");
       }
       else{
-        await axios.post("http://localhost:5000/waste/add", payLoad, { withCredentials: true });   
-        alert("✅Waste Item added successfully");
+        const res = await axios.post("http://localhost:5000/waste/add", payLoad, { withCredentials: true });   
+        if (res.data.merged) {
+          toast.info("Merged with existing item");
+        } else {
+          toast.success("Waste Item added successfully");
+        }
       }
       onClose();
 
@@ -94,6 +99,12 @@ function WasteForm({ onClose, item }) {
       alert("Failed to delete the item");
     }
   }
+
+  const isFormValid =
+  form.type &&
+  (Number(form.kg) > 0 || Number(form.grams) > 0) &&
+  Number(form.pricePerKg) > 0;
+
   useEffect(() => {
   if (!item) return;
 
@@ -169,7 +180,7 @@ function WasteForm({ onClose, item }) {
           Cancel
         </button>
         {item && <button name="delete-btn" type="button" onClick={handleDelete}>Delete</button>}
-        <button type="button" className="add-btn" onClick={handleSubmit} disabled={loadingSubmit}>
+        <button type="button" className="add-btn" onClick={handleSubmit} disabled={loadingSubmit || !isFormValid}>
           {loadingSubmit? (item ? "Updating..." : "Adding..."): (item ? "Update Item" : "➕ Add Item")}
         </button>
       </div>
