@@ -3,6 +3,7 @@ import { getWasteItems, getWasteDetails, requestWasteBooking } from "../../api/w
 import WasteCard from "../Card/WasteCard";
 import Filters from "../Filters/Filters";
 import "./WasteOptions.css";
+import {toast} from "react-toastify";
 
 export default function WasteOptions() {
 
@@ -84,7 +85,7 @@ export default function WasteOptions() {
       setSelectedWaste(data);
       setShowDetails(true);
     } catch {
-      alert("Failed to load waste details");
+      toast.info("Failed to load waste details");
     }
   };
 
@@ -187,7 +188,7 @@ export default function WasteOptions() {
                       itemType:"Waste"
                     });
 
-                    alert("✅ Waste booked successfully");
+                    toast.success("✅ Waste booked successfully");
 
                     setShowDetails(false);
 
@@ -200,7 +201,7 @@ export default function WasteOptions() {
                   } catch (err) {
 
                     console.log(err);
-                    alert("❌ Failed to book waste");
+                    toast.error("❌ Failed to book waste");
 
                   }
                 }}

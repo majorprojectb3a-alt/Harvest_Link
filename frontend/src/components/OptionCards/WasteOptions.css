@@ -57,7 +57,7 @@
 /* HOVER */
 
 .filters-container select:hover{
-  border-color:#2f6b3f;
+  border-color:#004d40;
 }
 
 
@@ -65,7 +65,7 @@
 
 .filters-container select:focus{
   outline:none;
-  border-color:#2f6b3f;
+  border-color: #004d40;
   box-shadow:0 0 0 2px rgba(47,107,63,0.15);
 }
 
@@ -121,7 +121,7 @@
 
 .modal-title{
   margin:0;
-  color:#2f6b3f;
+  color: #004d40;
   font-size:22px;
 }
 
@@ -194,7 +194,7 @@
 }
 
 .modal-content input:focus{
-  border-color:#2f6b3f;
+  border-color: #004d40;
   box-shadow:0 0 0 2px rgba(47,107,63,0.15);
   outline:none;
 }
@@ -214,7 +214,7 @@
 /* BOOK BUTTON */
 
 .book-btn{
-  background:#2f6b3f;
+  background: #004d40;
   color:white;
 
   border:none;
@@ -229,7 +229,7 @@
 }
 
 .book-btn:hover{
-  background:#245532;
+  background: #004d40;
 }
 
 

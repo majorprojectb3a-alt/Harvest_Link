@@ -4,7 +4,7 @@ import {
   getFreshDetails,
   requestFreshBooking
 } from "../../api/freshApi";
-
+import {toast} from "react-toastify";
 import FreshCard from "../Card/FreshCard";
 import Filters from "../Filters/FreshFilters";
 
@@ -118,7 +118,7 @@ export default function FreshOptions() {
       setShowDetails(true);
     }
     catch{
-      alert("Failed to load details");
+      toast.info("Failed to load details");
     }
 
   };
@@ -248,7 +248,7 @@ export default function FreshOptions() {
                   itemType:"Fresh"}
 );
 
-                  alert("Booking request sent to farmer!");
+                  toast.success("Booking request sent to farmer!");
 
                     setShowDetails(false);
                     fetchFresh(
@@ -262,7 +262,7 @@ export default function FreshOptions() {
 
                     console.log(err);
 
-                    alert("Purchase failed");
+                    toast.error("Purchase failed");
                   }
 
                 }}

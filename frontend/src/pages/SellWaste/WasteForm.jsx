@@ -37,7 +37,7 @@ function WasteForm({ onClose, item }) {
   // SUBMIT FORM
   const handleSubmit = async () => {
     if (!form.type || (!form.kg && !form.grams) || !form.pricePerKg) {
-      alert("Please fill all fields");
+      toast.info("Please fill all fields");
       return;
     }
 
@@ -74,7 +74,7 @@ function WasteForm({ onClose, item }) {
       }
       else{
       console.log(err);
-      alert("❌ Failed to add waste item");
+      toast.error("❌ Failed to add waste item");
       }
     }
   };
@@ -91,12 +91,12 @@ function WasteForm({ onClose, item }) {
       const res = await axios.delete(`http://localhost:5000/waste/delete/${item._id}`,
       { withCredentials: true });
 
-      alert("Item deleted successfully");
+      toast.success("Item deleted successfully");
       onClose();
     }
     catch(err){
       console.log(err);
-      alert("Failed to delete the item");
+      toast.error("Failed to delete the item");
     }
   }
 
