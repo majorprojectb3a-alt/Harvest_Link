@@ -93,21 +93,37 @@ router.post("/signup", async (req, res) => {
 /* ---------- LOGIN ---------- */
 router.post("/login", async (req, res) => {
   try {
-    console.log('inside login');
+    console.log("inside unified login");
 
-    const { role, email, password } = req.body;
-    console.log(email+" "+password);
-    if (!email || !password)
-      return res.status(400).json({ msg: "Email & password required" });
+    const { role, identifier, password } = req.body;
 
-    const user = await User.findOne({ email, role });
+    if (!identifier || !password)
+      return res.status(400).json({ msg: "Email/Phone & password required" });
+
+    let query = { role };
+
+
+
+    // 👉 Check if identifier is email or phone
+    if (isValidEmail(identifier)) {
+      query.email = identifier.toLowerCase();
+    } else if (/^[0-9]{10}$/.test(identifier)) {
+      query.phone = identifier;
+    } else {
+      return res.status(400).json({ msg: "Invalid email or phone format" });
+    }
+
+    const user = await User.findOne(query);
+
     if (!user)
       return res.status(400).json({ msg: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch)
       return res.status(400).json({ msg: "Incorrect password" });
 
+    // ✅ Session creation (same as your code)
     req.session.user = {
       id: user._id,
       name: user.name,
@@ -119,43 +135,9 @@ router.post("/login", async (req, res) => {
       msg: "Login successful",
       user: req.session.user
     });
+
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-router.post("/farmerLogin", async (req, res) => {
-  try {
-    console.log('inside farmer login');
-
-    const { role, phone, password } = req.body;
-    console.log(phone+" "+password);
-    
-    if (!phone || !password)
-      return res.status(400).json({ msg: "phone number & password required" });
-
-    const user = await User.findOne({ phone, role });
-    if (!user)
-      return res.status(400).json({ msg: "User not found" });
-
-    console.log(user);
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ msg: "Incorrect password" });
-
-    req.session.user = {
-      id: user._id,
-      name: user.name,
-      role: user.role,
-      profileImage: user.profileImage || ""
-    };
-
-    res.json({
-      msg: "Login successful",
-      user: req.session.user
-    });
-  } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: "Server error" });
   }
 });

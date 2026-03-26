@@ -10,11 +10,12 @@ export default function BuyerAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: ""
-  });
+  name: "",
+  email: "",
+  phone: "",
+  identifier: "",
+  password: ""
+});
 
   const [otpSent, setOtpSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -45,12 +46,19 @@ export default function BuyerAuth() {
   };
 
   const validateLogin = () => {
-    let e = {};
-    if (!isValidEmail(form.email)) e.email = "Invalid email";
-    if (!form.password) e.password = "Password required";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  let e = {};
+
+  const value = form.identifier.trim();
+
+  if (!isValidEmail(value) && !isValidPhone(value)) {
+    e.identifier = "Enter valid email or 10-digit phone number";
+  }
+
+  if (!form.password) e.password = "Password required";
+
+  setErrors(e);
+  return Object.keys(e).length === 0;
+};
 
   const validateSignup = () => {
     let e = {};
@@ -73,7 +81,7 @@ export default function BuyerAuth() {
         "http://localhost:5000/auth/login",
         {
           role: "buyer",
-          email: form.email,
+          identifier: form.identifier.trim(),
           password: form.password
         },
         { withCredentials: true }
@@ -119,7 +127,13 @@ export default function BuyerAuth() {
             toast.success(res.data.msg);
             setIsSignUp(false);
             setOtpSent(false);
-            setForm({ name: "", email: "", phone: "", password: "", otp: "" });
+            setForm({
+              name: "",
+              email: "",
+              phone: "",
+              identifier: "",
+              password: ""
+            });
           } catch (err) {
             setErrors({ phone: err.response?.data?.msg || "Signup failed" });
           }
@@ -201,13 +215,16 @@ export default function BuyerAuth() {
             <h2 className="h2">Buyer Login</h2>
 
             <div className="form-group">
-              <label>Email</label>
+              <label>Email or Phone</label>
               <input
-                name="email"
-                value={form.email}
+                name="identifier"
+                value={form.identifier}
                 onChange={handleChange}
+                placeholder="Enter email or phone number"
               />
-              {errors.email && <span className="error">{errors.email}</span>}
+              {errors.identifier && (
+                <span className="error">{errors.identifier}</span>
+              )}
             </div>
 
             <div className="form-group password-group">
@@ -218,6 +235,7 @@ export default function BuyerAuth() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
+                placeholder="Enter password"
               />
               <span
                 className="toggle-icon"

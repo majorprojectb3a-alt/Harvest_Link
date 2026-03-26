@@ -16,8 +16,8 @@ export default function FarmerAuth() {
     name: "",
     email: "",
     phone: "",
+    identifier: "",
     password: "",
-    otp: ""
   });
 
   const [otpSent, setOtpSent] = useState(false);
@@ -43,12 +43,33 @@ export default function FarmerAuth() {
   };
 
   const validateLogin = () => {
-    let e = {};
-    if (!isValidPhone(form.phone)) e.phone = "Invalid phone number";
-    if (!form.password) e.password = "Password required";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  let e = {};
+
+  const value = form.identifier.trim();
+
+  if (!isValidEmail(value) && !isValidPhone(value)) {
+    e.identifier = "Enter valid email or 10-digit phone number";
+  }
+
+  if (!form.password) e.password = "Password required";
+
+  setErrors(e);
+  return Object.keys(e).length === 0;
+};
+  /* ---------- LOGIN ---------- */
+  // const validateSendOtp = () => {
+  //   let e = {};
+  //   if (!isValidPhone(form.phone)) e.phone = "Enter valid 10-digit phone number";
+  //   setErrors(e);
+  //   return Object.keys(e).length === 0;
+  // };
+
+  // const validateVerifyOtp = () => {
+  //   let e = {};
+  //   if (!form.otp || form.otp.length !== 6) e.otp = "Enter valid 6-digit OTP";
+  //   setErrors(e);
+  //   return Object.keys(e).length === 0;
+  // };
 
   const sendOtp = async () => {
     try {
@@ -119,14 +140,14 @@ export default function FarmerAuth() {
     try {
       console.log('inside handle login for farmer');
       const res = await axios.post(
-        "http://localhost:5000/auth/farmerLogin",
-        {
-          role: "farmer",
-          phone: form.phone,
-          password: form.password
-        },
-        { withCredentials: true }
-      );
+  "http://localhost:5000/auth/login",
+  {
+    role: "farmer",
+    identifier: form.identifier.trim(),
+    password: form.password
+  },
+  { withCredentials: true }
+);
 
       // console.log(res.data);
       localStorage.setItem("userId", res.data.user.id);
@@ -179,7 +200,13 @@ export default function FarmerAuth() {
         toast.success(res.data.msg);
         setIsSignUp(false);
         setOtpSent(false);
-        setForm({ name: "", email: "", phone: "", password: "", otp: "" });
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          identifier: "",
+          password: "",
+        });
       } catch (err) {
         setErrors({ phone: err.response?.data?.msg || "Signup failed" });
       }
@@ -201,22 +228,17 @@ export default function FarmerAuth() {
             <h2 className="h2">Farmer Login</h2>
 
             <div className="form-group">
-              <label>Phone</label>
-              <input
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-              />
-              {errors.phone && <span className="error">{errors.phone}</span>}
-              {/* <label>Phone</label>
-              <input
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                disabled={otpSent}
-              />
-              {errors.phone && <span className="error">{errors.phone}</span>} */}
-            </div>
+  <label>Email or Phone</label>
+  <input
+    name="identifier"
+    value={form.identifier}
+    onChange={handleChange}
+    placeholder="Enter email or phone number"
+  />
+  {errors.identifier && (
+    <span className="error">{errors.identifier}</span>
+  )}
+</div>
               
               <div className="form-group password-group">
               <label>Password</label>
@@ -226,6 +248,7 @@ export default function FarmerAuth() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
+                placeholder="Enter password"
               />
               <span
                 className="toggle-icon"
