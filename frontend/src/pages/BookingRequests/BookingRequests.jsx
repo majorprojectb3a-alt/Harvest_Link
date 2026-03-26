@@ -45,13 +45,13 @@ export default function BookingRequests(){
 
   const acceptBooking = async(id)=>{
     await axios.post(`http://localhost:5000/api/bookings/accept/${id}`);
-    alert("Booking accepted successfully ✅");
+    toast.success("Booking accepted successfully ✅");
     fetchRequests();
   };
 
   const rejectBooking = async(id)=>{
     await axios.post(`http://localhost:5000/api/bookings/reject/${id}`);
-     alert("Booking rejected ❌");
+    toast.success("Booking rejected ❌");
     fetchRequests();
   };
 

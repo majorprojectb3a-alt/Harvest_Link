@@ -20,6 +20,7 @@
 .logo{
   font-size:22px;
   font-weight:bold;
+  font-family: cursive;
 }
 
 .nav-buttons{
@@ -55,6 +56,7 @@
   font-size:56px;
   color:#00695C;
   margin-bottom:10px;
+  font-family: cursive;
 }
 
 .tagline{

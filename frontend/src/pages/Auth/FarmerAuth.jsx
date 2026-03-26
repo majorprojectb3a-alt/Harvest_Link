@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {toast} from "react-toastify";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import Navbar from "./AuthNavbar";
 import "../../App.css";
 import "./Auth.css"; 
@@ -10,7 +11,7 @@ export default function FarmerAuth() {
   const navigate = useNavigate();
 
   const [isSignUp, setIsSignUp] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -79,7 +80,7 @@ export default function FarmerAuth() {
       toast.info(res.data.msg);
       setOtpSent(true);
     } catch (err) {
-      alert(err.response?.data?.msg);
+      toast.error(err.response?.data?.msg);
       // setErrors({ phone: err.response?.data?.msg || "Failed to send OTP" });
     }
   };
@@ -128,7 +129,7 @@ export default function FarmerAuth() {
       navigate("/farmer");
   
     } catch (err) {
-      alert(err.response?.data?.msg);
+      toast.error(err.response?.data?.msg);
     }
   };
 
@@ -155,7 +156,7 @@ export default function FarmerAuth() {
       toast.success(res.data.msg);
       navigate("/FarmerHome");
     } catch (err) {
-      alert(err.response.data.msg);
+      toast.error(err.response.data.msg);
     }
   };
 
@@ -174,7 +175,7 @@ export default function FarmerAuth() {
     if (!validateSignup()) return;
 
     if(!navigator.geolocation){
-      alert("geolocation not supported by browser");
+      toast.info("geolocation not supported by browser");
       return ;
     }
 
@@ -239,15 +240,23 @@ export default function FarmerAuth() {
   )}
 </div>
               
-              <div className="form-group">
+              <div className="form-group password-group">
               <label>Password</label>
+              <div className="password-input">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
                 placeholder="Enter password"
               />
+              <span
+                className="toggle-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </span>
+              </div>
               {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
@@ -366,14 +375,23 @@ export default function FarmerAuth() {
                 {errors.phone && <span className="error">{errors.phone}</span>}
               </div>
 
-              <div className="form-group">
+              <div className="form-group password-group">
                 <label>Password</label>
+                <div className="password-input">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={form.password}
                   onChange={handleChange}
                 />
+
+                <span
+                  className="toggle-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </span>
+                </div>
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 

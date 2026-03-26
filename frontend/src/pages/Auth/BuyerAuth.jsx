@@ -4,6 +4,7 @@ import Navbar from "./AuthNavbar";
 import "../../App.css";
 import "./Auth.css";   
 import {toast} from 'react-toastify';
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 export default function BuyerAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -17,6 +18,7 @@ export default function BuyerAuth() {
 });
 
   const [otpSent, setOtpSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   const [resetForm, setResetForm] = useState({
@@ -92,7 +94,7 @@ export default function BuyerAuth() {
       toast.success(res.data.msg);
       navigate("/BuyerHome");
     } catch (err) {
-      alert(err.response.data.msg);
+      toast.error(err.response.data.msg);
     }
   };
 
@@ -149,7 +151,7 @@ export default function BuyerAuth() {
       toast.info(res.data.msg);
       setOtpSent(true);
     } catch (err) {
-      alert(err.response?.data?.msg);
+      toast.error(err.response?.data?.msg);
     }
   };
 
@@ -197,7 +199,7 @@ export default function BuyerAuth() {
     navigate("/buyer");
 
   } catch (err) {
-    alert(err.response?.data?.msg);
+    toast.error(err.response?.data?.msg);
   }
 };
 
@@ -225,15 +227,23 @@ export default function BuyerAuth() {
               )}
             </div>
 
-            <div className="form-group">
+            <div className="form-group password-group">
               <label>Password</label>
+              <div className="password-input">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
                 placeholder="Enter password"
               />
+              <span
+                className="toggle-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </span>
+              </div>
               {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
@@ -364,14 +374,20 @@ export default function BuyerAuth() {
                 {errors.phone && <span className="error">{errors.phone}</span>}
               </div>
 
-              <div className="form-group">
+              <div className="form-group password-group">
                 <label>Password</label>
+                <div className="password-input">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={form.password}
                   onChange={handleChange}
                 />
+                <span
+                  className="toggle-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >{showPassword ? <FiEyeOff /> : <FiEye />}</span>
+                </div>
                 {errors.password && <span className="error">{errors.password}</span>}
               </div>
 

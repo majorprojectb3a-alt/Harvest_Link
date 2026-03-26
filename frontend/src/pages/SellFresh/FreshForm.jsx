@@ -100,13 +100,13 @@ function FreshForm({ onClose, item }) {
         { withCredentials: true }
       );
 
-      alert("Item deleted successfully");
+      toast.success("Fresh Item deleted successfully");
       onClose();
 
     } catch (err) {
 
       console.log(err);
-      alert("Failed to delete item");
+      toast.error("Failed to delete item");
 
     }
   };
@@ -116,7 +116,7 @@ function FreshForm({ onClose, item }) {
   const handleSubmit = async () => {
 
     if (!form.crop || (!form.kg && !form.grams) || !form.price) {
-      alert("Please fill all fields");
+      toast.info("Please fill all fields");
       return;
     }
 
@@ -140,7 +140,7 @@ function FreshForm({ onClose, item }) {
     }
 
     if (chosenLat == null || chosenLng == null) {
-      alert("Cannot determine mandi coordinates.");
+      toast.info("Cannot determine mandi coordinates.");
       return;
     }
 
@@ -194,7 +194,7 @@ function FreshForm({ onClose, item }) {
     } catch (err) {
 
       console.log(err);
-      alert("Failed to save item");
+      toast.error("Failed to save item");
 
     }
 
@@ -334,7 +334,7 @@ function FreshForm({ onClose, item }) {
       Number(form.kg || 0) + Number(form.grams || 0) / 1000;
 
     if (!form.crop || !form.district) {
-      alert("Select crop and district first");
+      toast.info("Select crop and district first");
       return;
     }
 
@@ -358,7 +358,7 @@ function FreshForm({ onClose, item }) {
     } catch (err) {
 
       console.log(err);
-      alert("Prediction failed");
+      toast.error("Prediction failed");
 
     }
 
